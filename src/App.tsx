@@ -2,17 +2,16 @@ import './App.scss'
 
 import { Container } from '@material-ui/core'
 import React from 'react'
-import { Provider } from 'react-redux'
-import { Workout } from 'src/components'
-import { store } from 'src/state'
+
+import { createNote, Note, NoteProvider } from './playground'
 
 const App: React.FC = () => {
   return (
-    <Provider store={store}>
-      <Container maxWidth="sm">
-        <Workout />
-      </Container>
-    </Provider>
+    <Container maxWidth="sm">
+      <NoteProvider note={createNote()}>
+        <Note />
+      </NoteProvider>
+    </Container>
   )
 }
 

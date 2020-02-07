@@ -1,0 +1,27 @@
+{
+  "files.exclude": {
+    "**/node_modules": true
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "vscode.typescript-language-features"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "vscode.typescript-language-features"
+  },
+  "editor.formatOnSaveTimeout": 2000,
+  "tslint.autoFixOnSave": true,
+  "typescript.format.insertSpaceAfterOpeningAndBeforeClosingTemplateStringBraces": true,
+  "typescript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBrackets": true,
+  "typescript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyParenthesis": true,
+  "typescript.format.insertSpaceAfterKeywordsInControlFlowStatements": false,
+  "typescript.format.insertSpaceAfterFunctionKeywordForAnonymousFunctions": false,
+  "typescript.format.semicolons": "remove",
+  "prettier.semi": false,
+  "typescriptHero.imports.multiLineWrapThreshold": 80,
+  "typescriptHero.imports.organizeOnSave": true,
+  "editor.formatOnSave": true,
+  "typescript.format.placeOpenBraceOnNewLineForFunctions": false,
+  "editor.rulers": [80, 100],
+  "typescriptHero.imports.insertSemicolons": false,
+  "prettier.trailingComma": "all"
+}

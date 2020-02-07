@@ -12,6 +12,7 @@
     "node-sass": "^4.13.0",
     "react": "^16.12.0",
     "react-compound-timer": "^1.1.15",
+    "react-contenteditable": "^3.3.3",
     "react-dom": "^16.12.0",
     "react-flexview": "^4.0.4",
     "react-redux": "^7.1.3",
