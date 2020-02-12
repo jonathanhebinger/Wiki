@@ -1,17 +1,37 @@
 import './App.scss'
 
-import { Container } from '@material-ui/core'
+import { Container, Grid } from '@material-ui/core'
 import React from 'react'
+import { Provider } from 'react-redux'
+import { Note } from 'src/components/note'
+import { store } from 'src/state'
+import uuid from 'uuid'
 
-import { createNote, Note, NoteProvider } from './playground'
+import { NoteProvider } from './providers'
 
 const App: React.FC = () => {
+  const note = {
+    id: uuid.v4(),
+    title: 'New note',
+    content: '42',
+    creation: Date.now(),
+    modification: Date.now(),
+  }
   return (
-    <Container maxWidth="sm">
-      <NoteProvider note={createNote()}>
-        <Note />
+    <Provider store={store}>
+      <NoteProvider note={note}>
+        <Container maxWidth="md">
+          <Grid container spacing={2}>
+            <Grid item xs={3}>
+              <Note />
+            </Grid>
+            <Grid item xs={9}>
+              <Note />
+            </Grid>
+          </Grid>
+        </Container>
       </NoteProvider>
-    </Container>
+    </Provider >
   )
 }
 
