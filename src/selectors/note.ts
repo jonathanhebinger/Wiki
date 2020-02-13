@@ -2,16 +2,24 @@ import { createSelector } from 'reselect'
 import { IState } from 'src/types'
 import { find } from 'src/utils'
 
-export function getNotes( state: IState ) {
-  return state.notes
-}
+export const noteSelectorAll = ( state: IState ) => state.notes
 
-export function getSelected( state: IState ) {
-  return state.selected
-}
+export const noteSelectorById = ( id: string ) => ( state: IState ) => find( state.notes, id )
 
-export const getSelectedNotes = createSelector(
-  getSelected,
-  getNotes,
-  ( selected, notes ) => Array.from( selected ).map( id => find( notes, id ) ),
+export const noteSelectorSelected = ( state: IState ) => state.selected
+
+export const noteSelectorSelectedAsIds = createSelector(
+  noteSelectorSelected,
+  selected => Object.keys( selected ),
+)
+
+export const noteSelectorSortedByModification = createSelector(
+  noteSelectorAll,
+  notes => [ ...notes ].sort( ( a, b ) => a.modification - b.modification ),
+)
+
+export const noteSelectorSelectedAsNotes = createSelector(
+  noteSelectorSelectedAsIds,
+  noteSelectorAll,
+  ( selected, notes ) => selected.map( id => find( notes, id ) ),
 )

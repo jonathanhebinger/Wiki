@@ -1,30 +1,29 @@
 import constate from 'constate'
 import { useCallback, useState } from 'react'
-import { useDispatch } from 'react-redux'
-import { noteActionClose, noteActionDelete, noteActionSave } from 'src/actions'
-import { INote } from 'src/types'
+import { useDispatch, useSelector } from 'react-redux'
+import { noteActionClose, noteActionSave, noteThunkDelete } from 'src/actions'
+import { noteSelectorById } from 'src/selectors'
 
-export const [ NoteProvider, useNoteContext ] = constate( ( { note }: { note: INote } ) => {
+export const [ NoteProvider, useNoteContext ] = constate( ( { id }: { id: string } ) => {
   const dispatch = useDispatch()
 
+  const note = useSelector( noteSelectorById( id ) )
+
   const [ editing, setEditing ] = useState( false )
-  const [ unsaved, setUnsaved ] = useState( false )
 
   const edit = useCallback( () => setEditing( true ), [] )
 
   const save = useCallback( () => {
     setEditing( false )
-    setUnsaved( false )
     dispatch( noteActionSave( note ) )
   }, [ dispatch, note ] )
 
   const close = useCallback( () => {
-    if( unsaved ) { setUnsaved( false ) }
-    if( !unsaved ) { dispatch( noteActionClose( note.id ) ) }
-  }, [ dispatch, note.id, unsaved ] )
+    dispatch( noteActionClose( note.id ) )
+  }, [ dispatch, note.id ] )
 
   const remove = useCallback( () => {
-    dispatch( noteActionDelete( note.id ) )
+    dispatch( noteThunkDelete( note.id ) )
   }, [ dispatch, note.id ] )
 
   return { editing, edit, save, note, close, remove }

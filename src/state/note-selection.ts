@@ -1,15 +1,12 @@
 import { createReducer } from '@reduxjs/toolkit'
-import { noteActionClose, noteActionDelete, noteActionOpen } from 'src/actions'
+import { noteActionClose, noteActionOpen } from 'src/actions'
 
-export const noteSelectionReducer = createReducer( new Set<string>(), builder =>
+export const noteSelectionReducer = createReducer( {} as { [ index: string ]: boolean }, builder =>
   builder
     .addCase( noteActionOpen, ( state, { payload } ) => {
-      state.add( payload )
+      state[ payload ] = true
     } )
     .addCase( noteActionClose, ( state, { payload } ) => {
-      state.delete( payload )
-    } )
-    .addCase( noteActionDelete, ( state, { payload } ) => {
-      state.delete( payload )
+      delete state[ payload ]
     } ),
 )

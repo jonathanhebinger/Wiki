@@ -1,41 +1,49 @@
-import { Card, CardContent, CardHeader, IconButton } from '@material-ui/core'
+import { Card, CardContent, CardHeader, IconButton, Typography } from '@material-ui/core'
 import { Close, Delete, Edit, Save } from '@material-ui/icons'
 import React from 'react'
-import ContentEditable, { ContentEditableEvent } from 'react-contenteditable'
-import { useNoteContext } from 'src/providers'
+import { InputContentEditable } from 'src/blocs'
+import { NoteProvider, useNoteContext } from 'src/providers'
 
-export function Note() {
-  const { editing, edit, save, note } = useNoteContext()
+export function Note( { id }: { id: string } ) {
+  return (
+    <NoteProvider id={id}>
+      <Card>
+        <NoteHeader />
+        <NoteContent />
+      </Card>
+    </NoteProvider>
+  )
+}
 
-  const onChange = ( evt: ContentEditableEvent ) => {
-    note.content = evt.target.value
-  }
+function NoteContent() {
+  const { editing, note } = useNoteContext()
+  const onChange = ( content: string ) => console.log( content )
+  return (
+    <CardContent>
+      <Typography>Content :</Typography>
+      <InputContentEditable content={note.content} editing={editing} onChange={onChange} />
+    </CardContent>
+  )
+}
 
-  const actions = (
+function NoteHeader() {
+  const { note } = useNoteContext()
+  return <CardHeader action={<NoteHeaderAction />} title={note.title} subheader={note.id} />
+}
+
+function NoteHeaderAction() {
+  const { edit, save, close, remove, editing } = useNoteContext()
+  return (
     <div>
-      <IconButton aria-label="edit" onClick={edit}>
-        <Edit />
+      <IconButton aria-label="save" onClick={editing ? save : edit}>
+        {editing ? <Save /> : <Edit />}
       </IconButton>
-      <IconButton aria-label="save" onClick={save}>
-        <Save />
-      </IconButton>
-      <IconButton aria-label="delete" onClick={save}>
+      <IconButton aria-label="delete" onClick={remove}>
         <Delete />
       </IconButton>
-      <IconButton aria-label="close" onClick={save}>
+      <IconButton aria-label="close" onClick={close}>
         <Close />
       </IconButton>
     </div>
-  )
-
-  return (
-    <Card>
-      <CardHeader action={actions} title={note.title} subheader={note.id} />
-      <CardContent>
-        <ContentEditable html={note.content} disabled={!editing} onChange={onChange} />
-        {/* https://www.npmjs.com/package/react-contenteditable */}
-        {/* https://codesandbox.io/s/l91xvkox9l */}
-      </CardContent>
-    </Card>
   )
 }

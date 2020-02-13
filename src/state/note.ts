@@ -2,14 +2,13 @@ import { createReducer } from '@reduxjs/toolkit'
 import { noteActionCreate, noteActionDelete, noteActionSave } from 'src/actions'
 import { INote } from 'src/types'
 import { find, remove } from 'src/utils'
-import uuid from 'uuid'
 
 export const noteReducer = createReducer( [] as INote[], builder =>
   builder
     .addCase( noteActionCreate, ( state, { payload } ) => {
       state.push( {
-        id: uuid.v4(),
-        title: payload || 'New note',
+        id: payload,
+        title: 'New note',
         content: '42',
         creation: Date.now(),
         modification: Date.now(),
