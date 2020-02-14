@@ -1,4 +1,19 @@
-import { Button, ButtonGroup, Paper } from '@material-ui/core'
+import {
+  Box,
+  Button,
+  ButtonGroup,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Divider,
+  Grid,
+  Paper,
+  Switch,
+  TextField,
+  Typography,
+} from '@material-ui/core'
 import {
   FormatAlignCenter,
   FormatAlignJustify,
@@ -15,7 +30,7 @@ import {
   Redo,
   Undo,
 } from '@material-ui/icons'
-import React from 'react'
+import React, { useState } from 'react'
 import ContentEditable, { ContentEditableEvent } from 'react-contenteditable'
 
 export const actions = [
@@ -30,18 +45,18 @@ export const actions = [
     { name: 'Strikethrough', icon: <FormatStrikethrough />, command: 'strikethrough' },
   ],
   [
-    { name: 'Bold', icon: <FormatAlignLeft />, command: 'justifyLeft' },
-    { name: 'Bold', icon: <FormatAlignCenter />, command: 'justifyCenter' },
-    { name: 'Bold', icon: <FormatAlignRight />, command: 'justifyRight' },
-    { name: 'Bold', icon: <FormatAlignJustify />, command: 'justifyFull' },
+    { name: 'Align left', icon: <FormatAlignLeft />, command: 'justifyLeft' },
+    { name: 'Align center', icon: <FormatAlignCenter />, command: 'justifyCenter' },
+    { name: 'Align right', icon: <FormatAlignRight />, command: 'justifyRight' },
+    { name: 'Align justify', icon: <FormatAlignJustify />, command: 'justifyFull' },
   ],
   [
-    { name: 'Bold', icon: <FormatIndentIncrease />, command: 'indent' },
-    { name: 'Bold', icon: <FormatIndentDecrease />, command: 'outdent' },
+    { name: 'Indent', icon: <FormatIndentIncrease />, command: 'indent' },
+    { name: 'Outdent', icon: <FormatIndentDecrease />, command: 'outdent' },
   ],
   [
-    { name: 'Bold', icon: <FormatListBulleted />, command: 'insertUnorderedList' },
-    { name: 'Bold', icon: <FormatListNumbered />, command: 'insertOrderedList' },
+    { name: 'Unordered list', icon: <FormatListBulleted />, command: 'insertUnorderedList' },
+    { name: 'Ordered list', icon: <FormatListNumbered />, command: 'insertOrderedList' },
   ],
 ]
 
@@ -55,6 +70,7 @@ export const actions = [
     <a href="#" data-command='subscript'><i class='fa fa-subscript'></i></a>
     <a href="#" data-command='superscript'><i class='fa fa-superscript'></i></a>
 */
+
 export function InputContentEditable( {
   editing = true,
   content,
@@ -70,13 +86,14 @@ export function InputContentEditable( {
       {editing && <InputContentEditableActions />}
       <Paper elevation={editing ? 1 : 0}>
         <ContentEditable html={content} disabled={!editing} onChange={vOnChange} />
+        <FormDialog />
       </Paper>
     </div>
   )
 }
 
 function InputContentEditableActions() {
-  const doAction = ( command: string ) => () => document.execCommand( command )
+  const doAction = ( command: string ) => () => execCommand( command )
   const vGroups = actions.map( ( group, index ) => {
     const vActions = group.map( action => (
       <Button
@@ -88,11 +105,85 @@ function InputContentEditableActions() {
         {action.icon}
       </Button>
     ) )
-    return <ButtonGroup key={index}>{vActions}</ButtonGroup>
+    return (
+      <Box mx={1} key={index}>
+        <ButtonGroup>{vActions}</ButtonGroup>
+      </Box>
+    )
   } )
   return (
-    <React.Fragment>
+    <Grid container justify="center">
       {vGroups}
-    </React.Fragment>
+    </Grid>
+  )
+}
+
+function execCommand( command: string ) {
+  switch( command ) {
+    case 'createlink':
+      break
+    default:
+      document.execCommand( command )
+  }
+}
+
+export function FormDialog() {
+  const [ open, setOpen ] = useState( false )
+  const [ external, setExternal ] = useState( true )
+
+  const handleClickOpen = () => {
+    setOpen( true )
+  }
+
+  const handleClose = () => {
+    setOpen( false )
+  }
+
+  const toggleExternal = () => setExternal( !external )
+
+  return (
+    <div>
+      <Button variant="outlined" color="primary" onClick={handleClickOpen}>
+        Open form dialog
+      </Button>
+      <Dialog open={open} onClose={handleClose}>
+        <DialogTitle>Add link</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            To subscribe to this website, please enter your email address here. We will send updates
+            occasionally.
+          </DialogContentText>
+          <Typography component="div">
+            <Grid component="label" container alignItems="center" spacing={1}>
+              <Grid item>External</Grid>
+              <Grid item>
+                <Switch
+                  checked={!external}
+                  onChange={toggleExternal}
+                  color="primary"
+                />
+              </Grid>
+              <Grid item>Internal</Grid>
+            </Grid>
+          </Typography>
+          <Divider />
+          <TextField
+            margin="dense"
+            id="name"
+            label="Email Address"
+            type="email"
+            fullWidth
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleClose} color="primary">
+            Subscribe
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </div>
   )
 }
