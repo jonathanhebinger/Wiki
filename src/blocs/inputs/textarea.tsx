@@ -8,11 +8,12 @@ import {
   DialogContentText,
   DialogTitle,
   Divider,
+  FormControlLabel,
   Grid,
   Paper,
-  Switch,
+  Radio,
+  RadioGroup,
   TextField,
-  Typography,
 } from '@material-ui/core'
 import {
   FormatAlignCenter,
@@ -30,7 +31,7 @@ import {
   Redo,
   Undo,
 } from '@material-ui/icons'
-import React, { useState } from 'react'
+import React, { ChangeEvent, useState } from 'react'
 import ContentEditable, { ContentEditableEvent } from 'react-contenteditable'
 
 export const actions = [
@@ -106,7 +107,7 @@ function InputContentEditableActions() {
       </Button>
     ) )
     return (
-      <Box mx={1} key={index}>
+      <Box mx={0.5} key={index}>
         <ButtonGroup>{vActions}</ButtonGroup>
       </Box>
     )
@@ -129,7 +130,7 @@ function execCommand( command: string ) {
 
 export function FormDialog() {
   const [ open, setOpen ] = useState( false )
-  const [ external, setExternal ] = useState( true )
+  const [ type, setType ] = useState( 'external' )
 
   const handleClickOpen = () => {
     setOpen( true )
@@ -139,7 +140,16 @@ export function FormDialog() {
     setOpen( false )
   }
 
-  const toggleExternal = () => setExternal( !external )
+  const eTypeChange = ( event: ChangeEvent<HTMLInputElement> ) => setType( event.target.value )
+
+  let form
+
+  if( type === 'external' ) {
+    form = <TextField margin="dense" id="name" label="Email Address" type="email" fullWidth />
+  }
+  if( type === 'internal' ) {
+    form =  <React.Fragment/> <TextField margin="dense" id="name" label="Email Address" type="email" fullWidth />
+  }
 
   return (
     <div>
@@ -153,27 +163,22 @@ export function FormDialog() {
             To subscribe to this website, please enter your email address here. We will send updates
             occasionally.
           </DialogContentText>
-          <Typography component="div">
-            <Grid component="label" container alignItems="center" spacing={1}>
-              <Grid item>External</Grid>
-              <Grid item>
-                <Switch
-                  checked={!external}
-                  onChange={toggleExternal}
-                  color="primary"
-                />
-              </Grid>
-              <Grid item>Internal</Grid>
-            </Grid>
-          </Typography>
+          <RadioGroup value={type} onChange={eTypeChange} row>
+            <FormControlLabel
+              value="external"
+              control={<Radio color="primary" />}
+              label="External"
+              labelPlacement="start"
+            />
+            <FormControlLabel
+              value="internal"
+              control={<Radio color="primary" />}
+              label="Internal"
+              labelPlacement="end"
+            />
+          </RadioGroup>
           <Divider />
-          <TextField
-            margin="dense"
-            id="name"
-            label="Email Address"
-            type="email"
-            fullWidth
-          />
+          {form}
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="primary">
