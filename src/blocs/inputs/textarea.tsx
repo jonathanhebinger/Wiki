@@ -1,17 +1,4 @@
-import {
-  Box,
-  Button,
-  ButtonGroup,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Grid,
-  Paper,
-  Tab,
-  Tabs,
-  TextField,
-} from '@material-ui/core'
+import { Box, Button, ButtonGroup, Grid, Paper, Tab, Tabs, TextField } from '@material-ui/core'
 import {
   FormatAlignCenter,
   FormatAlignJustify,
@@ -25,13 +12,15 @@ import {
   FormatListNumbered,
   FormatStrikethrough,
   FormatUnderlined,
+  Link,
+  LinkOff,
   Redo,
   Undo,
 } from '@material-ui/icons'
 import constate from 'constate'
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import ContentEditable, { ContentEditableEvent } from 'react-contenteditable'
-import { TabPanel } from 'src/blocs'
+import { TabPanel, useModalContext } from 'src/blocs'
 
 export const actions = [
   [
@@ -58,13 +47,15 @@ export const actions = [
     { name: 'Unordered list', icon: <FormatListBulleted />, command: 'insertUnorderedList' },
     { name: 'Ordered list', icon: <FormatListNumbered />, command: 'insertOrderedList' },
   ],
+  [
+    { name: 'Link', icon: <Link />, command: 'createlink' },
+    { name: 'Unlink', icon: <LinkOff />, command: 'unlink' },
+  ],
 ]
 
 /*
     <a href="#" data-command='h1'>H1</a>
     <a href="#" data-command='h2'>H2</a>
-    <a href="#" data-command='createlink'><i class='fa fa-link'></i></a>
-    <a href="#" data-command='unlink'><i class='fa fa-unlink'></i></a>
     <a href="#" data-command='insertimage'><i class='fa fa-image'></i></a>
     <a href="#" data-command='p'>P</a>
     <a href="#" data-command='subscript'><i class='fa fa-subscript'></i></a>
@@ -86,16 +77,16 @@ export function InputContentEditable( {
       {editing && <InputContentEditableActions />}
       <Paper elevation={editing ? 1 : 0}>
         <ContentEditable html={content} disabled={!editing} onChange={vOnChange} />
-        <InputLinkProvider>
-          <FormDialog />
-        </InputLinkProvider>
       </Paper>
     </div>
   )
 }
 
 function InputContentEditableActions() {
-  const doAction = ( command: string ) => () => execCommand( command )
+  const { execute, Element } = useContentEditableCommand()
+
+  const doAction = ( command: string ) => () => execute( command )
+
   const vGroups = actions.map( ( group, index ) => {
     const vActions = group.map( action => (
       <Button
@@ -113,113 +104,120 @@ function InputContentEditableActions() {
       </Box>
     )
   } )
+
   return (
-    <Grid container justify="center">
-      {vGroups}
-    </Grid>
+    <React.Fragment>
+      <Grid container justify="center">
+        {vGroups}
+      </Grid>
+      <Box hidden>{Element}</Box>
+    </React.Fragment>
   )
 }
 
-function execCommand( command: string ) {
-  switch( command ) {
-    case 'createlink':
-      break
-    default:
-      document.execCommand( command )
-  }
+function useContentEditableCommand() {
+  const [ Element, setElement ] = useState( null as ( React.ReactNode | null ) )
+  const reset = useCallback( () => setElement( null ), [] )
+  const execute = useCallback( ( command: string ) => {
+    switch( command ) {
+      case 'createlink':
+        const createLinkOnClose = () => {
+
+          reset()
+        }
+        setElement( <LinkInputDialog onValidate={createLinkOnClose} /> )
+        break
+      default:
+        document.execCommand( command )
+    }
+  }, [ reset ] )
+  return { execute, Element }
 }
 
-interface ModalConfig {
-  title: string
-  content: React.ReactNode
-  actions: React.ReactNode
-}
-
-const [ ModalProvider, useModalContext ] = constate( () => {
-  const [ open, setOpen ] = useState( false )
-  const [ config, setConfig ] = useState( {} as ModalConfig )
-  const close = () => setOpen( false )
-  return { open, config, close, setConfig }
-} )
-
-const Modal = () => {
-  const { open, config, close } = useModalContext()
-  const { title, content, actions } = config
-  return (
-    <Dialog open={open} onClose={close}>
-      <DialogTitle>{title}</DialogTitle>
-      <DialogContent>{content}</DialogContent>
-      <DialogActions>{actions}</DialogActions>
-    </Dialog>
-  )
-}
-
-enum InputLinkType {
+enum LinkInputType {
   INTERNAL,
   NOTES,
   EXTERNAL,
 }
 
-type InputChange = React.ChangeEvent<HTMLInputElement>
-type Change = React.ChangeEvent<{}>
-
-const [ InputLinkProvider, useInputLinkContext ] = constate( () => {
+const [ LinkInputProvider, useLinkInputContext ] = constate( () => {
   const [ label, setLabel ] = useState( '' )
-  const eLabelChange = ( event: InputChange ) => setLabel( event.target.value )
 
-  const [ type, setType ] = React.useState( InputLinkType.INTERNAL )
-  const eTabChange = ( event: Change, newValue: InputLinkType ) => setType( newValue )
+  const [ type, setType ] = React.useState( LinkInputType.INTERNAL )
 
-  return { label, setLabel, eLabelChange, type, setType, eTabChange }
+  return { label, setLabel, type, setType }
 } )
 
-export function useLinkInputDialog() {
-  const { type: tab, eTabChange } = useInputLinkContext()
-
-  const modal = useModalContext()
+export function LinkInputDialog( { onValidate }: { onValidate: () => void } ) {
+  const { setConfig, open, close } = useModalContext()
 
   useEffect( () => {
-    modal.setConfig( {
+    setConfig( {
       title: 'Add link',
-      content: (
-        <React.Fragment>
-          <Paper square>
-            <Tabs value={tab} indicatorColor="primary" textColor="primary" onChange={eTabChange}>
-              <Tab label="External" value={InputLinkType.INTERNAL} />
-              <Tab label="Notes" value={InputLinkType.NOTES} />
-              <Tab label="Internal" value={InputLinkType.EXTERNAL} />
-            </Tabs>
-          </Paper>
-
-          <TabPanel value={tab} index={InputLinkType.INTERNAL}>
-            <InputLinkExternal />
-          </TabPanel>
-
-          <TabPanel value={tab} index={InputLinkType.NOTES}>
-            <InputLinkNotes />
-          </TabPanel>
-
-          <TabPanel value={tab} index={InputLinkType.EXTERNAL}>
-            <InputLinkInternal />
-          </TabPanel>
-        </React.Fragment>
-      ),
-      actions: (
-        <React.Fragment>
-          <Button onClick={modal.close} color="primary">
-            Cancel
-        </Button>
-          <Button onClick={modal.close} color="primary">
-            Subscribe
-        </Button>
-        </React.Fragment>
-      ),
+      content: <LinkInputDialogContent />,
+      actions: <LinkInputDialogActions />,
+      wrapper: LinkInputProvider,
     } )
-  }, [ eTabChange, modal, tab ] )
+    open()
+    return () => close()
+  }, [ setConfig, open, close ] )
+
+  return <React.Fragment />
 }
 
-const InputLinkExternalLabel = () => {
-  const { label, eLabelChange } = useInputLinkContext()
+const LinkInputDialogContent = () => {
+  const { type, setType } = useLinkInputContext()
+
+  const eTabChange = useCallback(
+    ( e: React.ChangeEvent<{}>, value: LinkInputType ) => setType( value ),
+    [ setType ],
+  )
+
+  return (
+    <React.Fragment>
+      <Paper square>
+        <Tabs value={type} indicatorColor="primary" textColor="primary" onChange={eTabChange}>
+          <Tab label="External" value={LinkInputType.INTERNAL} />
+          <Tab label="Notes" value={LinkInputType.NOTES} />
+          <Tab label="Internal" value={LinkInputType.EXTERNAL} />
+        </Tabs>
+      </Paper>
+
+      <TabPanel value={type} index={LinkInputType.INTERNAL}>
+        <LinkInputExternal />
+      </TabPanel>
+
+      <TabPanel value={type} index={LinkInputType.NOTES}>
+        <LinkInputNotes />
+      </TabPanel>
+
+      <TabPanel value={type} index={LinkInputType.EXTERNAL}>
+        <LinkInputInternal />
+      </TabPanel>
+    </React.Fragment>
+  )
+}
+
+const LinkInputDialogActions = () => {
+  const { close } = useModalContext()
+  return (
+    <React.Fragment>
+      <Button onClick={close} color="primary">
+        Cancel
+      </Button>
+      <Button onClick={close} color="primary">
+        Subscribe
+      </Button>
+    </React.Fragment>
+  )
+}
+
+const LinkInputExternalLabel = () => {
+  const { label, setLabel } = useLinkInputContext()
+  const eLabelChange = useCallback(
+    ( e: React.ChangeEvent<HTMLInputElement> ) => setLabel( e.target.value ),
+    [ setLabel ],
+  )
   return (
     <TextField
       margin="dense"
@@ -232,28 +230,28 @@ const InputLinkExternalLabel = () => {
   )
 }
 
-const InputLinkExternal = () => {
+const LinkInputExternal = () => {
   return (
     <React.Fragment>
-      <InputLinkExternalLabel />
+      <LinkInputExternalLabel />
       <TextField margin="dense" label="Address" type="text" fullWidth />
     </React.Fragment>
   )
 }
 
-const InputLinkNotes = () => {
+const LinkInputNotes = () => {
   return (
     <React.Fragment>
-      <InputLinkExternalLabel />
+      <LinkInputExternalLabel />
       <TextField margin="dense" label="Title" type="text" fullWidth />
     </React.Fragment>
   )
 }
 
-const InputLinkInternal = () => {
+const LinkInputInternal = () => {
   return (
     <React.Fragment>
-      <InputLinkExternalLabel />
+      <LinkInputExternalLabel />
     </React.Fragment>
   )
 }
