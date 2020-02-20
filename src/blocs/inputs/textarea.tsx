@@ -1,4 +1,16 @@
-import { Box, Button, ButtonGroup, Grid, Paper, Tab, Tabs, TextField } from '@material-ui/core'
+import {
+  Box,
+  Button,
+  ButtonGroup,
+  Grid,
+  List,
+  ListItem,
+  ListItemText,
+  Paper,
+  Tab,
+  Tabs,
+  TextField,
+} from '@material-ui/core'
 import {
   FormatAlignCenter,
   FormatAlignJustify,
@@ -18,9 +30,12 @@ import {
   Undo,
 } from '@material-ui/icons'
 import constate from 'constate'
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import ContentEditable, { ContentEditableEvent } from 'react-contenteditable'
+import { useSelector } from 'react-redux'
 import { TabPanel, useModalContext } from 'src/blocs'
+import { noteSelectorAll } from 'src/selectors'
+import { INote } from 'src/types'
 
 export const actions = [
   [
@@ -116,21 +131,23 @@ function InputContentEditableActions() {
 }
 
 function useContentEditableCommand() {
-  const [ Element, setElement ] = useState( null as ( React.ReactNode | null ) )
+  const [ Element, setElement ] = useState( null as React.ReactNode | null )
   const reset = useCallback( () => setElement( null ), [] )
-  const execute = useCallback( ( command: string ) => {
-    switch( command ) {
-      case 'createlink':
-        const createLinkOnClose = () => {
-
-          reset()
-        }
-        setElement( <LinkInputDialog onValidate={createLinkOnClose} /> )
-        break
-      default:
-        document.execCommand( command )
-    }
-  }, [ reset ] )
+  const execute = useCallback(
+    ( command: string ) => {
+      switch( command ) {
+        case 'createlink':
+          const createLinkOnClose = () => {
+            reset()
+          }
+          setElement( <LinkInputDialog onValidate={createLinkOnClose} onCancel={reset} /> )
+          break
+        default:
+          document.execCommand( command )
+      }
+    },
+    [ reset ],
+  )
   return { execute, Element }
 }
 
@@ -148,19 +165,26 @@ const [ LinkInputProvider, useLinkInputContext ] = constate( () => {
   return { label, setLabel, type, setType }
 } )
 
-export function LinkInputDialog( { onValidate }: { onValidate: () => void } ) {
+interface LinkInputDialogProps {
+  onValidate: () => void
+  onCancel: () => void
+}
+
+export function LinkInputDialog( { onValidate, onCancel }: LinkInputDialogProps ) {
   const { setConfig, open, close } = useModalContext()
 
   useEffect( () => {
     setConfig( {
-      title: 'Add link',
+      title: 'Create link',
       content: <LinkInputDialogContent />,
       actions: <LinkInputDialogActions />,
       wrapper: LinkInputProvider,
+      onClose: onCancel,
+      width: 'md',
     } )
     open()
     return () => close()
-  }, [ setConfig, open, close ] )
+  }, [ setConfig, open, close, onCancel ] )
 
   return <React.Fragment />
 }
@@ -175,6 +199,10 @@ const LinkInputDialogContent = () => {
 
   return (
     <React.Fragment>
+      <Box marginBottom={2.5}>
+        <LinkInputExternalLabel />
+      </Box>
+
       <Paper square>
         <Tabs value={type} indicatorColor="primary" textColor="primary" onChange={eTabChange}>
           <Tab label="External" value={LinkInputType.INTERNAL} />
@@ -205,8 +233,8 @@ const LinkInputDialogActions = () => {
       <Button onClick={close} color="primary">
         Cancel
       </Button>
-      <Button onClick={close} color="primary">
-        Subscribe
+      <Button onClick={close} color="primary" disabled>
+        Validate
       </Button>
     </React.Fragment>
   )
@@ -226,6 +254,7 @@ const LinkInputExternalLabel = () => {
       fullWidth
       value={label}
       onChange={eLabelChange}
+      required
     />
   )
 }
@@ -233,17 +262,48 @@ const LinkInputExternalLabel = () => {
 const LinkInputExternal = () => {
   return (
     <React.Fragment>
-      <LinkInputExternalLabel />
-      <TextField margin="dense" label="Address" type="text" fullWidth />
+      <TextField margin="dense" label="Address" type="text" fullWidth required />
     </React.Fragment>
   )
 }
 
 const LinkInputNotes = () => {
+  const [ search, setSearch ] = useState( '' )
+
+  const onSearch = ( e: React.ChangeEvent<HTMLInputElement> ) => setSearch( e.target.value )
+
+  const select = useCallback( ( note: INote ) => {
+    setSearch( note.title )
+  }, [] )
+
+  const notes = useSelector( noteSelectorAll )
+
+  const searchResult = useMemo( () => {
+    return notes.filter( note => note.title.includes( search ) ).slice( 0, 10 )
+  }, [ search, notes ] )
+
+  const vSearchResult = useMemo( () => searchResult.map( note => {
+    const onClick = () => select( note )
+
+    return (
+      <ListItem key={note.id} button>
+        <ListItemText primary={note.title} onClick={onClick} />
+      </ListItem>
+    )
+  } ), [ searchResult, select ] )
+
   return (
     <React.Fragment>
-      <LinkInputExternalLabel />
-      <TextField margin="dense" label="Title" type="text" fullWidth />
+      <TextField
+        type="text"
+        value={search}
+        onChange={onSearch}
+        required
+        margin="dense"
+        label="Title"
+        fullWidth
+      />
+      <List>{vSearchResult}</List>
     </React.Fragment>
   )
 }
