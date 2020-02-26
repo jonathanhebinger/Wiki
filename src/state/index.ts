@@ -1,3 +1,3 @@
 export * from './note'
-export * from './note-selection'
+export * from './note.opened'
 export * from './store'

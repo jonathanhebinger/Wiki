@@ -1,25 +1,26 @@
-import { createAction } from '@reduxjs/toolkit'
-import { NOTE_CLOSE, NOTE_CREATE, NOTE_DELETE, NOTE_OPEN, NOTE_SAVE } from 'src/constants'
-import { noteSelectorSelectedAsIds } from 'src/selectors'
-import { INote, Thunk } from 'src/types'
+import { noteActionClose, noteActionOpen } from 'src/actions/note.details'
+import { NOTE_CREATE, NOTE_DELETE, NOTE_SAVE } from 'src/constants'
+import { Action, ID, INote, Thunk } from 'src/types'
+import { createAction } from 'src/utils'
 import uuid from 'uuid'
 
-export const noteActionCreate = createAction( NOTE_CREATE, ( id: string ) => ( { payload: id } ) )
-export const noteActionOpen = createAction( NOTE_OPEN, ( id: string ) => ( { payload: id } ) )
-export const noteActionClose = createAction( NOTE_CLOSE, ( id: string ) => ( { payload: id } ) )
-export const noteActionSave = createAction( NOTE_SAVE, ( note: INote ) => ( { payload: note } ) )
-export const noteActionDelete = createAction( NOTE_DELETE, ( id: string ) => ( { payload: id } ) )
+export type INoteCreateAction = Action<typeof NOTE_CREATE, ID>
+export type INoteSaveAction = Action<typeof NOTE_SAVE, INote>
+export type INoteDeleteAction = Action<typeof NOTE_DELETE, ID>
 
-export const noteThunkCreate = (): Thunk => dispatch => {
+export type INoteActions = INoteCreateAction | INoteSaveAction | INoteDeleteAction
+
+export const noteCreateAction = createAction( NOTE_CREATE, ( id: ID ) => id )
+export const noteSaveAction = createAction( NOTE_SAVE, ( note: INote ) => note )
+export const noteDeleteAction = createAction( NOTE_DELETE, ( id: ID ) => ( { payload: id } ) )
+
+export const noteCreate = (): Thunk => dispatch => {
   const id = uuid.v4()
-  dispatch( noteActionCreate( id ) )
+  dispatch( noteCreateAction( id ) )
   dispatch( noteActionOpen( id ) )
 }
-
-export const noteThunkDelete = ( id: string ): Thunk => dispatch => {
+export const noteSave = ( note: INote ) => noteSaveAction( note )
+export const noteDelete = ( id: ID ): Thunk => dispatch => {
   dispatch( noteActionClose( id ) )
-  dispatch( noteActionDelete( id ) )
+  dispatch( noteDeleteAction( id ) )
 }
-
-export const noteThunkCloseAll = (): Thunk => ( dispatch, getState ) =>
-  noteSelectorSelectedAsIds( getState() ).forEach( id => dispatch( noteActionClose( id ) ) )

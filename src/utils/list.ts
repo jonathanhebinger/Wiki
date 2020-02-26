@@ -1,6 +1,7 @@
 import _ from 'lodash'
+import { ID } from 'src/types'
 
-export function add<State extends { id: ID }, ID>(
+export function add<State extends { id: ID }>(
   state: State[],
   data: State | State[],
 ) {
@@ -10,7 +11,7 @@ export function add<State extends { id: ID }, ID>(
   } )
 }
 
-export function find<State extends { id: ID }, ID>( state: State[], id: ID ) {
+export function find<State extends { id: ID }>( state: State[], id: ID ) {
   const result = state.find( item => item.id === id )
   if( result ) {
     return result
@@ -18,10 +19,10 @@ export function find<State extends { id: ID }, ID>( state: State[], id: ID ) {
   throw new Error()
 }
 
-export function findOpt<State extends { id: ID }, ID>( state: State[], id: ID ) {
+export function findOpt<State extends { id: ID }>( state: State[], id: ID ) {
   return state.find( item => item.id === id )
 }
 
-export function remove<State extends { id: ID }, ID>( state: State[], id: ID ) {
+export function remove<State extends { id: ID }>( state: State[], id: ID ) {
   return _.remove( state, item => item.id === id )
 }

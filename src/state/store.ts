@@ -2,12 +2,12 @@ import { applyMiddleware, combineReducers, createStore } from 'redux'
 import thunk from 'redux-thunk'
 
 import { noteReducer } from './note'
-import { noteSelectionReducer } from './note-selection'
+import { noteOpenedReducer } from './note.opened'
 
 export const store = createStore(
   combineReducers( {
     notes: noteReducer,
-    selected: noteSelectionReducer,
+    selected: noteOpenedReducer,
   } ),
   applyMiddleware( thunk ),
 )

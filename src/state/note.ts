@@ -1,25 +1,33 @@
-import { createReducer } from '@reduxjs/toolkit'
-import { noteActionCreate, noteActionDelete, noteActionSave } from 'src/actions'
-import { INote } from 'src/types'
+import produce from 'immer'
+import { INoteActions } from 'src/actions'
+import { NOTE_CREATE, NOTE_DELETE, NOTE_SAVE } from 'src/constants'
+import { ID, INote } from 'src/types'
 import { find, remove } from 'src/utils'
 
-export const noteReducer = createReducer( [] as INote[], builder =>
-  builder
-    .addCase( noteActionCreate, ( state, { payload } ) => {
-      state.push( {
-        id: payload,
-        title: 'New note',
-        content: '42',
-        creation: Date.now(),
-        modification: Date.now(),
-      } )
-    } )
-    .addCase( noteActionSave, ( state, { payload } ) => {
-      const note = find( state, payload.id )
-      Object.assign( note, payload )
-      note.modification = Date.now()
-    } )
-    .addCase( noteActionDelete, ( state, { payload } ) => {
-      remove( state, payload )
-    } ),
-)
+const noteCreateHandler = ( state: INote[], id: ID ) => state.push( {
+  id,
+  title: 'New note',
+  content: '42',
+  creation: Date.now(),
+  modification: Date.now(),
+} )
+
+const noteSaveHandler = ( state: INote[], patch: INote ) => {
+  const note = find( state, patch.id )
+  Object.assign( note, patch )
+  note.modification = Date.now()
+}
+
+export const noteReducer = produce( ( state: INote[], action: INoteActions ) => {
+  switch( action.type ) {
+    case NOTE_CREATE:
+      noteCreateHandler( state, action.payload )
+      break
+    case NOTE_SAVE:
+      noteSaveHandler( state, action.payload )
+      break
+    case NOTE_DELETE:
+      remove( state, action.payload )
+      break
+  }
+} )

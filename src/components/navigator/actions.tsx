@@ -2,13 +2,13 @@ import { IconButton } from '@material-ui/core'
 import { Add, Close } from '@material-ui/icons'
 import React from 'react'
 import { useDispatch } from 'react-redux'
-import { noteThunkCloseAll, noteThunkCreate } from 'src/actions'
+import { noteCloseAll, noteCreate } from 'src/actions'
 
 export function NavigatorActions() {
   const dispatch = useDispatch()
 
-  const add = () => dispatch( noteThunkCreate() )
-  const closeAll = () => dispatch( noteThunkCloseAll() )
+  const add = () => dispatch( noteCreate() )
+  const closeAll = () => dispatch( noteCloseAll() )
 
   return (
     <React.Fragment>
