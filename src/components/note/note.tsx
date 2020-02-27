@@ -1,22 +1,23 @@
 import { Card, CardContent, CardHeader, IconButton, Typography } from '@material-ui/core'
 import { Close, Delete, Edit, Save } from '@material-ui/icons'
-import React, { Fragment, useState } from 'react'
+import React, { Fragment } from 'react'
 import { FloatingToolBox, InputContentEditable } from 'src/blocs'
-import { NoteProvider, useNoteContext } from 'src/providers'
+import { NoteEditorProvider, useEditorNoteContext, useNoteEditorFieldProvider } from 'src/providers'
+import { Key } from 'src/types'
 
 export function Note( { id }: { id: string } ) {
   return (
-    <NoteProvider id={id}>
+    <NoteEditorProvider id={id}>
       <Card>
         <NoteHeader />
         <NoteContent />
       </Card>
-    </NoteProvider>
+    </NoteEditorProvider>
   )
 }
 
 function NoteContent() {
-  const { editing, note } = useNoteContext()
+  const { editing, note } = useEditorNoteContext()
   const onChange = ( content: string ) => console.log( content )
   return (
     <CardContent>
@@ -27,21 +28,17 @@ function NoteContent() {
 }
 
 function NoteHeader() {
-  const { note } = useNoteContext()
-  return (
-    <CardHeader
-      action={<NoteHeaderAction />}
-      title={<NoteStringItem />}
-      subheader={note.id}
-    />
-  )
+  const { id } = useEditorNoteContext()
+  return <CardHeader action={<NoteHeaderAction />} title={<NoteStringItem field="title" />} subheader={id} />
 }
 
 function NoteHeaderAction() {
-  const { edit, save, close, remove, editing } = useNoteContext()
+  const { modified, save, close, remove } = useEditorNoteContext()
   return (
     <div>
-      <IconButton onClick={editing ? save : edit}>{editing ? <Save /> : <Edit />}</IconButton>
+      <IconButton onClick={save} disabled={!modified}>
+        <Save />
+      </IconButton>
       <IconButton onClick={remove}>
         <Delete />
       </IconButton>
@@ -53,32 +50,33 @@ function NoteHeaderAction() {
 }
 
 interface NoteStringItemProps {
-  key: string
-  required?: true
-  value: string
-  editing: boolean
-  onSave: ( value: string ) => void
+  field: Key
 }
 
-const NoteStringItem = ( { required, value, onSave }: NoteStringItemProps ) => {
-  const [ editing, setEditing ] = useState( false )
-  const onClickDelete = () => {
-    setEditing( false )
-  }
-  const onClickSave = () => {
-    setEditing( false )
-  }
-  const onClickEdit = () => setEditing( true )
-  const onClick = editing ? onClickSave : onClickEdit
-  const tools = (
+const NoteStringItem = ( { field }: NoteStringItemProps ) => {
+  const {
+    field: { required, editable, editing, value },
+    edit,
+    save,
+    remove,
+  } = useNoteEditorFieldProvider( field )
+
+  const onClick = editing ? save : edit
+  const deleteButton = required || (
+    <IconButton onClick={remove}>
+      <Delete />
+    </IconButton>
+  )
+  const tools = editable && (
     <Fragment>
-      {required || <IconButton onClick={onClickDelete}><Delete /></IconButton>}
+      {deleteButton}
       <IconButton onClick={onClick}>{editing ? <Save /> : <Edit />}</IconButton>
     </Fragment>
   )
+
   return (
     <FloatingToolBox tools={tools}>
-      <Typography>{value}</Typography>
+      <Typography>{value.old}</Typography>
     </FloatingToolBox>
   )
 }

@@ -1,9 +1,9 @@
 import { Typography } from '@material-ui/core'
 import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { noteActionOpen } from 'src/actions'
 import { noteSelectorSortedByModification } from 'src/selectors'
-import { INote } from 'src/types'
+import { noteOpen } from 'src/state/actions'
+import { INote } from 'src/types/models'
 
 export function NavigatorRecent() {
   const notes = useSelector( noteSelectorSortedByModification )
@@ -15,7 +15,7 @@ export function NavigatorRecent() {
 
 function NavigatorRecentNote( { note: { id, title } }: { note: INote } ) {
   const dispatch = useDispatch()
-  const open = () => dispatch( noteActionOpen( id ) )
+  const open = () => dispatch( noteOpen( id ) )
   return (
     <Typography key={id} onClick={open}>
       {title}

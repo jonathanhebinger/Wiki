@@ -35,7 +35,7 @@ import ContentEditable, { ContentEditableEvent } from 'react-contenteditable'
 import { useSelector } from 'react-redux'
 import { TabPanel, useModalContext } from 'src/blocs'
 import { noteSelectorAll } from 'src/selectors'
-import { INote } from 'src/types'
+import { INote } from 'src/types/models'
 
 export const actions = [
   [

@@ -1,75 +1,46 @@
 import constate from 'constate'
-import { useEffect, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { noteActionClose, noteDelete, noteSaveAction } from 'src/actions'
-import { noteSelectorById } from 'src/selectors'
-import { INote } from 'src/types'
+import { useMemo } from 'react'
+import { noteEditorSelectorById, noteSelectorById } from 'src/selectors'
+import {
+  noteClose,
+  noteDelete,
+  noteEditorFieldDelete,
+  noteEditorFieldEdit,
+  noteEditorFieldSave,
+  noteEditorFieldSaveAll,
+  noteEditorFieldUpdate,
+} from 'src/state'
+import { ID, INote } from 'src/types'
+import { useDispatch, useSelector } from 'src/utils'
 
-const reducer = ( acc: State<INote>, [ key, value ]: [ string, any ] ) => {
-  acc[ key as keyof INote ] = {
-    required: false,
-    editable: true,
-    editing: false,
-    value: { old: value, new: value },
-  }
-  return acc
-}
-
-export const [ NoteProvider, useNoteContext ] = constate( ( { id }: { id: string } ) => {
+export const [ NoteEditorProvider, useEditorNoteContext ] = constate( ( { id }: { id: ID } ) => {
   const dispatch = useDispatch()
-
   const note = useSelector( noteSelectorById( id ) )
-  const [ state, setState ] = useState( Object.entries( note ).reduce( reducer, {} as State<INote> ) )
-  const [ editing, setEditing ] = useState( false )
+  const editor = useSelector( noteEditorSelectorById( id ) )
+  const values = Object.values( editor.keys )
+  const editing = useMemo( () => values.some( field => field.editing === true ), [ values ] )
+  const modified = useMemo( () => values.some( ( { value } ) => value.old !== value.new ), [ values ] )
+  console.log( modified, editing )
+  const save = () => dispatch( noteEditorFieldSaveAll( id ) )
+  const close = () => dispatch( noteClose( id ) )
+  const remove = () => dispatch( noteDelete( id ) )
 
-  useEffect( () => {
-    setState( Object.entries( note ).reduce(
-      ( acc, [ key, value ]: [ string, any ] ) => {
-        const field = {
-          required: false,
-          editable: true,
-          editing: false,
-          value: { old: value, new: value },
-        }
-
-        const oldField = state[ key as keyof INote ]
-        if( oldField ) {
-          Object.assign( field, oldField )
-          field.value = { old: value, new: value }
-        }
-
-        acc[ key as keyof INote ] = field
-
-        return acc
-      },
-      {} as State<INote>,
-    ) )
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ note ] )
-
-  const edit = () => setEditing( true )
-  const save = () => {
-    setEditing( false )
-    dispatch( noteSaveAction( note ) )
-  }
-  const close = () => dispatch( noteActionClose( note.id ) )
-  const remove = () => dispatch( noteDelete( note.id ) )
-
-  return { editing, edit, save, note, close, remove, state }
+  return { note, editing, modified, save, close, remove, editor, id }
 } )
 
-export const useNoteFieldProvider = ( key: keyof INote ) => {
-  const { note, ...context } = useNoteContext()
-  const field = context.state[ key ]
+export const useNoteEditorFieldProvider = ( key: keyof INote ) => {
+  const dispatch = useDispatch()
 
-  const edit = () => {
-    context.edit()
-  }
-  const save = () => {
-    Reflect.set( note, key, field.value.new )
-    context.save()
-  }
-  const remove = () => delete note[ key ]
+  const {
+    editor: { id, keys },
+  } = useEditorNoteContext()
+  const field = keys[ key ]
 
-  return { ...field, save, remove }
+  const edit = () => dispatch( noteEditorFieldEdit( id, key ) )
+  const save = () => dispatch( noteEditorFieldSave( id, key ) )
+  const update = ( value: any ) => dispatch( noteEditorFieldUpdate( id, key, value ) )
+  const reset = () => dispatch( noteEditorFieldEdit( id, key ) )
+  const remove = () => dispatch( noteEditorFieldDelete( id, key ) )
+
+  return { field, edit, save, update, reset, remove }
 }

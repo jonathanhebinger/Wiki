@@ -1,9 +1,10 @@
 // NOTE
 export const NOTE_CREATE = 'NOTE_CREATE'
-export const NOTE_OPEN = 'NOTE_OPEN'
-export const NOTE_CLOSE = 'NOTE_CLOSE'
 export const NOTE_SAVE = 'NOTE_SAVE'
 export const NOTE_DELETE = 'NOTE_DELETE'
+// NOTE EDITOR
+export const NOTE_EDITOR_OPEN = 'NOTE_EDITOR_OPEN'
+export const NOTE_EDITOR_CLOSE = 'NOTE_EDITOR_CLOSE'
 // NOTE OPENED
 export const NOTE_KEY_ADD = 'NOTE_KEY_ADD'
 export const NOTE_KEY_EDIT = 'NOTE_KEY_EDIT'

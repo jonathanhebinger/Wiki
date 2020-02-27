@@ -1,5 +1,4 @@
-import { IFields } from 'src/types'
-import { ID } from 'src/types/id'
+import { ID, IFields } from 'src/types'
 
 export interface INote {
   id: ID
@@ -9,7 +8,7 @@ export interface INote {
   modification: number
 }
 
-export interface INoteDetails {
+export interface INoteEditor {
   id: ID
   keys: IFields
 }

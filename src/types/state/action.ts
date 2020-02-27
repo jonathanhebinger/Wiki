@@ -10,3 +10,5 @@ export interface ActionPayload<Type extends string, Payload = undefined> {
 export type Action<Type extends string, Payload = undefined> = Payload extends undefined
   ? ActionAtomic<Type>
   : ActionPayload<Type, Payload>
+
+export type Payload<Action extends ActionPayload<any, any>> = Action[ 'payload' ]
