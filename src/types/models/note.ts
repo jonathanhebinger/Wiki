@@ -1,4 +1,4 @@
-import { ID, IFields } from 'src/types'
+import { ID, IFields } from 'src/types/models'
 
 export interface INote {
   id: ID

@@ -9,6 +9,8 @@ import {
   NOTE_KEY_SAVE,
   NOTE_KEY_UPDATE,
 } from 'src/constants'
+import { INote, INoteEditor, Wrapper } from 'src/types/models'
+import { Payload } from 'src/types/state'
 import {
   NoteDeleteAction,
   NoteEditorActions,
@@ -18,8 +20,7 @@ import {
   NoteEditorFieldResetAction,
   NoteEditorFieldSaveAction,
   NoteEditorFieldUpdateAction,
-} from 'src/state'
-import { INote, INoteEditor, Payload, Wrapper } from 'src/types'
+} from 'src/types/state/actions'
 
 type State = Wrapper<INoteEditor>
 

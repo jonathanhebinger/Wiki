@@ -1,5 +1,5 @@
 import { createSelector } from 'reselect'
-import { IState } from 'src/types'
+import { IState } from 'src/types/models'
 import { find } from 'src/utils'
 
 export const noteSelectorAll = ( state: IState ) => state.notes

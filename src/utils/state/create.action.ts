@@ -1,4 +1,4 @@
-import { ActionAtomic, ActionPayload } from 'src/types'
+import { ActionAtomic, ActionPayload } from 'src/types/state'
 
 export function createAction<Type extends string>( type: Type ): () => ActionAtomic<Type>
 export function createAction<Type extends string, Builder extends ( ...args: any[] ) => any>(

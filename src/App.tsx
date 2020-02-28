@@ -3,9 +3,9 @@ import './App.scss'
 import { Container, Grid } from '@material-ui/core'
 import React from 'react'
 import { Provider } from 'react-redux'
-import { Modal, ModalProvider } from 'src/blocs'
-import { Navigator, NotesOpened } from 'src/components'
-import { store } from 'src/state'
+import { store } from 'src/state/store'
+import { Modal, ModalProvider } from 'src/view/blocs'
+import { Navigator, NotesOpened } from 'src/view/components'
 
 const App: React.FC = () => {
   return (

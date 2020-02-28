@@ -6,25 +6,11 @@ import {
   NOTE_KEY_SAVE,
   NOTE_KEY_UPDATE,
 } from 'src/constants'
-import { noteEditorSelectorById, noteSelectorById } from 'src/selectors'
 import { noteSaveAction } from 'src/state/actions'
-import { Action, ID, Key, Thunk } from 'src/types'
+import { noteEditorSelectorById, noteSelectorById } from 'src/state/selectors'
+import { ID, Key } from 'src/types/models'
+import { Thunk } from 'src/types/state'
 import { createAction } from 'src/utils'
-
-export type NoteEditorFieldAddAction = Action<typeof NOTE_KEY_ADD, { id: ID; key: Key; value?: any }>
-export type NoteEditorFieldSaveAction = Action<typeof NOTE_KEY_SAVE, { id: ID; key: Key }>
-export type NoteEditorFieldUpdateAction = Action<typeof NOTE_KEY_UPDATE, { id: ID; key: Key; value: any }>
-export type NoteEditorFieldEditAction = Action<typeof NOTE_KEY_EDIT, { id: ID; key: Key }>
-export type NoteEditorFieldResetAction = Action<typeof NOTE_KEY_RESET, { id: ID; key: Key }>
-export type NoteEditorFieldDeleteAction = Action<typeof NOTE_KEY_DELETE, { id: ID; key: Key }>
-
-export type NoteEditorFieldActions =
-  | NoteEditorFieldAddAction
-  | NoteEditorFieldSaveAction
-  | NoteEditorFieldUpdateAction
-  | NoteEditorFieldEditAction
-  | NoteEditorFieldResetAction
-  | NoteEditorFieldDeleteAction
 
 const noteEditorFieldDefaultBuilder = ( id: ID, key: Key ) => ( { id, key } )
 const noteEditorFieldAddBuilder = ( id: ID, key: Key, value?: any ) => ( { id, key, value } )
@@ -40,8 +26,8 @@ export const noteEditorFieldDeleteAction = createAction( NOTE_KEY_DELETE, noteEd
 export const noteEditorFieldAdd = noteEditorFieldAddAction
 export const noteEditorFieldSave = ( id: ID, key: Key ): Thunk => ( dispatch, getState ) => {
   dispatch( noteEditorFieldSaveAction( id, key ) )
-  const note = noteSelectorById( id )( getState() )
-  const patch = Object.assign( {}, note, { [ key ]: key } )
+  const editor = noteEditorSelectorById( id )( getState() )
+  const patch = Object.assign( { id }, { [ key ]: editor.keys[ key ].value.new } )
   dispatch( noteSaveAction( patch ) )
 }
 export const noteEditorFieldUpdate = noteEditorFieldUpdateAction
@@ -57,5 +43,9 @@ export const noteEditorFieldDelete = ( id: ID, key: Key ): Thunk => ( dispatch, 
 
 export const noteEditorFieldSaveAll = ( id: ID ): Thunk => ( dispatch, getState ) => {
   const editor = noteEditorSelectorById( id )( getState() )
-  Object.keys( editor.keys ).map( key => noteEditorFieldSave( id, key as Key ) )
+  const patch = Object.keys( editor.keys ).reduce(
+    ( acc, key ) => Object.assign( acc, { [ key as Key ]: editor.keys[ key as Key ].value.new } ),
+    { id },
+  )
+  dispatch( noteSaveAction( patch ) )
 }

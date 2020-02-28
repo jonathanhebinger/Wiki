@@ -1,4 +1,4 @@
-import { INote, INoteEditor, Wrapper } from 'src/types'
+import { INote, INoteEditor, Wrapper } from 'src/types/models'
 
 export interface IState {
   notes: INote[]

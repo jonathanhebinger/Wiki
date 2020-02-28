@@ -1,7 +1,7 @@
 import React from 'react'
 import { useSelector } from 'react-redux'
-import { Note } from 'src/components'
-import { noteSelectorSelectedAsIds } from 'src/selectors'
+import { noteSelectorSelectedAsIds } from 'src/state/selectors'
+import { Note } from 'src/view/components'
 
 export function NotesOpened() {
   const notes = useSelector( noteSelectorSelectedAsIds )

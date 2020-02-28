@@ -33,9 +33,9 @@ import constate from 'constate'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import ContentEditable, { ContentEditableEvent } from 'react-contenteditable'
 import { useSelector } from 'react-redux'
-import { TabPanel, useModalContext } from 'src/blocs'
-import { noteSelectorAll } from 'src/selectors'
+import { noteSelectorAll } from 'src/state/selectors'
 import { INote } from 'src/types/models'
+import { TabPanel, useModalContext } from 'src/view/blocs'
 
 export const actions = [
   [

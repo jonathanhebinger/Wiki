@@ -1,8 +1,8 @@
 import { Typography } from '@material-ui/core'
 import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { noteSelectorSortedByModification } from 'src/selectors'
 import { noteOpen } from 'src/state/actions'
+import { noteSelectorSortedByModification } from 'src/state/selectors'
 import { INote } from 'src/types/models'
 
 export function NavigatorRecent() {

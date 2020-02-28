@@ -1,4 +1,4 @@
-import { INote } from 'src/types'
+import { INote } from 'src/types/models'
 
 export type Key = keyof INote
 

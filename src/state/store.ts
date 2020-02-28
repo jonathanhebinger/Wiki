@@ -1,7 +1,7 @@
 import produce from 'immer'
 import { applyMiddleware, combineReducers, createStore } from 'redux'
 import thunk from 'redux-thunk'
-import { noteEditorReducer, noteReducer } from 'src/state'
+import { noteEditorReducer, noteReducer } from 'src/state/reducers'
 
 const mainReducer = combineReducers( {
   notes: produce( noteReducer ),

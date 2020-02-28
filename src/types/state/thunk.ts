@@ -1,5 +1,5 @@
-import { AllActions } from 'src/state/actions'
-import { IState } from 'src/types'
+import { IState } from 'src/types/models'
+import { AllActions } from 'src/types/state/actions'
 
 export type Thunk<T = void> = ( dispatch: Dispatch, getState: () => IState ) => T
 

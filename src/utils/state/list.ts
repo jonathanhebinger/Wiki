@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import { ID } from 'src/types'
+import { ID } from 'src/types/models'
 
 export function add<State extends { id: ID }>(
   state: State[],

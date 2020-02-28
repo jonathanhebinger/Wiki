@@ -1,9 +1,14 @@
-import { Card, CardContent, CardHeader, IconButton, Typography } from '@material-ui/core'
+import { Card, CardContent, CardHeader, IconButton, Input, Typography } from '@material-ui/core'
 import { Close, Delete, Edit, Save } from '@material-ui/icons'
-import React, { Fragment } from 'react'
-import { FloatingToolBox, InputContentEditable } from 'src/blocs'
-import { NoteEditorProvider, useEditorNoteContext, useNoteEditorFieldProvider } from 'src/providers'
-import { Key } from 'src/types'
+import React, { ChangeEvent, Fragment } from 'react'
+import {
+  NoteEditorFieldProvider,
+  NoteEditorProvider,
+  useEditorNoteContext,
+  useNoteEditorFieldProvider,
+} from 'src/providers'
+import { Key } from 'src/types/models'
+import { FloatingToolBox, InputContentEditable } from 'src/view/blocs'
 
 export function Note( { id }: { id: string } ) {
   return (
@@ -23,13 +28,24 @@ function NoteContent() {
     <CardContent>
       <Typography>Content :</Typography>
       <InputContentEditable content={note.content} editing={editing} onChange={onChange} />
+      {note.title}
     </CardContent>
   )
 }
 
 function NoteHeader() {
   const { id } = useEditorNoteContext()
-  return <CardHeader action={<NoteHeaderAction />} title={<NoteStringItem field="title" />} subheader={id} />
+  return (
+    <CardHeader
+      action={<NoteHeaderAction />}
+      title={
+        <div>
+          <NoteStringItem field="title" />
+        </div>
+      }
+      subheader={id}
+    />
+  )
 }
 
 function NoteHeaderAction() {
@@ -54,12 +70,22 @@ interface NoteStringItemProps {
 }
 
 const NoteStringItem = ( { field }: NoteStringItemProps ) => {
+  return (
+    <NoteEditorFieldProvider field={field}>
+      <FloatingToolBox tools={<NoteFieldStringTools />}>
+        <NoteFieldStringContent />
+      </FloatingToolBox>
+    </NoteEditorFieldProvider>
+  )
+}
+
+const NoteFieldStringTools = () => {
   const {
-    field: { required, editable, editing, value },
+    field: { required, editable, editing },
     edit,
     save,
     remove,
-  } = useNoteEditorFieldProvider( field )
+  } = useNoteEditorFieldProvider()
 
   const onClick = editing ? save : edit
   const deleteButton = required || (
@@ -67,16 +93,26 @@ const NoteStringItem = ( { field }: NoteStringItemProps ) => {
       <Delete />
     </IconButton>
   )
-  const tools = editable && (
+  return editable ? (
     <Fragment>
       {deleteButton}
       <IconButton onClick={onClick}>{editing ? <Save /> : <Edit />}</IconButton>
     </Fragment>
-  )
+  ) : null
+}
 
-  return (
-    <FloatingToolBox tools={tools}>
-      <Typography>{value.old}</Typography>
-    </FloatingToolBox>
-  )
+const NoteFieldStringContent = () => {
+  const {
+    field: { editing, value },
+    edit,
+    update,
+  } = useNoteEditorFieldProvider()
+
+  const onChange = ( event: ChangeEvent<HTMLInputElement> ) => update( event.target.value )
+
+  if( editing ) {
+    return <Input type="text" value={value.new} onChange={onChange} autoFocus />
+  } else {
+    return <Typography onDoubleClick={edit}>{value.old}</Typography>
+  }
 }
