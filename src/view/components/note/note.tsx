@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, IconButton, Input, Typography } from '@material-ui/core'
-import { Close, Delete, Edit, Save } from '@material-ui/icons'
+import { Close, Delete, Edit, Save, Undo } from '@material-ui/icons'
 import React, { ChangeEvent, Fragment } from 'react'
 import {
   NoteEditorFieldProvider,
@@ -84,6 +84,7 @@ const NoteFieldStringTools = () => {
     field: { required, editable, editing },
     edit,
     save,
+    reset,
     remove,
   } = useNoteEditorFieldProvider()
 
@@ -95,8 +96,9 @@ const NoteFieldStringTools = () => {
   )
   return editable ? (
     <Fragment>
-      {deleteButton}
       <IconButton onClick={onClick}>{editing ? <Save /> : <Edit />}</IconButton>
+      <IconButton onClick={reset}><Undo /></IconButton>
+      {deleteButton}
     </Fragment>
   ) : null
 }

@@ -5,6 +5,7 @@ import {
   noteDelete,
   noteEditorFieldDelete,
   noteEditorFieldEdit,
+  noteEditorFieldReset,
   noteEditorFieldSave,
   noteEditorFieldSaveAll,
   noteEditorFieldUpdate,
@@ -33,7 +34,7 @@ export const [ NoteEditorFieldProvider, useNoteEditorFieldProvider ] = constate(
     const dispatch = useDispatch()
 
     const {
-      editor: { id, keys }
+      editor: { id, keys },
     } = useEditorNoteContext()
     const field = keys[ key ]
     console.log( useEditorNoteContext() )
@@ -41,9 +42,9 @@ export const [ NoteEditorFieldProvider, useNoteEditorFieldProvider ] = constate(
     const edit = () => dispatch( noteEditorFieldEdit( id, key ) )
     const save = () => dispatch( noteEditorFieldSave( id, key ) )
     const update = ( value: any ) => dispatch( noteEditorFieldUpdate( id, key, value ) )
-    const reset = () => dispatch( noteEditorFieldEdit( id, key ) )
+    const reset = () => dispatch( noteEditorFieldReset( id, key ) )
     const remove = () => dispatch( noteEditorFieldDelete( id, key ) )
 
     return { field, edit, save, update, reset, remove }
-  }
+  },
 )

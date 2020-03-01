@@ -137,6 +137,7 @@ function useContentEditableCommand() {
     ( command: string ) => {
       switch( command ) {
         case 'createlink':
+          console.log( document.getSelection()?.getRangeAt( 0 ) )
           const createLinkOnClose = () => {
             reset()
           }
