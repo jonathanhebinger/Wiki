@@ -28,7 +28,6 @@ function NoteContent() {
     <CardContent>
       <Typography>Content :</Typography>
       <InputContentEditable content={note.content} editing={editing} onChange={onChange} />
-      {note.title}
     </CardContent>
   )
 }
