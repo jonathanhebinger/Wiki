@@ -37,7 +37,6 @@ export const [ NoteEditorFieldProvider, useNoteEditorFieldProvider ] = constate(
       editor: { id, keys },
     } = useEditorNoteContext()
     const field = keys[ key ]
-    console.log( useEditorNoteContext() )
 
     const edit = () => dispatch( noteEditorFieldEdit( id, key ) )
     const save = () => dispatch( noteEditorFieldSave( id, key ) )

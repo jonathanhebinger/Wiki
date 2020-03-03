@@ -1,5 +1,5 @@
 import { Grid, GridProps, Tooltip, TooltipProps, withStyles } from '@material-ui/core'
-import React, { Fragment } from 'react'
+import React from 'react'
 
 export const LightTooltip = withStyles( theme => ( {
   tooltip: {
