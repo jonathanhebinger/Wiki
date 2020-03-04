@@ -17,11 +17,11 @@ import {
   Redo,
   Undo,
 } from '@material-ui/icons'
-import React, { useCallback, useMemo, useState } from 'react'
-import { createEditor, Editor, Text, Transforms } from 'slate'
+import React, { MouseEvent, useCallback, useMemo, useState } from 'react'
+import { createEditor, Editor, Path, Text, Transforms } from 'slate'
 import { withHistory } from 'slate-history'
 import { Editable, ReactEditor, Slate, useSlate, withReact } from 'slate-react'
-import { Element, Leaf, LeafAttributes } from 'src/view/blocs'
+import { Element, ElementType, Leaf, LeafAttributes } from 'src/view/blocs'
 
 function isMarkActive( editor: ReactEditor, format: keyof LeafAttributes ) {
   const [ match ] = Editor.nodes( editor, {
@@ -38,6 +38,47 @@ function toggleMark( editor: ReactEditor, format: keyof LeafAttributes ) {
     { [ format ]: isActive ? null : true },
     { match: Text.isText, split: true },
   )
+}
+
+const LIST_TYPES = [ 'numbered-list', 'bulleted-list' ]
+
+const isBlockActive = ( editor: ReactEditor, format: string ) => {
+  const [ match ] = Editor.nodes( editor, {
+    match: node => node.type === format,
+  } )
+  return !!match
+}
+
+const toggleBlock = ( editor: ReactEditor, format: string ) => {
+  const isActive = isBlockActive( editor, format )
+
+  Transforms.unwrapNodes( editor, {
+    match: node => LIST_TYPES.includes( node.type ),
+    split: true,
+  } )
+
+  switch( format ) {
+    case ElementType.List.Numbered:
+    case ElementType.List.Bulleted: {
+      const type = isActive
+        ? ElementType.Paragraph
+        : ElementType.List.Item
+      Transforms.setNodes( editor, { type } )
+      if( !isActive ) {
+        Transforms.wrapNodes( editor, {
+          type: format,
+          children: [],
+        } )
+      }
+      break
+    }
+    default:
+      const type = isActive
+        ? ElementType.Paragraph
+        : format
+      Transforms.setNodes( editor, { type } )
+  }
+
 }
 
 export const actions = [
@@ -71,16 +112,64 @@ export const actions = [
   ],
 ]
 
-const leafCommandEventBuilder = ( format: keyof LeafAttributes ) => ( editor: ReactEditor ) =>
-  () => toggleMark( editor, format )
-const leafToolbarButtonBuilder = ( name: string, Icon: typeof SvgIcon, format: keyof LeafAttributes ) =>
-  ( { name, Icon, command: leafCommandEventBuilder( format ) } )
+type Command = ( editor: ReactEditor ) => ( event: MouseEvent<any, any> ) => void
+type IsActive = ( editor: ReactEditor ) => boolean
+
+function toolbarButtonData(
+  name: string,
+  Icon: typeof SvgIcon,
+  command: Command,
+  isActive?: IsActive,
+) {
+  return {
+    name,
+    Icon,
+    command,
+    isActive,
+  }
+}
+
+function leafToolbarFormatButtonData(
+  name: string,
+  Icon: typeof SvgIcon,
+  format: keyof LeafAttributes,
+) {
+  return toolbarButtonData(
+    name,
+    Icon,
+    editor => () => toggleMark( editor, format ),
+    editor => isMarkActive( editor, format ),
+  )
+}
+
+const unorderedListButtonData = toolbarButtonData(
+  'Unordered list',
+  FormatListBulleted,
+  editor => () => toggleBlock( editor, 'bulleted-list' ),
+  editor => isBlockActive( editor, 'bulleted-list' ),
+)
+
+const orderedListButtonData = toolbarButtonData(
+  'Ordered list',
+  FormatListNumbered,
+  editor => () => toggleBlock( editor, 'numbered-list' ),
+  editor => isBlockActive( editor, 'numbered-list' ),
+)
+
 export const actions2 = [
   [
-    leafToolbarButtonBuilder( 'Bold', FormatBold, 'bold' ),
-    leafToolbarButtonBuilder( 'Italic', FormatItalic, 'italic' ),
-    leafToolbarButtonBuilder( 'Underline', FormatUnderlined, 'underline' ),
-    leafToolbarButtonBuilder( 'Strikethrough', FormatStrikethrough, 'strikethrough' ),
+    toolbarButtonData( 'Undo', Undo, editor => () => editor.undo() ),
+    toolbarButtonData( 'Redo', Redo, editor => () => editor.redo() ),
+  ],
+  [
+    leafToolbarFormatButtonData( 'Bold', FormatBold, 'bold' ),
+    leafToolbarFormatButtonData( 'Italic', FormatItalic, 'italic' ),
+    leafToolbarFormatButtonData( 'Underline', FormatUnderlined, 'underline' ),
+    leafToolbarFormatButtonData( 'Strikethrough', FormatStrikethrough, 'strikethrough' ),
+  ],
+  [
+    unorderedListButtonData,
+    orderedListButtonData,
   ],
 ]
 
@@ -90,7 +179,7 @@ interface InputContentEditableProps {
   onChange: ( newContent: string ) => void
 }
 
-export function InputContentEditable( { editing, content, ...props }: InputContentEditableProps ) {
+export function InputContentEditable( { editing }: InputContentEditableProps ) {
   const editor = useMemo( () => withHistory( withReact( createEditor() ) ), [] )
 
   const renderElement = useCallback( props => <Element {...props} />, [] )
@@ -104,6 +193,29 @@ export function InputContentEditable( { editing, content, ...props }: InputConte
   ] )
   const onChange = ( newValue: any ) => setValue( newValue )
 
+  const onKeyDown = useCallback( ( event: React.KeyboardEvent<any> ) => {
+    switch( event.key ) {
+      case 'Enter':
+        const nodeEntryItem = Editor.above( editor,
+          { match: node => node.type === 'list-item' },
+        )
+        if( nodeEntryItem ) {
+          const [ item, itemPath ] = nodeEntryItem
+          const listPath = Path.parent( itemPath )
+          if( Editor.isEmpty( editor, item ) ) {
+            const nextPath = Path.next( listPath )
+            Transforms.removeNodes( editor, { at: itemPath } )
+            Transforms.insertNodes( editor,
+              { type: 'paragraph', children: [] },
+              { at: nextPath } )
+            Transforms.select( editor, nextPath )
+            event.preventDefault()
+          }
+        }
+        break
+    }
+  }, [ editor ] )
+
   if( editing ) {
     return (
       <Slate editor={editor} value={value} onChange={onChange} >
@@ -113,6 +225,7 @@ export function InputContentEditable( { editing, content, ...props }: InputConte
             renderElement={renderElement}
             renderLeaf={renderLeaf}
             autoFocus
+            onKeyDown={onKeyDown}
           />
         </Paper>
       </Slate>
@@ -134,8 +247,14 @@ function InputContentEditableActions() {
   const editor = useSlate()
 
   const vGroups = actions2.map( ( group, index ) => {
-    const vActions = group.map( ( { name, command, Icon } ) => (
-      <Button size="small" title={name} onClick={command( editor )} key={name}>
+    const vActions = group.map( ( { name, command, Icon, isActive } ) => (
+      <Button
+        key={name}
+        size="small"
+        title={name}
+        onClick={command( editor )}
+        color={isActive && isActive( editor ) ? 'primary' : undefined}
+      >
         <Icon />
       </Button>
     ) )
