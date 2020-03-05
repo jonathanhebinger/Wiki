@@ -24,7 +24,6 @@
   "typescriptHero.imports.insertSemicolons": false,
   "prettier.printWidth": 120,
   "editor.wordWrapColumn": 120,
-  "typescript.preferences.importModuleSpecifier": "non-relative",
   "typescript.preferences.quoteStyle": "single",
   "typescript.suggest.completeFunctionCalls": true,
   "prettier.singleQuote": true

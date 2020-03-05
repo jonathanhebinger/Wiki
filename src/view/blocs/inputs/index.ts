@@ -1,4 +1,4 @@
-export * from './textarea'
 export * from './editor.link'
 export * from './editor.leaf'
-export * from './editor.element'
+export * from './element'
+export * from './textarea'

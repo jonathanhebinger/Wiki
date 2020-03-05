@@ -21,7 +21,8 @@ import React, { MouseEvent, useCallback, useMemo, useState } from 'react'
 import { createEditor, Editor, Path, Text, Transforms } from 'slate'
 import { withHistory } from 'slate-history'
 import { Editable, ReactEditor, Slate, useSlate, withReact } from 'slate-react'
-import { Element, ElementType, Leaf, LeafAttributes } from 'src/view/blocs'
+import { Leaf, LeafAttributes } from './editor.leaf'
+import { EDITOR_ELEMENT, EditorElement } from './element'
 
 function isMarkActive( editor: ReactEditor, format: keyof LeafAttributes ) {
   const [ match ] = Editor.nodes( editor, {
@@ -40,8 +41,6 @@ function toggleMark( editor: ReactEditor, format: keyof LeafAttributes ) {
   )
 }
 
-const LIST_TYPES = [ 'numbered-list', 'bulleted-list' ]
-
 const isBlockActive = ( editor: ReactEditor, format: string ) => {
   const [ match ] = Editor.nodes( editor, {
     match: node => node.type === format,
@@ -52,17 +51,22 @@ const isBlockActive = ( editor: ReactEditor, format: string ) => {
 const toggleBlock = ( editor: ReactEditor, format: string ) => {
   const isActive = isBlockActive( editor, format )
 
-  Transforms.unwrapNodes( editor, {
-    match: node => LIST_TYPES.includes( node.type ),
-    split: true,
-  } )
-
+  // Pre-Processing
   switch( format ) {
-    case ElementType.List.Numbered:
-    case ElementType.List.Bulleted: {
+    case EDITOR_ELEMENT.LIST.TYPE:
+    default:
+      Transforms.unwrapNodes( editor, {
+        match: node => EDITOR_ELEMENT.LIST.TYPE === node.type,
+        split: true,
+      } )
+  }
+
+  // Processing
+  switch( format ) {
+    case EDITOR_ELEMENT.LIST.TYPE: {
       const type = isActive
-        ? ElementType.Paragraph
-        : ElementType.List.Item
+        ? EDITOR_ELEMENT.PARAGRAPH
+        : EDITOR_ELEMENT.LIST.ITEM
       Transforms.setNodes( editor, { type } )
       if( !isActive ) {
         Transforms.wrapNodes( editor, {
@@ -72,13 +76,13 @@ const toggleBlock = ( editor: ReactEditor, format: string ) => {
       }
       break
     }
-    default:
+    default: {
       const type = isActive
-        ? ElementType.Paragraph
+        ? EDITOR_ELEMENT.PARAGRAPH
         : format
       Transforms.setNodes( editor, { type } )
+    }
   }
-
 }
 
 export const actions = [
@@ -115,15 +119,22 @@ export const actions = [
 type Command = ( editor: ReactEditor ) => ( event: MouseEvent<any, any> ) => void
 type IsActive = ( editor: ReactEditor ) => boolean
 
+interface ToolbarButtonData {
+  Icon: typeof SvgIcon
+  name: string
+  command: Command
+  isActive?: IsActive
+}
+
 function toolbarButtonData(
-  name: string,
   Icon: typeof SvgIcon,
+  name: string,
   command: Command,
   isActive?: IsActive,
-) {
+): ToolbarButtonData {
   return {
-    name,
     Icon,
+    name,
     command,
     isActive,
   }
@@ -135,31 +146,31 @@ function leafToolbarFormatButtonData(
   format: keyof LeafAttributes,
 ) {
   return toolbarButtonData(
-    name,
     Icon,
+    name,
     editor => () => toggleMark( editor, format ),
     editor => isMarkActive( editor, format ),
   )
 }
 
 const unorderedListButtonData = toolbarButtonData(
-  'Unordered list',
   FormatListBulleted,
-  editor => () => toggleBlock( editor, 'bulleted-list' ),
-  editor => isBlockActive( editor, 'bulleted-list' ),
+  'Unordered list',
+  editor => () => toggleBlock( editor, EDITOR_ELEMENT.LIST.TYPE ),
+  editor => isBlockActive( editor, EDITOR_ELEMENT.LIST.TYPE ),
 )
 
 const orderedListButtonData = toolbarButtonData(
-  'Ordered list',
   FormatListNumbered,
-  editor => () => toggleBlock( editor, 'numbered-list' ),
-  editor => isBlockActive( editor, 'numbered-list' ),
+  'Ordered list',
+  editor => () => toggleBlock( editor, EDITOR_ELEMENT.LIST.TYPE ),
+  editor => isBlockActive( editor, EDITOR_ELEMENT.LIST.TYPE ),
 )
 
 export const actions2 = [
   [
-    toolbarButtonData( 'Undo', Undo, editor => () => editor.undo() ),
-    toolbarButtonData( 'Redo', Redo, editor => () => editor.redo() ),
+    toolbarButtonData( Undo, 'Undo', editor => () => editor.undo() ),
+    toolbarButtonData( Redo, 'Redo', editor => () => editor.redo() ),
   ],
   [
     leafToolbarFormatButtonData( 'Bold', FormatBold, 'bold' ),
@@ -182,7 +193,7 @@ interface InputContentEditableProps {
 export function InputContentEditable( { editing }: InputContentEditableProps ) {
   const editor = useMemo( () => withHistory( withReact( createEditor() ) ), [] )
 
-  const renderElement = useCallback( props => <Element {...props} />, [] )
+  const renderElement = useCallback( props => <EditorElement {...props} />, [] )
   const renderLeaf = useCallback( props => <Leaf {...props} />, [] )
 
   const [ value, setValue ] = useState( [
