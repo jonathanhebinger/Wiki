@@ -32,6 +32,8 @@ interface ListUnordered extends ListBase {
 
 export type EditorElementList = ListOrdered | ListUnordered
 
+export type EditorElementListDetails = Partial<Pick<EditorElementList, 'variant' | 'style'>>
+
 export interface EditorElementListItem extends Element {
   type: typeof ITEM
 }

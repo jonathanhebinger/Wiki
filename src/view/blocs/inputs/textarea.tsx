@@ -21,8 +21,10 @@ import React, { MouseEvent, useCallback, useMemo, useState } from 'react'
 import { createEditor, Editor, Path, Text, Transforms } from 'slate'
 import { withHistory } from 'slate-history'
 import { Editable, ReactEditor, Slate, useSlate, withReact } from 'slate-react'
+
 import { Leaf, LeafAttributes } from './editor.leaf'
 import { EDITOR_ELEMENT, EditorElement } from './element'
+import { EditorList } from './list'
 
 function isMarkActive( editor: ReactEditor, format: keyof LeafAttributes ) {
   const [ match ] = Editor.nodes( editor, {
@@ -46,42 +48,21 @@ const isBlockActive = ( editor: ReactEditor, format: string ) => {
     match: node => node.type === format,
   } )
   return !!match
+
 }
 
 const toggleBlock = ( editor: ReactEditor, format: string ) => {
-  const isActive = isBlockActive( editor, format )
-
-  // Pre-Processing
   switch( format ) {
-    case EDITOR_ELEMENT.LIST.TYPE:
-    default:
-      Transforms.unwrapNodes( editor, {
-        match: node => EDITOR_ELEMENT.LIST.TYPE === node.type,
-        split: true,
-      } )
-  }
-
-  // Processing
-  switch( format ) {
-    case EDITOR_ELEMENT.LIST.TYPE: {
-      const type = isActive
-        ? EDITOR_ELEMENT.PARAGRAPH
-        : EDITOR_ELEMENT.LIST.ITEM
-      Transforms.setNodes( editor, { type } )
-      if( !isActive ) {
-        Transforms.wrapNodes( editor, {
-          type: format,
-          children: [],
-        } )
-      }
+    case EDITOR_ELEMENT.LIST.VARIANT.ORDERED:
+    case EDITOR_ELEMENT.LIST.VARIANT.UNORDERED:
+      EditorList.toggle( editor, { variant: format as any } )
       break
-    }
-    default: {
-      const type = isActive
+    default:
+      EditorList.remove( editor )
+      const type = isBlockActive( editor, format )
         ? EDITOR_ELEMENT.PARAGRAPH
         : format
       Transforms.setNodes( editor, { type } )
-    }
   }
 }
 
@@ -156,15 +137,15 @@ function leafToolbarFormatButtonData(
 const unorderedListButtonData = toolbarButtonData(
   FormatListBulleted,
   'Unordered list',
-  editor => () => toggleBlock( editor, EDITOR_ELEMENT.LIST.TYPE ),
-  editor => isBlockActive( editor, EDITOR_ELEMENT.LIST.TYPE ),
+  editor => () => toggleBlock( editor, EDITOR_ELEMENT.LIST.VARIANT.UNORDERED ),
+  editor => isBlockActive( editor, EDITOR_ELEMENT.LIST.VARIANT.UNORDERED ),
 )
 
 const orderedListButtonData = toolbarButtonData(
   FormatListNumbered,
   'Ordered list',
-  editor => () => toggleBlock( editor, EDITOR_ELEMENT.LIST.TYPE ),
-  editor => isBlockActive( editor, EDITOR_ELEMENT.LIST.TYPE ),
+  editor => () => toggleBlock( editor, EDITOR_ELEMENT.LIST.VARIANT.ORDERED ),
+  editor => isBlockActive( editor, EDITOR_ELEMENT.LIST.VARIANT.ORDERED ),
 )
 
 export const actions2 = [
@@ -227,16 +208,24 @@ export function InputContentEditable( { editing }: InputContentEditableProps ) {
     }
   }, [ editor ] )
 
+  const [ ref, setRef ] = useState()
+  editor.focus = () => ref && ref.focus && ref.focus()
   if( editing ) {
+    const eSetRef = ( event: React.FocusEvent<any> ) => {
+      editor.ref = ref
+      setRef( event.target )
+    }
     return (
-      <Slate editor={editor} value={value} onChange={onChange} >
+      <Slate editor={editor} value={value} onChange={onChange}>
         <InputContentEditableActions />
         <Paper elevation={1}>
           <Editable
+            {...{ ref }}
             renderElement={renderElement}
             renderLeaf={renderLeaf}
             autoFocus
             onKeyDown={onKeyDown}
+            onBlur={eSetRef}
           />
         </Paper>
       </Slate>
@@ -282,27 +271,3 @@ function InputContentEditableActions() {
     </Grid>
   )
 }
-
-/*
-function useContentEditableCommand() {
-  const [ Element, setElement ] = useState( null as React.ReactNode | null )
-  const reset = useCallback( () => setElement( null ), [] )
-  const execute = useCallback(
-    ( command: string ) => {
-      switch( command ) {
-        case 'createlink':
-          console.log( document.getSelection()?.getRangeAt( 0 ) )
-          const createLinkOnClose = () => {
-            reset()
-          }
-          setElement( <LinkInputDialog onValidate={createLinkOnClose} onCancel={reset} /> )
-          break
-        default:
-          document.execCommand( command )
-      }
-    },
-    [ reset ],
-  )
-  return { execute, Element }
-}
-*/
