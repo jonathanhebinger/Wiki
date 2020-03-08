@@ -36,8 +36,7 @@ function isMarkActive( editor: ReactEditor, format: keyof LeafAttributes ) {
 
 function toggleMark( editor: ReactEditor, format: keyof LeafAttributes ) {
   const isActive = isMarkActive( editor, format )
-  Transforms.setNodes(
-    editor,
+  Transforms.setNodes( editor,
     { [ format ]: isActive ? null : true },
     { match: Text.isText, split: true },
   )
@@ -48,7 +47,6 @@ const isBlockActive = ( editor: ReactEditor, format: string ) => {
     match: node => node.type === format,
   } )
   return !!match
-
 }
 
 const toggleBlock = ( editor: ReactEditor, format: string ) => {
@@ -195,12 +193,12 @@ export function InputContentEditable( { editing }: InputContentEditableProps ) {
           const [ item, itemPath ] = nodeEntryItem
           const listPath = Path.parent( itemPath )
           if( Editor.isEmpty( editor, item ) ) {
-            const nextPath = Path.next( listPath )
+            const next = Path.next( listPath )
             Transforms.removeNodes( editor, { at: itemPath } )
             Transforms.insertNodes( editor,
               { type: 'paragraph', children: [] },
-              { at: nextPath } )
-            Transforms.select( editor, nextPath )
+              { at: next } )
+            Transforms.select( editor, next )
             event.preventDefault()
           }
         }
@@ -209,7 +207,14 @@ export function InputContentEditable( { editing }: InputContentEditableProps ) {
   }, [ editor ] )
 
   const [ ref, setRef ] = useState()
-  editor.focus = () => ref && ref.focus && ref.focus()
+  editor.focus = ( path?: Path ) => {
+    if( ref && ref.focus ) {
+      if( path ) {
+        Transforms.select( editor, path )
+      }
+      ref.focus()
+    }
+  }
   if( editing ) {
     const eSetRef = ( event: React.FocusEvent<any> ) => {
       editor.ref = ref
