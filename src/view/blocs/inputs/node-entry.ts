@@ -1,11 +1,11 @@
-import { Editor, Element, Node, Path } from 'slate'
+import { Editor, Element, Node, Path, Text } from 'slate'
 import * as Slate from 'slate'
 import { ArrayUtil, Logger } from 'src/utils'
 
 const log = Logger.new( 'debug' )
 
 function pathReducer( element: Node | undefined, index: number ) {
-  return Element.isElement( element ) || Editor.isEditor( element )
+  return element && !Text.isText( element )
     ? element.children[ index ]
     : undefined
 }
@@ -18,9 +18,9 @@ export const NodeEntry = {
       && Node.isNode( value[ 0 ] )
       && Path.isPath( value[ 1 ] )
   },
-  isValid( editor: Editor, entry: NodeEntry ): boolean {
+  isValid( root: Node, entry: NodeEntry ): boolean {
     const [ node, path ] = entry
-    return node === path.reduce( pathReducer, editor )
+    return node === path.reduce( pathReducer, root )
   },
   index( entry: NodeEntry ): number {
     const [ , path ] = entry
@@ -38,14 +38,14 @@ export const NodeEntry = {
     log.info( 'Trying to get children of text node entry : ', entry )
     return []
   },
-  fromPath( editor: Editor, path: Path ) {
-    const node = path.reduce( pathReducer, editor )
+  fromPath( root: Node, path: Path ) {
+    const node = path.reduce( pathReducer, root )
     return node
       ? [ node, path ] as NodeEntry
       : log.info( 'Path is not valid : ', path )
   },
-  fromNode( editor: Editor, node: Node ) {
-    const nodesIterable = Editor.nodes( editor, { match: n => n === node } )
+  fromNode( root: Node, node: Node ) {
+    const nodesIterable = Editor.nodes( root as any, { match: n => n === node } )
     const entry = Array.from( nodesIterable )[ 0 ]
     return entry || log.info( 'Node not found : ', node )
   },
