@@ -18,7 +18,6 @@
         "esSpecCompliant": true
       }
     ],
-
     "quotemark": [true, "single"],
     "only-arrow-functions": false,
     "arrow-parens": [true, "ban-single-arg-parens"],

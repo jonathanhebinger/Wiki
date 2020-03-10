@@ -3,7 +3,7 @@ import { ReactEditor } from 'slate-react'
 import { Logger } from 'src/utils'
 import { EDITOR_ELEMENT } from 'src/view/blocs'
 
-import { Location, Navigator } from '../navigator'
+import { get, Location } from '../navigator'
 import { NodeEntry } from '../node-entry'
 import { EDITOR_ELEMENT_LIST, EditorElementListDetails } from './element'
 
@@ -42,10 +42,10 @@ const update = ( editor: ReactEditor, details: EditorElementListDetails ) => {
 }
 
 const merge = ( editor: Editor, source: Location, into: Location ) => {
-  const content = Navigator.children( editor, source )
+  const content = get.children( editor, source )
   if( !content ) return
-  Navigator.append( editor, into, content.map( NodeEntry.node ) )
-  Navigator.delete( editor, source )
+  get.append( editor, into, content.map( NodeEntry.node ) )
+  get.delete( editor, source )
 }
 
 const insert = ( editor: ReactEditor, details: EditorElementListDetails ) => {

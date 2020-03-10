@@ -1,5 +1,5 @@
 import { Editor, Node, Path, useSlate } from '../editor'
-import { Location, Navigator } from '../navigator'
+import { get, Location } from '../navigator'
 import { NodeEntry } from '../node-entry'
 import { EditorElementList } from './element'
 
@@ -8,10 +8,10 @@ const canMerge = ( element: EditorElementList, previous: Node ): boolean => {
 }
 
 const merge = ( editor: Editor, source: Location, into: Location ) => {
-  const content = Navigator.children( editor, source )
+  const content = get.children( editor, source )
   if( !content ) return
-  Navigator.append( editor, into, content.map( NodeEntry.node ) )
-  Navigator.delete( editor, source )
+  get.append( editor, into, content.map( NodeEntry.node ) )
+  get.delete( editor, source )
 }
 
 export function useListcreate( element: EditorElementList, path: Path ) {
@@ -20,7 +20,7 @@ export function useListcreate( element: EditorElementList, path: Path ) {
 
 export function useListMerge( element: EditorElementList, path: Path ) {
   const editor = useSlate()
-  const previous = Navigator.sibling.previous( editor, path )
+  const previous = get.sibling.previous( editor, path )
   if( previous && canMerge( element, NodeEntry.node( previous ) ) )
     return {
       enabled: true,

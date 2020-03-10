@@ -2,12 +2,6 @@
   "files.exclude": {
     "**/node_modules": true
   },
-  "[typescript]": {
-    "editor.defaultFormatter": "vscode.typescript-language-features"
-  },
-  "[typescriptreact]": {
-    "editor.defaultFormatter": "vscode.typescript-language-features"
-  },
   "tslint.autoFixOnSave": true,
   "typescript.format.insertSpaceAfterOpeningAndBeforeClosingTemplateStringBraces": true,
   "typescript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBrackets": true,
