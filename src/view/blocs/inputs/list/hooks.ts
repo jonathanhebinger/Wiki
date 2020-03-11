@@ -1,6 +1,6 @@
 import { Editor, Node, Path, useSlate } from '../editor'
-import { get, Location } from '../navigator'
 import { NodeEntry } from '../node-entry'
+import { get, Location } from '../slate'
 import { EditorElementList } from './element'
 
 const canMerge = ( element: EditorElementList, previous: Node ): boolean => {

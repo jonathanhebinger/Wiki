@@ -4,9 +4,9 @@ export const ArrayUtil = {
   at: <T>( array: T[], index: number ): T => array[ index ],
   previous: <T>( array: T[], index: number ) => array[ index - 1 ],
   next: <T>( array: T[], index: number ) => array[ index + 1 ],
-  isEmpty: ( array: any[] ) => !!array.length,
-  onEmpty: <T, R>( array: T[], callback: ( array: T[] ) => R ) =>
-    ArrayUtil.isEmpty( array ) ? callback( array ) : undefined,
-  onNotEmpty: <T, R>( array: T[], callback: ( array: T[] ) => R ) =>
-    !ArrayUtil.isEmpty( array ) ? callback( array ) : undefined,
+  isEmpty: ( array: any[] ) => !array.length,
+  is: {
+    array: <T>( value: T | T[] ): value is T[] => Array.isArray( value ),
+    empty: ( array: any[] ) => !array.length,
+  },
 }

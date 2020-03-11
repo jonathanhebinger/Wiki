@@ -7,7 +7,7 @@ const log = Logger.new( 'info' )
 export type Location = Path | Node | NodeEntry | Point
 type Position = 'absolute' | 'relative'
 
-export const is = {
+const is = {
   node: Node.isNode,
   text: Text.isText,
   nodeEntry: NodeEntry.isNodeEntry,
@@ -16,7 +16,7 @@ export const is = {
   path: Path.isPath,
   range: Range.isRange,
   point: Point.isPoint,
-  location: ( value: any ) =>
+  location: ( value: any ): value is Location =>
     is.path( value ) || is.node( value ) || is.nodeEntry( value ) || is.point( value ),
   list: {
     node: Node.isNodeList,
@@ -35,74 +35,57 @@ export const is = {
   },
 }
 
-export const get = {
-  get( root: Node, location: Location ) {
-    if( is.point( location ) ) {
-      return NodeEntry.fromPath( root, location.path )
-    }
-    if( is.path( location ) ) {
-      return NodeEntry.fromPath( root, location )
-    }
-    if( is.node( location ) ) {
-      return NodeEntry.fromNode( root, location )
-    }
-    if( NodeEntry.isValid( root, location ) ) {
-      return location
-    }
-    log.info( 'NodeEntry is not valid : ', location )
-  },
+function at( root: Node, location: Location ): NodeEntry
+function at( root: Node, locations: Location[] ): NodeEntry[]
+function at( root: Node, location: Location | Location[] ): NodeEntry | NodeEntry[] {
+  if( is.list.location( location ) )
+    return ( location as Location[] )
+      .map( item => at( root, item ) )
+      .filter( entry => entry ) as NodeEntry[]
+  if( is.point( location ) )
+    return NodeEntry.fromPath( root, location.path )
+  if( is.path( location ) )
+    return NodeEntry.fromPath( root, location )
+  if( is.node( location ) )
+    return NodeEntry.fromNode( root, location )
+  if( NodeEntry.isValid( root, location ) )
+    return location
+  throw new Error( 'NodeEntry is not valid ' )
+}
+
+const get = {
+  at,
   children( root: Node, location: Location ) {
-    const entry = get.get( root, location )
-    return entry && NodeEntry.children( entry )
+    return NodeEntry.children( get.at( root, location ) )
   },
   child: {
     first( root: Node, location: Location ) {
       return get.child.at( root, location, 0 )
     },
-    at( root: Node, location: Location, index: number, position: Position = 'absolute' ) {
-      const entry = get.get( root, location )
-      if( !entry ) {
-        return
-      }
-      const children = get.children( root, entry )
-      if( !children ) {
-        return
-      }
-      return position === 'absolute'
-        ? ArrayUtil.at( children, index >= 0 ? index : children.length + index )
-        : ArrayUtil.at( children, NodeEntry.index( entry ) + index )
+    at( root: Node, location: Location, index: number ) {
+      const [ node, path ] = get.at( root, location )
+      index = index >= 0 ? index : node.children.length + index
+      return get.at( root, [ ...path, index ] )
     },
     last( root: Node, location: Location ) {
       return get.child.at( root, location, -1 )
     },
   },
   parent( root: Node, location: Location ) {
-    const entry = get.get( root, location )
-    if( !entry ) {
-      return
-    }
-    const [ node, path ] = entry
-    if( Editor.isEditor( node ) ) {
-      return log.info( 'Cannot get parent of Editor' )
-    }
-    return get.get( root, Path.parent( path ) )
+    const [ node, path ] = get.at( root, location )
+    if( is.editor( node ) )
+      throw new Error( 'Cannot get parent of Editor' )
+    return get.at( root, Path.parent( path ) )
   },
   root( root: Node, location: Location ) {
-    const entry = get.get( root, location )
-    if( !entry ) {
-      return
-    }
-    const [ , path ] = entry
-    if( ArrayUtil.isEmpty( path ) ) {
-      return
-    }
-    return get.get( root, path.slice( 0, 1 ) )
+    if( is.editor( root ) )
+      throw new Error( 'Cannot get root of Editor' )
+    const [ , path ] = get.at( root, location )
+    return get.at( root, path.slice( 0, 1 ) )
   },
   siblings( root: Node, location: Location ) {
-    const entry = get.parent( root, location )
-    if( entry ) {
-      return NodeEntry.children( entry )
-    }
+    get.root( root, location )
+    return NodeEntry.children( get.parent( root, location ) )
   },
   sibling: {
     first( root: Node, location: Location ) {
@@ -112,17 +95,12 @@ export const get = {
       return get.sibling.at( root, location, -1, 'relative' )
     },
     at( root: Node, location: Location, index: number, position: Position = 'absolute' ) {
-      const entry = get.get( root, location )
-      if( !entry ) {
-        return
-      }
-      const siblings = get.siblings( root, entry )
-      if( !siblings ) {
-        return
-      }
-      return position === 'absolute'
-        ? ArrayUtil.at( siblings, index >= 0 ? index : siblings.length - index )
-        : ArrayUtil.at( siblings, NodeEntry.index( entry ) + index )
+      const [ , path ] = get.at( root, location )
+      const siblings = get.siblings( root, location )
+      index = position === 'absolute'
+        ? index >= 0 ? index : siblings.length - index
+        : ArrayUtil.last( path ) + index
+      return get.at( root, [ ...path, index ] )
     },
     next( root: Node, location: Location ) {
       return get.sibling.at( root, location, 1, 'relative' )
@@ -131,60 +109,32 @@ export const get = {
       return get.sibling.at( root, location, -1 )
     },
   },
-
-  update( root: Editor, location: Location, details: Partial<Node> ) {
-    const entry = get.get( root, location )
-    if( !entry ) {
-      return log.info( 'Impossible to update node at ', location )
-    }
-    Transforms.setNodes( root, details, { at: entry[ 1 ] } )
-  },
-  insert( root: Editor, path: Path, details: Node | Node[] ) {
-    Transforms.insertNodes( root, details, { at: path } )
-  },
-  append( root: Editor, location: Location, details: Node | Node[] ) {
-    const entry = get.child.last( root, location )
-    if( !entry ) {
-      return log.info( 'Impossible to append nodes at ', location )
-    }
-    get.insert( root, Path.next( NodeEntry.path( entry ) ), details )
-  },
-  delete( root: Editor, location: Location ) {
-    const entry = get.get( root, location )
-    if( !entry ) {
-      return log.info( 'Impossible to delete node at ', location )
-    }
-    Transforms.delete( root, { at: entry[ 1 ] } )
-    return entry
-  },
-  extract: {
-    content( root: Editor, location: Location, deleteParent = true ) {
-      const entry = get.get( root, location )
-      if( !entry ) {
-        return log.info( 'Impossible to extract content at path ', location )
-      }
-      const children = get.children( root, entry )
-      if( !children ) {
-        return
-      }
-      if( deleteParent ) {
-        get.delete( root, location )
-      } else {
-        ;[ ...children ].reverse().forEach( child => Transforms.delete( root, { at: child[ 1 ] } ) )
-      }
-      return children
-    },
-    node( root: Editor, location: Location ) {
-      return (
-        get.delete( root, location ) || log.info( 'Impossible to extract node at ', location )
-      )
-    },
-  },
 }
 
+interface Wrapper {
+  [ index: string ]: ( ( ...args: any[] ) => any ) | Wrapper
+}
+type Opt<S extends Wrapper> = {
+  [ K in keyof S ]: S[ K ] extends Wrapper
+  ? Opt<S[ K ]>
+  // @ts-ignore
+  : ( ...args: Parameters<S[ K ]> ) => ReturnType<S[ K ]> | undefined
+}
+function makeOpt<T extends Wrapper>( wrapper: T ): Opt<T> {
+  const optWrapper = {} as Opt<T>
+  for( const [ key, value ] of Object.entries( wrapper ) ) {
+    optWrapper[ key as keyof T ] = typeof value === 'object'
+      ? makeOpt( value ) as any
+      : ( ...args: any[] ) => {
+        try { value( ...args ) } catch( e ) { log.info( e ) }
+      }
+  }
+  return optWrapper
+}
+
+const opt = makeOpt( get )
+
 /*
-  get
-    path(location|Point, ?root)
   do
     set(root, data, location([])): NodeEntry([])
     unset(root, data, location([])): NodeEntry([])
@@ -215,23 +165,17 @@ export const get = {
 
 */
 
-export const Do = {
+const Do = {
   /** Set properties of node at location */
   set( editor: Editor, details: Partial<Node>, location: Location ) {
-    const entry = get.get( editor, location )
-    if( !entry ) {
-      return log.info( 'Impossible to set node at ', location )
-    }
-    Transforms.setNodes( editor, details, { at: entry[ 1 ] } )
+    const [ , path ] = get.at( editor, location )
+    Transforms.setNodes( editor, details, { at: path } )
   },
 
   /** Unset properties of node at location */
   unset( editor: Editor, details: Partial<Node>, location: Location ) {
-    const entry = get.get( editor, location )
-    if( !entry ) {
-      return log.info( 'Impossible to unset node at ', location )
-    }
-    Transforms.setNodes( editor, details, { at: entry[ 1 ] } )
+    const [ , path ] = get.at( editor, location )
+    Transforms.setNodes( editor, details, { at: path } )
   },
 
   /** Methods to insert nodes in the editor and return their nodeEntry */
@@ -249,19 +193,14 @@ export const Do = {
       location: Location,
       mode: 'after' | 'before' = 'before',
     ) {
-      const entry = get.get( editor, location )
-      if( !entry )
-        return log.info( `Impossible to insert nodes ${ mode } `, location )
+      const entry = get.at( editor, location )
       const path = mode === 'before'
         ? NodeEntry.path( entry )
         : Path.next( NodeEntry.path( entry ) )
       if( !is.list.node( nodes ) )
         nodes = [ nodes ]
       Transforms.insertNodes( editor, nodes, { at: path } )
-      const sibling = get.siblings( editor, entry )
-      return sibling
-        ? sibling.filter( ( [ node ] ) => ( nodes as Node[] ).includes( node ) )
-        : log.info( `Impossible to get inserted nodes `, location )
+      return get.siblings( editor, entry ).filter( ( [ node ] ) => ( nodes as Node[] ).includes( node ) )
     },
 
     /** Insert nodes as the next siblings of location and return their nodeEntry */
@@ -275,9 +214,7 @@ export const Do = {
       /** Insert nodes as the first children of location */
       start( editor: Editor, nodes: Node | Node[], location: Location ) {
         const first = get.child.first( editor, location )
-        return first
-          ? Do.insert.at( editor, nodes, first, 'before' )
-          : log.info( 'Impossible to insert node as first sibling of ', location )
+        return Do.insert.at( editor, nodes, first, 'before' )
       },
 
       /** Insert nodes at a, index in a location and return their nodeEntry */
@@ -289,17 +226,13 @@ export const Do = {
         mode: 'after' | 'before' = 'before',
       ) {
         const entry = get.child.at( editor, location, index )
-        return entry
-          ? Do.insert.at( editor, nodes, entry, mode )
-          : log.info( `Impossible to get inserted nodes `, location )
+        return Do.insert.at( editor, nodes, entry, mode )
       },
 
       /** Insert nodes as the last children of location and return their nodeEntry */
       end( editor: Editor, nodes: Node | Node[], location: Location ) {
         const last = get.child.last( editor, location )
-        return last
-          ? Do.insert.at( editor, nodes, last, 'after' )
-          : log.info( 'Impossible to insert node as last sibling of ', location )
+        return Do.insert.at( editor, nodes, last, 'after' )
       },
     },
   },
@@ -319,23 +252,21 @@ export const Do = {
       location: Location,
       mode: 'after' | 'before',
     ) {
-      const into = get.get( editor, location )
-      if( !into ) return log.info( 'Location to move into not found ', location )
+      const into = get.at( editor, location )
       const target = mode === 'before'
         ? NodeEntry.path( into )
         : Path.next( NodeEntry.path( into ) )
       sources = is.list.location( sources ) ? sources : [ sources ]
       const entries = sources
-        .map( source => get.get( editor, source ) as NodeEntry )
-        .filter( entry => entry )
+        .map( source => get.at( editor, source ) )
       entries
         .map( NodeEntry.path )
         .sort( Path.compare )
         .forEach( path => Transforms.moveNodes( editor, { at: path, to: target } ) )
-      const siblings = get.siblings( editor, into )
-      if( !siblings ) return log.error( 'Something happened during move at ', location )
-      const nodes = entries.map( NodeEntry.node )
-      return siblings.filter( sibling => nodes.includes( NodeEntry.node( sibling ) ) )
+      const nodes = entries
+        .map( NodeEntry.node )
+      return get.siblings( editor, into )
+        .filter( sibling => nodes.includes( NodeEntry.node( sibling ) ) )
     },
 
     /** Move nodes as the next siblings of location and return their nodeEntry */
@@ -348,9 +279,7 @@ export const Do = {
       /** Move nodes as the first children of location and return their nodeEntry */
       start( editor: Editor, sources: Location | Location[], location: Location ) {
         const first = get.child.first( editor, location )
-        return first
-          ? Do.move.at( editor, sources, first, 'before' )
-          : log.info( 'Impossible to move node as first sibling of ', location )
+        return Do.move.at( editor, sources, first, 'before' )
       },
 
       /** Move nodes at a, index in a location and return their nodeEntry */
@@ -362,40 +291,106 @@ export const Do = {
         mode: 'after' | 'before' = 'before',
       ) {
         const entry = get.child.at( editor, location, index )
-        return entry
-          ? Do.move.at( editor, sources, entry, mode )
-          : log.info( `Impossible to get moved nodes `, location )
+        return Do.move.at( editor, sources, entry, mode )
       },
 
       /** Move nodes as the last children of location */
       end( editor: Editor, sources: Location | Location[], location: Location ) {
         const last = get.child.last( editor, location )
-        return last
-          ? Do.move.at( editor, sources, last, 'after' )
-          : log.info( 'Impossible to move node as last sibling of ', location )
+        return Do.move.at( editor, sources, last, 'after' )
       },
     },
   },
 
   /** Methods to remove nodes in the editor and return their nodeEntry */
   remove: {
+
+    /** Remove node at location and return its nodeEntry */
     at( editor: Editor, location: Location ) {
-      const entry = get.get( editor, location )
-      if( !entry )
-        return log.info( 'Impossible to remove node at ', location )
+      const entry = get.at( editor, location )
       Transforms.delete( editor, { at: NodeEntry.path( entry ) } )
       return entry
     },
 
+    /** Remove children nodes of location and return their nodeEntry */
     content( editor: Editor, location: Location, deleteParent = true ) {
       const children = get.children( editor, location )
-      if( !children )
-        return log.info( 'Impossible to remove children of ', location )
       children.reverse().forEach( child => Do.remove.at( editor, child ) )
-      if( deleteParent ) {
+      if( deleteParent )
         Do.remove.at( editor, location )
-      }
       return children
     },
   },
+
+  /** Wrap node with wrapper at location */
+  wrap( editor: Editor, wrapper: Element | Element[], location: Location ) {
+    const wrappers = ArrayUtil.is.array( wrapper ) ? wrapper : [ wrapper ]
+    const [ , path ] = get.at( editor, location )
+    wrappers
+      .reverse()
+      .forEach( element => Transforms.wrapNodes( editor, element, { at: path } ) )
+    return get.at( editor, path )
+  },
+
+  /** Methods to merge nodes and return their new NodeEntry */
+  merge: {
+
+    /** Insert nodes as the previous siblings of location and return their nodeEntry */
+    before( editor: Editor, source: Location, location: Location ) {
+      return Do.merge.at( editor, source, location, 'before' )
+    },
+
+    /** Merge nodes at a location and return their new nodeEntry */
+    at(
+      editor: Editor,
+      source: Location,
+      into: Location,
+      mode: 'before' | 'after' = 'before',
+    ) {
+      const content = Slate.get.children( editor, source )
+      const nodes = Slate.do.insert.at( editor, content.map( NodeEntry.node ), into, mode )
+      Slate.do.remove.at( editor, source )
+      return nodes
+    },
+
+    /** Insert nodes as the previous siblings of location and return their nodeEntry */
+    after( editor: Editor, source: Location, location: Location ) {
+      return Do.merge.at( editor, source, location, 'after' )
+    },
+
+    /** Merge nodes in a location and return their new nodeEntry */
+    in: {
+
+      /** Merge content of source at start of target */
+      start( editor: Editor, source: Location, target: Location ) {
+        const first = get.child.first( editor, target )
+        return Do.merge.at( editor, source, first, 'before' )
+      },
+
+      /** Merge content of source into target at index */
+      at(
+        editor: Editor,
+        source: Location,
+        into: Location,
+        index: number,
+        mode: 'after' | 'before' = 'before',
+      ) {
+        const entry = get.child.at( editor, into, index )
+        return Do.merge.at( editor, source, entry, mode )
+      },
+
+      /** Merge content of source at end of target */
+      end( editor: Editor, source: Location, target: Location ) {
+        const first = get.child.first( editor, target )
+        return Do.merge.at( editor, source, first, 'before' )
+      },
+    },
+  },
+}
+
+export const Slate = {
+  is,
+  get,
+  opt,
+  do: Do,
 }

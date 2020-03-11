@@ -38,16 +38,18 @@ export const NodeEntry = {
     log.info( 'Trying to get children of text node entry : ', entry )
     return []
   },
-  fromPath( root: Node, path: Path ) {
+  fromPath( root: Node, path: Path ): NodeEntry {
     const node = path.reduce( pathReducer, root )
-    return node
-      ? [ node, path ] as NodeEntry
-      : log.info( 'Path is not valid : ', path )
+    if( node )
+      return [ node, path ]
+    throw new Error( 'Path is not valid' )
   },
   fromNode( root: Node, node: Node ) {
     const nodesIterable = Editor.nodes( root as any, { match: n => n === node } )
     const entry = Array.from( nodesIterable )[ 0 ]
-    return entry || log.info( 'Node not found : ', node )
+    if( entry )
+      return entry
+    throw new Error( 'Node not found' )
   },
   node( entry: NodeEntry ) {
     return entry[ 0 ]
