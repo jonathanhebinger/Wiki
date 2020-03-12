@@ -1,22 +1,42 @@
 import { IconButton } from '@material-ui/core'
 import { Delete, FormatListBulleted, FormatListNumbered, MergeType } from '@material-ui/icons'
 import React, { Fragment } from 'react'
-import { Path } from 'slate'
-import { EDITOR_ELEMENT, FloatingToolBox } from 'src/view/blocs'
+import { Editor, Node, Path, Transforms } from 'slate'
+import { ReactEditor, useSlate } from 'slate-react'
+import { EDITOR_ELEMENT, FloatingToolBox, FloatingToolBoxProps } from 'src/view/blocs'
+import { SlateList } from 'src/view/blocs/inputs/list'
 
-import { Editor, ReactEditor, Transforms, useSlate } from '../editor'
 import { SlateElementRenderer } from '../renderer'
 import { EditorElementList, EditorElementListDetails } from './element'
 import { useListMerge } from './hooks'
+
+const SlateFloatingToolBox = ( props: FloatingToolBoxProps & { element: Node } ) => {
+  const editor = useSlate()
+  const { element, ...others } = props
+  const [ entry ] = Editor.nodes( editor, { match: node => node === element } )
+  if( entry ) {
+    const [ , path ] = entry
+    const onClick = ( e: React.MouseEvent<any, MouseEvent> ) => {
+      editor.active = path
+      e.stopPropagation()
+    }
+    if( editor.active && Path.equals( path, editor.active ) ) {
+      return <FloatingToolBox {...others} onClick={onClick} />
+    } else {
+      return <div onClick={onClick}>{props.children}</div>
+    }
+  }
+  return <div>{props.children}</div>
+}
 
 export const editorElementRendererList: SlateElementRenderer<EditorElementList> = ( {
   attributes,
   children,
   element,
 } ) => (
-    <FloatingToolBox tools={<HoveringToolbar element={element} />}>
+    < SlateFloatingToolBox tools={< HoveringToolbar element={element} />} element={element} >
       {getItem( { attributes, children, element } )}
-    </FloatingToolBox>
+    </SlateFloatingToolBox >
   )
 
 const getItem: SlateElementRenderer<EditorElementList> = ( { attributes, children, element } ) => {
@@ -34,8 +54,7 @@ const getItem: SlateElementRenderer<EditorElementList> = ( { attributes, childre
 const HoveringToolbar = ( { element }: { element: EditorElementList } ) => {
   const editor = useSlate()
   if( ReactEditor.isFocused( editor ) ) {
-    const nodes = Editor.nodes( editor, { match: node => node === element } )
-    const list = Array.from( nodes )[ 0 ]
+    const [ list ] = Editor.nodes( editor, { match: node => node === element } )
     if( list ) {
       const [ , path ] = list
 
@@ -72,9 +91,12 @@ const HoveringToolbar = ( { element }: { element: EditorElementList } ) => {
 const DeleteButton = ( { element, path }: { element: EditorElementList; path: Path } ) => {
   const editor = useSlate()
   const remove = () => {
-    element.children.forEach( ( _, index ) =>
-      Transforms.setNodes( editor, { type: EDITOR_ELEMENT.PARAGRAPH }, { at: [ ...path, index ] } ),
-    )
+    const parent = Node.parent( editor, path )
+    if( !SlateList.matcher( parent ) ) {
+      element.children.forEach( ( _, index ) =>
+        Transforms.setNodes( editor, { type: EDITOR_ELEMENT.PARAGRAPH }, { at: [ ...path, index ] } ),
+      )
+    }
     Transforms.unwrapNodes( editor, { at: path, split: true } )
   }
   return (

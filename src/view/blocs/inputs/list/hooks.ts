@@ -1,17 +1,12 @@
-import { Editor, Node, Path, useSlate } from '../editor'
-import { NodeEntry } from '../node-entry'
-import { get, Location } from '../slate'
-import { EditorElementList } from './element'
+import { Editor, Node, Path } from 'slate'
+import { useSlate } from 'slate-react'
+import { Logger } from 'src/utils'
+import { EditorElementList, SlateList } from 'src/view/blocs/inputs/list'
+
+const log = Logger.new()
 
 const canMerge = ( element: EditorElementList, previous: Node ): boolean => {
   return previous.type === element.type && previous.variant === element.variant
-}
-
-const merge = ( editor: Editor, source: Location, into: Location ) => {
-  const content = get.children( editor, source )
-  if( !content ) return
-  get.append( editor, into, content.map( NodeEntry.node ) )
-  get.delete( editor, source )
 }
 
 export function useListcreate( element: EditorElementList, path: Path ) {
@@ -19,15 +14,19 @@ export function useListcreate( element: EditorElementList, path: Path ) {
 }
 
 export function useListMerge( element: EditorElementList, path: Path ) {
-  const editor = useSlate()
-  const previous = get.sibling.previous( editor, path )
-  if( previous && canMerge( element, NodeEntry.node( previous ) ) )
-    return {
-      enabled: true,
-      merge() {
-        merge( editor, element, previous )
-        editor.focus( NodeEntry.path( previous ) )
-      },
-    }
+  try {
+    const editor = useSlate()
+    const [ previous, previousPath ] = Editor.node( editor, Path.previous( path ) )
+    if( canMerge( element, previous ) )
+      return {
+        enabled: true,
+        merge() {
+          SlateList.merge( editor, path, previousPath )
+          editor.focus( previousPath )
+        },
+      }
+  } catch( e ) {
+    log.info( 'Impossible to use list merge : ', e )
+  }
   return { enabled: false }
 }

@@ -24,7 +24,7 @@ import { Editable, ReactEditor, Slate, useSlate, withReact } from 'slate-react'
 
 import { Leaf, LeafAttributes } from './editor.leaf'
 import { EDITOR_ELEMENT, EditorElement } from './element'
-import { EditorList } from './list'
+import { SlateList } from './list'
 
 function isMarkActive( editor: ReactEditor, format: keyof LeafAttributes ) {
   const [ match ] = Editor.nodes( editor, {
@@ -53,10 +53,10 @@ const toggleBlock = ( editor: ReactEditor, format: string ) => {
   switch( format ) {
     case EDITOR_ELEMENT.LIST.VARIANT.ORDERED:
     case EDITOR_ELEMENT.LIST.VARIANT.UNORDERED:
-      EditorList.toggle( editor, { variant: format as any } )
+      SlateList.toggle( editor, { variant: format as any } )
       break
     default:
-      EditorList.remove( editor )
+      SlateList.remove( editor )
       const type = isBlockActive( editor, format )
         ? EDITOR_ELEMENT.PARAGRAPH
         : format
@@ -215,6 +215,9 @@ export function InputContentEditable( { editing }: InputContentEditableProps ) {
       ref.focus()
     }
   }
+
+  const [ info, setInfo ] = useState( JSON.stringify( editor.selection ) )
+
   if( editing ) {
     const eSetRef = ( event: React.FocusEvent<any> ) => {
       editor.ref = ref
@@ -231,7 +234,11 @@ export function InputContentEditable( { editing }: InputContentEditableProps ) {
             autoFocus
             onKeyDown={onKeyDown}
             onBlur={eSetRef}
+            onMouseMove={() => setInfo( JSON.stringify( editor.selection ) )}
           />
+        </Paper>
+        <Paper>
+          {info}
         </Paper>
       </Slate>
     )
@@ -255,7 +262,7 @@ function InputContentEditableActions() {
     const vActions = group.map( ( { name, command, Icon, isActive } ) => (
       <Button
         key={name}
-        size="small"
+        size='small'
         title={name}
         onClick={command( editor )}
         color={isActive && isActive( editor ) ? 'primary' : undefined}
@@ -271,7 +278,7 @@ function InputContentEditableActions() {
   } )
 
   return (
-    <Grid container justify="center">
+    <Grid container justify='center'>
       {vGroups}
     </Grid>
   )
