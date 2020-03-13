@@ -218,6 +218,10 @@ export function InputContentEditable( { editing }: InputContentEditableProps ) {
 
   const [ info, setInfo ] = useState( JSON.stringify( editor.selection ) )
 
+  const setInfoEvent = () => {
+    setInfo( JSON.stringify( [ ...Editor.nodes( editor, { mode: 'highest' } ) ].length ) )
+  }
+
   if( editing ) {
     const eSetRef = ( event: React.FocusEvent<any> ) => {
       editor.ref = ref
@@ -234,7 +238,7 @@ export function InputContentEditable( { editing }: InputContentEditableProps ) {
             autoFocus
             onKeyDown={onKeyDown}
             onBlur={eSetRef}
-            onMouseMove={() => setInfo( JSON.stringify( editor.selection ) )}
+            onMouseMove={setInfoEvent}
           />
         </Paper>
         <Paper>

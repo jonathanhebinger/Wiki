@@ -64,7 +64,7 @@ function insert( editor: ReactEditor, details: EditorElementListDetails ) {
 }
 
 function insertAt( editor: ReactEditor, details: EditorElementListDetails, at: Path ) {
-  log.debug( 'Inserting list at selection with : ', editor.selection, details )
+  log.debug( 'Inserting list at with : ', at, details )
   const nest = Node.get( editor, at )
   if( Element.isElement( nest ) && match( nest ) ) {
     Transforms.wrapNodes( editor, { type: EDITOR_ELEMENT.PARAGRAPH, children: [] } )
