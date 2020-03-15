@@ -6,6 +6,8 @@
 - 4 : Text fields for additional data + search and group by fields
 - 5 : Fields of any basic type through tags + search and group by fields
 
+[Slate](view/slate/README.md)
+
 ---
 
 ## Components
