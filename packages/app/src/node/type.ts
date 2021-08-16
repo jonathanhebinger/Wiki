@@ -1,44 +1,44 @@
 export type Id<Key extends string> = string & { key?: Key }
 
 export type Node_Id = Id<'node'>
-export type Node_Value = any
-export type Node_About = any
+export type Node_Info = any
+export type Node_Data = { [index: string]: Node_Data_Item }
+export type Node_Data_Item = any
+
 export type Node = {
   id: Node_Id
 
+  tags: Node_Id[]
+  tagged: Node_Id[]
+
   name: string
+  info?: Node_Info
+  data: Node_Data
 
-  parents: Node_Id[]
-  children: Node_Id[]
-
-  about: Node_About | null
-  value: Value_Id | null
-
-  references: Node_Id[]
-}
-export type Value_Id = Id<'value'>
-export type Value = {
-  id: Value_Id
-
-  parents: Node_Id[]
-
-  value: Node_Value
+  references?: Node_Id[]
 }
 
-export type Template_Id = Id<'template'>
-export type Template = {
-  id: Template_Id
+export namespace Type {
+  export type Base<Type extends string> = { type: Type }
 
-  root: Node_Id
+  export type Type = Base<'type'>
 
-  keys: {
-    node: Node_Id
-    required: boolean
-  }[]
+  export type Boolean = Base<'boolean'>
+  export type Number = Base<'number'>
+  export type String = Base<'string'>
+
+  export type Array = Base<'array'> & {
+    of: Any
+  }
+  export type Object = Base<'object'> & {
+    keys: {
+      name: string
+      type: Any
+      required: boolean
+    }[]
+  }
+
+  export type Node = Base<'node'>
+
+  export type Any = Type | Boolean | Number | String | Array | Object | Node
 }
-
-/*
-Values are final, no children
-Values can be transformed to Nodes -> Node with Value as Child
-Nodes can only have one Value
-*/

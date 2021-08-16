@@ -1,57 +1,58 @@
 import { Thunk, thunk } from 'easy-peasy'
+import { Node_System } from 'src/node/system'
 import { Node, Node_Id } from 'src/node/type'
 import { CrudRepository, crudRepository } from 'src/repository'
 
 export interface Node_Repo_Model extends CrudRepository<Node, Node_Id> {
-  parents$add: Thunk<Node_Repo_Model, { node: Node_Id; parent: Node_Id }>
-  parents$remove: Thunk<Node_Repo_Model, { node: Node_Id; parent: Node_Id }>
+  tags$add: Thunk<Node_Repo_Model, { node: Node_Id; parent: Node_Id }>
+  tags$remove: Thunk<Node_Repo_Model, { node: Node_Id; parent: Node_Id }>
 
-  children$add: Thunk<Node_Repo_Model, { node: Node_Id; child: Node_Id }>
-  children$remove: Thunk<Node_Repo_Model, { node: Node_Id; child: Node_Id }>
+  tagged$add: Thunk<Node_Repo_Model, { node: Node_Id; child: Node_Id }>
+  tagged$remove: Thunk<Node_Repo_Model, { node: Node_Id; child: Node_Id }>
 }
 
 export const node_repo_model: Node_Repo_Model = {
-  ...crudRepository({}),
+  ...crudRepository({ initialState: Node_System }),
 
-  parents$add: thunk((actions, payload) => {
+  tags$add: thunk((actions, payload) => {
     actions.crud.updateMany([
       {
         id: payload.node,
         patch: {
-          parents: parents => [...parents, payload.node],
+          tags: tags =>
+            tags.includes(payload.parent) ? tags : [...tags, payload.parent],
         },
       },
       {
         id: payload.parent,
         patch: {
-          children: children => [...children, payload.node],
+          tagged: tagged =>
+            tagged.includes(payload.node) ? tagged : [...tagged, payload.node],
         },
       },
     ])
   }),
-  parents$remove: thunk((actions, payload) => {
+  tags$remove: thunk((actions, payload) => {
     actions.crud.updateMany([
       {
         id: payload.node,
         patch: {
-          parents: parents =>
-            parents.filter(parent => parent !== payload.parent),
+          tags: tags => tags.filter(parent => parent !== payload.parent),
         },
       },
       {
         id: payload.parent,
         patch: {
-          children: children =>
-            children.filter(child => child !== payload.node),
+          tagged: tagged => tagged.filter(child => child !== payload.node),
         },
       },
     ])
   }),
 
-  children$add: thunk((actions, payload) => {
-    actions.parents$add({ node: payload.child, parent: payload.node })
+  tagged$add: thunk((actions, payload) => {
+    actions.tags$add({ node: payload.child, parent: payload.node })
   }),
-  children$remove: thunk((actions, payload) => {
-    actions.parents$remove({ node: payload.child, parent: payload.node })
+  tagged$remove: thunk((actions, payload) => {
+    actions.tags$remove({ node: payload.child, parent: payload.node })
   }),
 }

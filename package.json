@@ -13,7 +13,7 @@
     "lint:packages": "eslint 'packages/**/**.ts' --fix --ignore-pattern 'packages/**/*.spec.ts'",
     "lint:spec": "eslint 'packages/**/**.spec.ts' -c '.eslintrc.spec.js' --fix",
     "serve": "cd ./packages/backend && npm run start:dev",
-    "start": "cd ./packages/frontend && npm run start",
+    "start": "cd ./packages/app && npm run start",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --watchAll --coverage"

@@ -1,64 +1,112 @@
 import './index.css'
 
+import { StoreProvider } from 'easy-peasy'
+import { useEffect, useState } from 'react'
 import ReactDOM from 'react-dom'
-import { useNode } from 'src/node/context'
+import { Badge } from 'src/blocs/badge'
+import { Divider } from 'src/blocs/divider'
+import { Modal } from 'src/blocs/modal'
+import { Surface } from 'src/blocs/surface'
+import { Node_Data } from 'src/node/components/data'
+import { NodeSearch } from 'src/node/components/search'
+import { NodeProvider, useNode } from 'src/node/context'
+import { Node } from 'src/node/type'
+import { store, useStoreState } from 'src/store'
 
-import App from './App'
+ReactDOM.render(<Root />, document.getElementById('root'))
 
-ReactDOM.render(<App />, document.getElementById('root'))
-
-function X_Page() {
+function Root() {
   return (
-    <div className="flex">
-      <div>
-        <X_Node_About></X_Node_About>
-        <X_Node_Parents></X_Node_Parents>
-      </div>
-      <div className="flex">
-        <X_Node_Children></X_Node_Children>
-      </div>
+    <StoreProvider store={store}>
+      <Node_List />
+      <NodeSearch />
+    </StoreProvider>
+  )
+}
+
+function Node_List() {
+  const nodes = useStoreState(state => state.nodes.entities)
+
+  return (
+    <div className="flex flex-col space-y-2 p-4">
+      {nodes.map(node => (
+        <Node_Main node={node} key={node.id}></Node_Main>
+      ))}
     </div>
   )
 }
 
-function X_Node_About() {
+function Node_Main({ node }: { node: Node }) {
+  return (
+    <NodeProvider node={node}>
+      <Surface shadow="large">
+        <div className="p-2">{node.name}</div>
+        <Divider />
+        <div className="flex">
+          <div className="p-2 flex-1">
+            <Node_Tags />
+            <Node_Info />
+            <Node_Data />
+          </div>
+          <Divider direction="vertical" />
+          <div className="p-2 flex-1">
+            <Node_Tagged />
+          </div>
+        </div>
+      </Surface>
+    </NodeProvider>
+  )
+}
+
+function Node_Info() {
   return null
 }
-function X_Node_Parents() {
-  const { parents, parents$remove } = useNode()
 
-  const badges = parents.map(parent => {
+function Node_Tags() {
+  const { tags, tags$remove } = useNode()
+
+  const [opened, opened$set] = useState(false)
+
+  const badges = tags.map(parent => {
     return (
-      <X_Badge
+      <Badge
         className="m-2"
         label={parent.name}
         onClick={() => {}}
-        onDelete={() => parents$remove(parent)}
+        onDelete={() => tags$remove(parent)}
+        key={parent.id}
       />
     )
   })
 
-  return <div className="flex flex-row">{badges}</div>
-}
-function X_Node_Children() {
-  return null
-}
-
-interface X_Badge_Props {
-  className?: string
-  label: React.ReactNode
-  onClick?: () => void
-  onDelete?: () => void
-}
-function X_Badge({ className = '', label, onClick, onDelete }: X_Badge_Props) {
   return (
-    <div className={'border rounded p-2 ' + className} onClick={onClick}>
-      {label}
-      {onDelete && (
-        <span className="ml-2" onClick={onDelete}>
-          X
-        </span>
-      )}
+    <div className="flex flex-row -m-2">
+      {badges}
+      <Badge className="m-2" label="+" onClick={() => opened$set(true)} />
+      <Modal
+        opened={opened}
+        onClickOutside={() => opened$set(false)}
+        className="w-1/2 h-1/4 p-4 flex"
+      >
+        <NodeSearch />
+      </Modal>
     </div>
   )
+}
+
+function Node_Tagged() {
+  const { tagged, tagged$remove } = useNode()
+
+  const badges = tagged.map(parent => {
+    return (
+      <Badge
+        label={parent.name}
+        onClick={() => {}}
+        onDelete={() => tagged$remove(parent)}
+        key={parent.id}
+      />
+    )
+  })
+
+  return <div className="flex flex-col space-y-2">{badges}</div>
 }

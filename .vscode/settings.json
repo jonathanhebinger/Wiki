@@ -18,5 +18,6 @@
   "typescript.suggest.completeFunctionCalls": true,
   "typescriptHero.imports.insertSemicolons": false,
   "typescriptHero.imports.multiLineWrapThreshold": 100,
-  "typescriptHero.imports.organizeOnSave": true
+  "typescriptHero.imports.organizeOnSave": true,
+  "tailwindCSS.experimental.classRegex": ["[^']*'([^']*)'[^']*//tw"]
 }
