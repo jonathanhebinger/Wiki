@@ -1,6 +1,7 @@
 {
   "files.exclude": {
-    "**/node_modules": true
+    "**/node_modules": true,
+    "**/pnpm*": true
   },
   "tslint.autoFixOnSave": true,
   "typescript.format.insertSpaceAfterOpeningAndBeforeClosingTemplateStringBraces": true,
@@ -10,16 +11,16 @@
   "typescript.format.insertSpaceAfterFunctionKeywordForAnonymousFunctions": false,
   "typescript.format.semicolons": "remove",
   "prettier.semi": false,
-  "typescriptHero.imports.multiLineWrapThreshold": 100,
+  "typescriptHero.imports.multiLineWrapThreshold": 80,
   "typescriptHero.imports.organizeOnSave": true,
   "editor.formatOnSave": true,
   "typescript.format.placeOpenBraceOnNewLineForFunctions": false,
   "editor.rulers": [80, 100],
   "typescriptHero.imports.insertSemicolons": false,
-  "prettier.printWidth": 100,
-  "editor.wordWrapColumn": 100,
+  "prettier.printWidth": 80,
+  "editor.wordWrapColumn": 80,
   "typescript.preferences.quoteStyle": "single",
   "typescript.suggest.completeFunctionCalls": true,
   "prettier.singleQuote": true,
-  "typescript.preferences.importModuleSpecifier": "non-relative"
+  "polacode.target": "snippet"
 }
