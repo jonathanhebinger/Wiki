@@ -1,94 +1,52 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { Badge } from 'src/blocs/badge'
-import {
-  I_NodeSearch_Option,
-  NodeSearch_ContextProvider,
-  use_NodeSearch_Context,
-} from 'src/node/components/search.context'
+import { Search, useSearchContext, useSearchStore } from 'src/blocs/search'
+import { Node_Id } from 'src/node/type'
+import { useStoreState } from 'src/store'
 
 export function NodeSearch() {
-  return (
-    <NodeSearch_ContextProvider>
-      <NodeSearch_Main />
-    </NodeSearch_ContextProvider>
+  const nodes = useStoreState(state => state.nodes.entities)
+  const nodes_map = useStoreState(state => state.nodes.dictionnary)
+
+  const options = useMemo<NodeSearch_Option[]>(
+    () =>
+      nodes.map(node => ({
+        id: node.id,
+        name: node.name,
+        test: node.name.toLowerCase(),
+        tags: node.tags,
+        tags_name: node.tags.map(tag => nodes_map[tag]?.name || ''),
+      })),
+    [nodes],
   )
-}
 
-function NodeSearch_Main() {
-  const { opened$set, value$set } = use_NodeSearch_Context()
-
-  return (
-    <div className="relative flex-grow">
-      <div className="border flex flex-wrap" onClick={() => opened$set(true)}>
-        <NodeSearch_Filters />
-        <input
-          type="text"
-          className="flex-grow w-32 outline-none border-b focus:border-gray-500 hover:bg-gray-50 m-2 px-2"
-          onChange={e => value$set(e.target.value)}
-        ></input>
-      </div>
-      {<NodeSearch_Options />}
-    </div>
-  )
-}
-
-function NodeSearch_Filters() {
-  const { filters, filters$delete: filter$delete } = use_NodeSearch_Context()
-
-  const Filters = filters.slice(1).map(filter => {
-    switch (filter.type) {
-      case 'tag':
-        return (
-          <Badge
-            className="m-2"
-            key={filter.name}
-            label={`#${filter.name}`}
-            onDelete={() => filter$delete(filter)}
-          />
-        )
-      case 'text':
-        if (filter.test === '') {
-          return null
-        } else {
-          return (
-            <Badge className="m-2" key={filter.test} label={`${filter.name}`} />
-          )
-        }
-    }
+  const store = useSearchStore({
+    options: options,
+    Option({ option }) {
+      return <NodeSearch_Option option={option} index={0} />
+    },
   })
 
-  return <>{Filters}</>
+  return <Search store={store} />
 }
 
-function NodeSearch_Options() {
-  const { opened, options_filtered } = use_NodeSearch_Context()
-
-  if (!opened) return null
-
-  const Options = options_filtered.map((option, index) => {
-    return <NodeSearch_Option option={option} key={option.id} index={index} />
-  })
-
-  return (
-    <div className="bg-white border relative bottom-0 overflow-auto h-32">
-      {Options}
-    </div>
-  )
+interface NodeSearch_Option {
+  id: Node_Id
+  name: string
+  test: string
+  tags: Node_Id[]
+  tags_name: string[]
 }
 
 function NodeSearch_Option({
   option,
   index,
 }: {
-  option: I_NodeSearch_Option
+  option: NodeSearch_Option
   index: number
 }) {
-  const { option$set, filters, filters$add, option_index } =
-    use_NodeSearch_Context()
-
-  const can_be_used_as_filter = filters.every(
-    filter => filter.type !== 'tag' || filter.tag !== option.id,
-  )
+  const { actions } = useSearchContext<NodeSearch_Option>()
+  const option_index = 0
 
   const Tags = option.tags_name.map(tag_name => (
     <span className="text-xs" key={tag_name}>
@@ -104,25 +62,27 @@ function NodeSearch_Option({
     }
   }, [index, option_index])
 
+  function filters$add() {
+    actions.filters$add({
+      id: '#' + option.id,
+      name: '#' + option.name,
+      test: o => o.tags.includes(option.id),
+    })
+  }
+
   return (
     <div
       className={`p-2 flex justify-between items-center cursor-pointer hover:bg-gray-100 ${
         option_index === index ? 'bg-gray-200' : ''
       }`}
-      onClick={() => option$set(option)}
+      // onClick={() => option$set(option)}
       ref={ref}
     >
       <div>
         <div>{option.name}</div>
         <div>{Tags}</div>
       </div>
-      {can_be_used_as_filter && (
-        <Badge
-          className="py-0"
-          label="#"
-          onClick={() => filters$add(option)}
-        ></Badge>
-      )}
+      <Badge className="py-0" label="#" onClick={filters$add}></Badge>
     </div>
   )
 }

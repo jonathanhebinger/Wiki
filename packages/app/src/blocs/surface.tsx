@@ -9,12 +9,19 @@ export type Surface_Props = {
   >
 }
 export type Surface_Props_Border = 'none' | 'squared' | 'rounded'
+export type Surface_Props_Radius = 'none' | 'small' | 'normal' | 'large'
 export type Surface_Props_Shadow = 'none' | 'small' | 'normal' | 'large'
 
 const BORDER: Record<Surface_Props_Border, string> = {
   none: '', //tw
   squared: 'border', //tw
   rounded: 'border rounded', //tw
+}
+const RADIUS: Record<Surface_Props_Radius, string> = {
+  none: '',
+  small: 'rounded', //tw
+  normal: 'rounded-lg', //tw
+  large: 'rounded-2xl', //tw
 }
 const SHADOW: Record<Surface_Props_Shadow, string> = {
   none: '',
@@ -25,14 +32,21 @@ const SHADOW: Record<Surface_Props_Shadow, string> = {
 
 export function surface_className({
   className = '',
+  radius = 'small',
   border = 'rounded',
   shadow = 'normal',
 }: {
   className?: string
   border?: Surface_Props_Border
+  radius?: Surface_Props_Radius
   shadow?: Surface_Props_Shadow
 }): string {
-  return `${BORDER[border]} ${SHADOW[shadow]} ${className}`
+  return (
+    ` ${BORDER[border]}` +
+    ` ${border !== 'none' ? RADIUS[radius] : ''}` +
+    ` ${SHADOW[shadow]}` +
+    ` ${className}`
+  )
 }
 export function Surface({ children, htmlProps, ...props }: Surface_Props) {
   return (

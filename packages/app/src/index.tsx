@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react'
 import ReactDOM from 'react-dom'
 import { Badge } from 'src/blocs/badge'
 import { Divider } from 'src/blocs/divider'
-import { Modal } from 'src/blocs/modal'
+import { Modal, useModalControl } from 'src/blocs/modal'
 import { Surface } from 'src/blocs/surface'
 import { Node_Data } from 'src/node/components/data'
 import { NodeSearch } from 'src/node/components/search'
@@ -65,8 +65,6 @@ function Node_Info() {
 function Node_Tags() {
   const { tags, tags$remove } = useNode()
 
-  const [opened, opened$set] = useState(false)
-
   const badges = tags.map(parent => {
     return (
       <Badge
@@ -79,15 +77,13 @@ function Node_Tags() {
     )
   })
 
+  const modal = useModalControl({ closeOnClickOut: true })
+
   return (
     <div className="flex flex-row -m-2">
       {badges}
-      <Badge className="m-2" label="+" onClick={() => opened$set(true)} />
-      <Modal
-        opened={opened}
-        onClickOutside={() => opened$set(false)}
-        className="w-1/2 h-1/4 p-4 flex"
-      >
+      <Badge className="m-2" label="+" onClick={modal.open} />
+      <Modal control={modal} className="w-1/2 h-1/4 p-4 flex">
         <NodeSearch />
       </Modal>
     </div>
