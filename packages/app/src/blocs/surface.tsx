@@ -1,8 +1,7 @@
-export type Surface_Props = {
-  children: React.ReactNode
-  className?: string
-  border?: Surface_Props_Border
-  shadow?: Surface_Props_Shadow
+import { forwardRef } from 'react'
+
+export type Surface_Props = Surface_Classname_Props & {
+  children?: React.ReactNode
   htmlProps?: React.DetailedHTMLProps<
     React.HTMLAttributes<HTMLDivElement>,
     HTMLDivElement
@@ -30,28 +29,32 @@ const SHADOW: Record<Surface_Props_Shadow, string> = {
   large: 'shadow-md hover:shadow-lg', //tw
 }
 
+export interface Surface_Classname_Props {
+  className?: string
+  border?: Surface_Props_Border
+  radius?: Surface_Props_Radius
+  shadow?: Surface_Props_Shadow
+}
 export function surface_className({
   className = '',
   radius = 'small',
   border = 'rounded',
   shadow = 'normal',
-}: {
-  className?: string
-  border?: Surface_Props_Border
-  radius?: Surface_Props_Radius
-  shadow?: Surface_Props_Shadow
-}): string {
+}: Surface_Classname_Props): string {
   return (
     ` ${BORDER[border]}` +
-    ` ${border !== 'none' ? RADIUS[radius] : ''}` +
+    ` ${border !== 'squared' ? RADIUS[radius] : ''}` +
     ` ${SHADOW[shadow]}` +
     ` ${className}`
   )
 }
-export function Surface({ children, htmlProps, ...props }: Surface_Props) {
-  return (
-    <div className={surface_className(props)} {...htmlProps}>
-      {children}
-    </div>
-  )
-}
+
+export const Surface = forwardRef<HTMLDivElement, Surface_Props>(
+  ({ children, htmlProps, ...props }, ref) => {
+    return (
+      <div className={surface_className(props)} {...htmlProps} ref={ref}>
+        {children}
+      </div>
+    )
+  },
+)

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef } from 'react'
 import { Badge } from 'src/blocs/badge'
-import { Search, useSearchContext, useSearchStore } from 'src/blocs/search'
+import { Search, SearchOptionProps, useSearchContext, useSearchStore } from 'src/blocs/search'
 import { Node_Id } from 'src/node/type'
 import { useStoreState } from 'src/store'
 
@@ -22,9 +22,8 @@ export function NodeSearch() {
 
   const store = useSearchStore({
     options: options,
-    Option({ option }) {
-      return <NodeSearch_Option option={option} index={0} />
-    },
+    Option: Option,
+    Selected: ({ option }) => <div>{option.name}</div>,
   })
 
   return <Search store={store} />
@@ -38,15 +37,13 @@ interface NodeSearch_Option {
   tags_name: string[]
 }
 
-function NodeSearch_Option({
+function Option({
+  focused,
   option,
-  index,
-}: {
-  option: NodeSearch_Option
-  index: number
-}) {
+  selected,
+  onSelect,
+}: SearchOptionProps<NodeSearch_Option>) {
   const { actions } = useSearchContext<NodeSearch_Option>()
-  const option_index = 0
 
   const Tags = option.tags_name.map(tag_name => (
     <span className="text-xs" key={tag_name}>
@@ -57,10 +54,8 @@ function NodeSearch_Option({
   const ref = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    if (index === option_index) {
-      ref.current?.scrollIntoView()
-    }
-  }, [index, option_index])
+    focused && ref.current?.scrollIntoView()
+  }, [focused])
 
   function filters$add() {
     actions.filters$add({
@@ -72,10 +67,10 @@ function NodeSearch_Option({
 
   return (
     <div
-      className={`p-2 flex justify-between items-center cursor-pointer hover:bg-gray-100 ${
-        option_index === index ? 'bg-gray-200' : ''
+      className={`px-2 py-1 flex justify-between items-center cursor-pointer hover:bg-gray-100 ${
+        selected ? 'bg-gray-200' : ''
       }`}
-      // onClick={() => option$set(option)}
+      onClick={onSelect}
       ref={ref}
     >
       <div>

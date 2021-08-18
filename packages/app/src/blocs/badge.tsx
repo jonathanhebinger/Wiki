@@ -37,7 +37,13 @@ export function Badge({
   ))
 
   return (
-    <div className={CLASS} onClick={onClick}>
+    <div
+      className={CLASS}
+      onClick={e => {
+        e.stopPropagation()
+        onClick && onClick()
+      }}
+    >
       <div className={SPACING[size]}>{label}</div>
       {Actions}
     </div>
@@ -51,15 +57,18 @@ export interface BadgeActionProps {
 }
 export function BadgeAction({ action, children, size }: BadgeActionProps) {
   return (
-    <>
+    <div className="flex">
       <Divider direction="vertical" />
       <span
         className={`${SPACING[size]} hover:bg-gray-100 cursor-pointer`}
-        onClick={action}
+        onClick={e => {
+          e.stopPropagation()
+          action()
+        }}
       >
         {children}
       </span>
-    </>
+    </div>
   )
 }
 

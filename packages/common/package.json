@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "main": "index.ts",
+  "module": "index.ts",
+  "typings": "index.ts",
   "scripts": {},
   "dependencies": {},
   "devDependencies": {}

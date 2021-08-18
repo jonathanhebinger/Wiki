@@ -3,6 +3,7 @@
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
     "emitDeclarationOnly": false,
+    "outDir": "./dist/",
     "baseUrl": "./",
     "allowJs": true,
     "skipLibCheck": true,
@@ -11,13 +12,12 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
-    "noFallthroughCasesInSwitch": true,
-    "strict": true,
-    "noImplicitAny": true,
-    "noImplicitThis": true,
-    "strictFunctionTypes": true,
-    "strictNullChecks": true,
-    "strictPropertyInitialization": true
+    "noFallthroughCasesInSwitch": true
   },
+  "references": [
+    {
+      "path": "../common/tsconfig.json"
+    }
+  ],
   "include": ["src"]
 }

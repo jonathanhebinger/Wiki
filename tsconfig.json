@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
+    "baseUrl": "./packages",
     "declaration": true,
     "downlevelIteration": true,
     "esModuleInterop": true,
@@ -12,6 +13,11 @@
     "strict": true,
     "target": "esnext"
   },
+  "references": [
+    { "path": "./packages/common" },
+    { "path": "./packages/app" },
+    { "path": "./packages/server" }
+  ],
   "exclude": ["node_modules", "**/dist/**/*"],
   "include": ["packages/**/*"]
 }

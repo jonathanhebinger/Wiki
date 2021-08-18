@@ -12,6 +12,6 @@ export namespace Data {
     | string
     | Array
     | Object
-    | Node.Id
+    | Node['id']
     | Type.Any
 }

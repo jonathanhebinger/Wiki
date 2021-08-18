@@ -2,7 +2,7 @@ import { useSearchContext } from '../search.context'
 
 const INPUT_CLASS =
   ' outline-none' + //tw
-  ' w-32 flex-grow' + //tw
+  ' flex-grow' + //tw
   ' border-b focus:border-gray-500' + //tw
   ' hover:bg-gray-50' + //tw
   ' m-2 px-2' //tw

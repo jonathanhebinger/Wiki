@@ -6,8 +6,8 @@ export function Divider({
   className?: string
 }) {
   return direction === 'horizontal' ? (
-    <div className={'border-t self-stretch ' + className}></div>
+    <div className={'border-t-2 self-stretch ' + className}></div>
   ) : (
-    <div className={'border-r self-stretch ' + className}></div>
+    <div className={'border-r-2 self-stretch ' + className}></div>
   )
 }

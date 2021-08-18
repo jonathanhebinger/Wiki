@@ -9,12 +9,12 @@ export function SearchFilters() {
     return (
       <Badge
         key={index}
-        className="m-2"
-        label={filter.name}
+        className="m-1"
+        label={filter.name + ' - ' + state.filtered.sizes[index]}
         onDelete={() => actions.filters$remove(filter)}
       />
     )
   })
 
-  return <>{Filters}</>
+  return <div className="flex flex-wrap p-1">{Filters}</div>
 }
