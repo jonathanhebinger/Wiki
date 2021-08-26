@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Section } from 'src/blocs/section'
+import { Section } from 'src/blocs/structure/section'
 import { Shelf } from 'src/blocs/structure/shelf'
 import { Surface } from 'src/blocs/structure/surface'
 import { useStoreActions, useStoreState } from 'src/features/root/root.store'

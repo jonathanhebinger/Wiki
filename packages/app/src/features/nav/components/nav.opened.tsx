@@ -1,6 +1,6 @@
 import { faTimes } from '@fortawesome/free-solid-svg-icons'
 import { ButtonIcon } from 'src/blocs/button.icon'
-import { Section } from 'src/blocs/section'
+import { Section } from 'src/blocs/structure/section'
 import { Shelf } from 'src/blocs/structure/shelf'
 import { Surface } from 'src/blocs/structure/surface'
 import { useStoreActions, useStoreState } from 'src/features/root/root.store'

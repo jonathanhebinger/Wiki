@@ -15,14 +15,14 @@ export const [NodeProvider, useNode] = constate(({ node }: { node: Node }) => {
   }, [node.tagged])
 
   function tags$add(parent: Node['id']) {
-    actions.tags$add({ node: node.id, tag: parent })
+    actions.tags$add({ id: node.id, tag: parent })
   }
   function tags$remove(parent: Node['id']) {
     actions.tags$remove({ node: node.id, tag: parent })
   }
 
   function tagged$add(tagged: Node['id']) {
-    actions.tags$add({ node: tagged, tag: node.id })
+    actions.tags$add({ id: tagged, tag: node.id })
   }
   function tagged$remove(tagged: Node['id']) {
     actions.tags$remove({ node: tagged, tag: node.id })

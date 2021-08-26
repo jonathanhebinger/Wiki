@@ -7,7 +7,7 @@ export function NavActions() {
   const actions = useStoreActions(state => state)
 
   function handleCreate() {
-    actions.nodes.$create({ tags: [] })
+    actions.nodes.$create({ name: 'New Node', tags: [] })
   }
   function handleCloseAll() {
     actions.nav.$close_all()

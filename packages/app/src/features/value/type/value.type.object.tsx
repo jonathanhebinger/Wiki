@@ -1,7 +1,14 @@
-import { Data, Type } from 'src/features/node/type'
-import { ValueTypeObjectKeys } from 'src/features/value/type/value.type.object.keys'
+import { faTrash } from '@fortawesome/free-solid-svg-icons'
+import produce from 'immer'
+import { ButtonIcon } from 'src/blocs/button.icon'
+import { Block } from 'src/blocs/structure/block'
+import { GroupItem } from 'src/blocs/structure/group'
+import { Shelf } from 'src/blocs/structure/shelf'
+import { Type } from 'src/features/node/type'
+import { useStoreActions } from 'src/features/root/root.store'
 import { ValueBlock } from 'src/features/value/value.block'
-import { ValueInlineItem } from 'src/features/value/value.inline.item'
+import { DataContextProvider, useDataContext } from 'src/features/value/value.context'
+import { ValueInline } from 'src/features/value/value.inline'
 
 const OBJECT: Type.Object = {
   type: 'object',
@@ -16,28 +23,98 @@ const OBJECT: Type.Object = {
     { id: 'type', name: 'type', required: true, type: { type: 'type' } },
   ],
 }
-const OBJECT_ARRAY: Type.Array = {
-  type: 'array',
-  of: OBJECT,
+
+export function ValueTypeObject() {
+  return (
+    <Block
+      Label="Keys"
+      Inline={<ValueInline />}
+      Content={<ValueTypeObjectKeys />}
+      inlineClickable
+    />
+  )
 }
 
-export interface ValueTypeObjectProps {
-  value: Type.Object
-  onChange: (value: Data.Object) => void
-}
-export function ValueTypeObject({ value, onChange }: ValueTypeObjectProps) {
-  return (
-    <ValueBlock
-      Label="Keys"
-      Inline={
-        <ValueInlineItem
-          type={OBJECT_ARRAY}
-          value={value.keys}
-          onChange={onChange}
+export function ValueTypeObjectKeys() {
+  const { draft, saved, $change, $save } = useDataContext<
+    Type.Object,
+    Type.Object
+  >()
+
+  const actions = useStoreActions(actions => actions)
+
+  function keys$add() {
+    $change(
+      produce(draft, draft => {
+        draft.keys.push({
+          id: actions.id$generate(),
+          name: 'New Key',
+          required: true,
+          type: { type: 'type' },
+        })
+      }),
+    )
+  }
+
+  const keys$update =
+    (data: Type.Object, index: number) => (key: Type.ObjectKey) => {
+      $change(
+        produce(data, draft => {
+          draft.keys.find(k => k.id === key.id)
+          draft.keys[index] = key
+        }),
+      )
+    }
+
+  function keys$delete(data: Type.Object, index: number) {
+    return (e: React.MouseEvent) => {
+      $change(
+        produce(data, draft => {
+          draft.keys.splice(index, 1)
+        }),
+      )
+
+      e.stopPropagation()
+    }
+  }
+
+  const Keys = draft.keys.map((key, index) => {
+    const Label = (
+      <div className="flex justify-between">
+        Key - {key.name}
+        <ButtonIcon icon={faTrash} onClick={keys$delete(draft, index)} />
+      </div>
+    )
+
+    return (
+      <DataContextProvider
+        key={key.id}
+        type={OBJECT}
+        saved={saved.keys[index]}
+        draft={draft.keys[index]}
+        onChange={keys$update(draft, index) as any}
+        onSave={keys$update(saved, index) as any}
+      >
+        <Block
+          Label={Label}
+          Inline={<ValueInline />}
+          Content={<ValueBlock />}
+          inlineClickable
         />
-      }
-      Block={<ValueTypeObjectKeys value={value} onChange={onChange} />}
-      collapsedClickable
-    />
+      </DataContextProvider>
+    )
+  })
+
+  return (
+    <Shelf>
+      {Keys}
+      <GroupItem
+        squared
+        className="p-2 cursor-pointer"
+        htmlProps={{ onClick: keys$add }}
+      >
+        Add Item
+      </GroupItem>
+    </Shelf>
   )
 }

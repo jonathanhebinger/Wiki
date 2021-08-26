@@ -1,36 +1,37 @@
 import { thunk } from 'easy-peasy'
 import { NodesModel } from 'src/features/node/nodes.model'
-import { Node_System } from 'src/features/node/system'
 import { Node } from 'src/features/node/type'
 import { crudRepository } from 'src/repository'
 
 export const nodes_model: NodesModel = {
-  ...crudRepository({ initialState: Node_System }),
+  ...crudRepository({}),
 
-  $create: thunk((actions, { tags }, { getStoreActions }) => {
-    const id = getStoreActions().id$generate()
+  $create: thunk(
+    (actions, { id, name = 'New Node', tags }, { getStoreActions }) => {
+      id = id || getStoreActions().id$generate()
 
-    const node: Node = {
-      id,
-      name: 'New Node',
-      tags: [],
-      tagged: [],
-      data: [],
-    }
+      const node: Node = {
+        id,
+        name,
+        tags: [],
+        tagged: [],
+        data: {},
+      }
 
-    actions.crud.addOne(node)
+      actions.crud.addOne(node)
 
-    tags.forEach(tag => {
-      actions.tags$add({ node: node.id, tag })
-    })
+      tags.forEach(tag => {
+        actions.tags$add({ id: node.id, tag })
+      })
 
-    return id
-  }),
+      return id
+    },
+  ),
 
   tags$add: thunk((actions, payload) => {
     actions.crud.updateMany([
       {
-        id: payload.node,
+        id: payload.id,
         patch: {
           tags: tags =>
             tags.includes(payload.tag) ? tags : [...tags, payload.tag],
@@ -40,7 +41,7 @@ export const nodes_model: NodesModel = {
         id: payload.tag,
         patch: {
           tagged: tagged =>
-            tagged.includes(payload.node) ? tagged : [...tagged, payload.node],
+            tagged.includes(payload.id) ? tagged : [...tagged, payload.id],
         },
       },
     ])
@@ -62,28 +63,19 @@ export const nodes_model: NodesModel = {
     ])
   }),
 
-  data$set: thunk((actions, { id: node, data, type }) => {
-    console.log(type, {
-      data: {
-        [type]: data,
-      },
-    })
+  data$set: thunk((actions, { id, data, type }) => {
     actions.crud.updateOne({
-      id: node,
-      patch: {
-        data: {
-          [type]: data,
-        },
+      id,
+      patch: node => {
+        node.data[type] = data
       },
     })
   }),
-  data$delete: thunk((actions, { id: node, type }) => {
+  data$delete: thunk((actions, { id, type }) => {
     actions.crud.updateOne({
-      id: node,
-      patch: {
-        data: data => {
-          delete data[type]
-        },
+      id,
+      patch: node => {
+        delete node.data[type]
       },
     })
   }),

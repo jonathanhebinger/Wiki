@@ -1,26 +1,34 @@
 import { useEffect } from 'react'
 import { useState } from 'react'
 import { Shelf } from 'src/blocs/structure/shelf'
-import { Data, Type } from 'src/features/node/type'
+import { Type } from 'src/features/node/type'
 import { ValueTypeItem } from 'src/features/value/type/value.type.item'
 import { ValueTypeSelect } from 'src/features/value/type/value.type.select'
+import { DataContextProvider, useDataContext } from 'src/features/value/value.context'
 
-export type ValueTypeRecord = Partial<Record<Type.Any['type'], Type.Any>>
-export type ValueTypeProps = {
-  value: Type.Any
-  onChange: (type: Data.Any) => void
+type ValueTypeRecordItem = {
+  draft: Type.Any
+  saved: Type.Any
 }
+type ValueTypeRecord = Partial<Record<Type.Any['type'], ValueTypeRecordItem>>
 
-export function ValueType({ value, onChange }: ValueTypeProps) {
-  const [record, record$set] = useState<ValueTypeRecord>({
-    [value.type]: value,
+export function ValueType() {
+  const { draft, saved, $change, $save } = useDataContext<Type.Type, Type.Any>()
+
+  const [current, current$set] = useState<ValueTypeRecordItem>({
+    draft,
+    saved,
   })
-  const [current, current$set] = useState<Type.Any>(value)
+  const [record, record$set] = useState<ValueTypeRecord>({
+    [draft.type]: current,
+  })
 
-  useEffect(() => {
-    current$set(value)
-    record$set({ ...record, [current.type]: current })
-  }, [value])
+  function record$set_entry(entry: ValueTypeRecordItem) {
+    record$set({
+      ...record,
+      [entry.draft.type]: entry,
+    })
+  }
 
   function handleTypeChange(type: Type.Any['type']) {
     let current = record[type]
@@ -31,34 +39,54 @@ export function ValueType({ value, onChange }: ValueTypeProps) {
         case 'number':
         case 'string':
         case 'type':
-          current = { type }
+          current = {
+            draft: { type },
+            saved: { type },
+          }
           break
         case 'array':
-          current = { type, of: { type: 'type' } }
+          current = {
+            draft: { type, of: { type: 'type' } },
+            saved: { type, of: { type: 'type' } },
+          }
           break
         case 'object':
-          current = { type, keys: [] }
+          current = {
+            draft: { type, keys: [] },
+            saved: { type, keys: [] },
+          }
           break
       }
     }
 
     if (current) {
-      current$set(current)
-      record$set({ ...record, [current.type]: current })
-      onChange(current)
+      console.log(current.draft)
+      $change(current.draft)
     }
   }
 
+  useEffect(() => {
+    const current = {
+      draft,
+      saved: saved.type === draft.type ? saved : draft,
+    }
+
+    current$set(current)
+    record$set_entry(current)
+  }, [draft])
+
   return (
     <Shelf>
-      <ValueTypeSelect type={current.type} onChange={handleTypeChange} />
-      <ValueTypeItem
-        value={current}
-        onChange={data => {
-          onChange(data)
-          current$set(data as Type.Any)
-        }}
-      />
+      <ValueTypeSelect type={current.draft.type} onChange={handleTypeChange} />
+      <DataContextProvider
+        type={{ type: 'type' }}
+        saved={current.saved}
+        draft={current.draft}
+        onChange={$change as any}
+        onSave={$save as any}
+      >
+        <ValueTypeItem />
+      </DataContextProvider>
     </Shelf>
   )
 }

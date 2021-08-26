@@ -1,20 +1,24 @@
-import { GroupItem } from 'src/blocs/structure/group'
-import { Shelf } from 'src/blocs/structure/shelf'
-import { ValueProps } from 'src/features/value/type'
-import { ValueInlineItem } from 'src/features/value/value.inline.item'
+import { Checkbox, Input } from 'src/blocs/forms/input'
+import { Type } from 'src/features/node/type'
+import { useDataContext } from 'src/features/value/value.context'
 
-export function ValueInline({
-  Label: name,
-  type,
-  value,
-  onChange,
-}: ValueProps) {
-  return (
-    <GroupItem radius="none" className="flex cursor-pointer">
-      <div className="w-1/3 px-2 py-1 self-center">{name}</div>
-      <Shelf spacing="sm" className="w-2/3">
-        <ValueInlineItem type={type} value={value} onChange={onChange} />
-      </Shelf>
-    </GroupItem>
-  )
+export function ValueInline() {
+  const { type, draft, $change } = useDataContext()
+
+  switch (type.type) {
+    case 'boolean':
+      return <Checkbox checked={draft as boolean} onChange={$change} />
+    case 'number':
+      return <Input value={draft as number} onChange={$change} />
+    case 'string':
+      return <Input value={draft as string} onChange={$change} />
+    case 'object':
+      return <>{`{ Object - ${type.keys.length} }`}</>
+    case 'array':
+      return <>{`{ Array - ${(draft as any[]).length} }`}</>
+    case 'type':
+      return <>{`{ Type - ${(draft as Type.Any).type} }`}</>
+  }
+
+  return null
 }

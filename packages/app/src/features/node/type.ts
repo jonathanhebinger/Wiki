@@ -39,13 +39,15 @@ export namespace Type {
   export type Array = Base<'array'> & {
     of: Any
   }
+
   export type Object = Base<'object'> & {
-    keys: {
-      id: string
-      name: string
-      type: Any
-      required: boolean
-    }[]
+    keys: ObjectKey[]
+  }
+  export type ObjectKey = {
+    id: string
+    name: string
+    type: Any
+    required: boolean
   }
 
   export type Node = Base<'node'>
@@ -66,4 +68,32 @@ export namespace Data {
     | Object
     | Node['id']
     | Type.Any
+}
+
+export namespace Filter {
+  export type Array = {
+    type: 'match-none' | 'match-some' | 'match-every'
+    matcher: any
+  }
+
+  export type Object = {
+    type: 'match-none' | 'match-some' | 'match-every'
+    matcher: any
+  }
+
+  export type NumberBase = {
+    type: 'sup' | 'sup-strict' | 'inf' | 'inf-strict' | 'equal' | 'diff'
+    to: number
+  }
+  export type NumberRange = {
+    type: 'between' | 'outside'
+    range: [number, number]
+  }
+  export type Number = NumberBase | NumberRange
+
+  export type Boolean = boolean
+
+  export type Logic =
+    | { type: 'or' | 'and'; filters: any[] }
+    | { type: 'not'; filter: any }
 }

@@ -1,5 +1,5 @@
-import { Section } from 'src/blocs/section'
 import { Badge } from 'src/blocs/structure/badge'
+import { Section } from 'src/blocs/structure/section'
 import { Surface } from 'src/blocs/structure/surface'
 import { NodeTagsAdd } from 'src/features/node/components/node.tags.add'
 import { useNode } from 'src/features/node/node.context'

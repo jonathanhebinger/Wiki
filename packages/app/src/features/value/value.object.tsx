@@ -1,25 +1,31 @@
 import { Shelf } from 'src/blocs/structure/shelf'
 import { Data, Type } from 'src/features/node/type'
-import { Value } from 'src/features/value/value'
+import { DataE } from 'src/features/value/value'
+import { useDataContext } from 'src/features/value/value.context'
 
-export interface ValueObjectProps {
-  value: { [index: string]: any }
-  type: Type.Object
-  onChange: (value: Data.Object) => void
-}
-export function ValueObject({ type, value, onChange }: ValueObjectProps) {
-  const Keys = type.keys.map(({ id, name, type }, index) => {
+export function ValueObject() {
+  const { type, draft, saved, $change, $save } = useDataContext<
+    Type.Object,
+    Data.Object
+  >()
+
+  const Keys = type.keys.map(({ id, name, type }) => {
     function handleChange(item: Data.Any) {
-      onChange({ ...value, [name]: item })
+      $change({ ...draft, [name]: item })
+    }
+    function handleSave(item: Data.Any) {
+      $save({ ...saved, [name]: item })
     }
 
     return (
-      <Value
+      <DataE
         key={id}
         Label={name}
-        value={value[name]}
+        saved={saved[id]}
+        draft={draft[id]}
         type={type}
         onChange={handleChange}
+        onSave={handleSave}
       />
     )
   })

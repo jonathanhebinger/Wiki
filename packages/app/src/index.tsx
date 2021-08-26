@@ -6,6 +6,7 @@ import { Dialog, DialogContextProvider } from 'src/blocs/dialog'
 import { Shelf } from 'src/blocs/structure/shelf'
 import { Nav } from 'src/features/nav/components/nav'
 import { Nodes } from 'src/features/node/components/nodes'
+import { init } from 'src/features/root/root.init'
 import { store } from 'src/features/root/root.store'
 
 ReactDOM.render(<Root />, document.getElementById('root'))
@@ -31,3 +32,5 @@ function Root() {
     </StoreProvider>
   )
 }
+
+init()

@@ -1,8 +1,8 @@
 import { useMemo } from 'react'
-import { Select } from 'src/blocs/select'
+import { Select } from 'src/blocs/forms/select'
+import { Block } from 'src/blocs/structure/block'
 import { Shelf } from 'src/blocs/structure/shelf'
 import { Type } from 'src/features/node/type'
-import { ValueBlock } from 'src/features/value/value.block'
 
 export function ValueTypeSelect({
   type,
@@ -22,6 +22,6 @@ export function ValueTypeSelect({
   )
 
   return (
-    <ValueBlock Label="Type" Block={<Shelf>{Inline}</Shelf>} Inline={Inline} />
+    <Block Label="Type" Content={<Shelf>{Inline}</Shelf>} Inline={Inline} />
   )
 }

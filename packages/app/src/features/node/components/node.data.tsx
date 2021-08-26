@@ -1,17 +1,15 @@
-import { faSave, faUndo } from '@fortawesome/free-solid-svg-icons'
 import { useState } from 'react'
-import { ButtonIcon } from 'src/blocs/button.icon'
-import { Section } from 'src/blocs/section'
+import { Section } from 'src/blocs/structure/section'
 import { Shelf } from 'src/blocs/structure/shelf'
 import { NodeDataKey, useNode } from 'src/features/node/node.context'
 import { Data } from 'src/features/node/type'
-import { Value } from 'src/features/value/value'
+import { DataE } from 'src/features/value/value'
 
 export function NodeData() {
   const { keys } = useNode()
 
   const Keys = keys.map(key => {
-    return <NodeDataItem value={key} key={key.typeNode.id} />
+    return <NodeDataItem item={key} key={key.typeNode.id} />
   })
 
   return (
@@ -21,40 +19,28 @@ export function NodeData() {
   )
 }
 
-export function NodeDataItem({ value: key }: { value: NodeDataKey }) {
+export function NodeDataItem({ item }: { item: NodeDataKey }) {
   const nodeContext = useNode()
 
-  const [modified, modified$set] = useState(false)
-  const [data, data$set] = useState(key.data)
+  const [draft, draft$set] = useState(item.data)
 
   function handleChange(data: Data.Any) {
-    modified$set(true)
-    data$set(data)
+    draft$set(data)
   }
 
-  function handleSave() {
-    nodeContext.data$set(key.typeNode.id, data)
-  }
-  function handleUndo() {
-    console.log('undo')
-    modified$set(false)
-    data$set(key.data)
+  function handleSave(data: Data.Any) {
+    draft$set(data)
+    nodeContext.data$set(item.typeNode.id, data)
   }
 
   return (
-    <Value
-      Label={
-        <div className="flex justify-between">
-          <div>{key.typeNode.name}</div>
-          <Shelf noPadding row sm>
-            {modified && <ButtonIcon icon={faUndo} onClick={handleUndo} />}
-            {modified && <ButtonIcon icon={faSave} onClick={handleSave} />}
-          </Shelf>
-        </div>
-      }
-      type={key.type}
-      value={data}
+    <DataE
+      Label={item.typeNode.name}
+      type={item.type}
+      draft={draft}
+      saved={item.data}
       onChange={handleChange}
+      onSave={handleSave}
     />
   )
 }

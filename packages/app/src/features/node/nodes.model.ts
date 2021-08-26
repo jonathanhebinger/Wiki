@@ -7,6 +7,8 @@ export interface NodesModel extends CrudRepository<Node, Node.Id> {
   $create: Thunk<
     NodesModel,
     {
+      id?: string
+      name: string
       tags: Node.Id[]
     },
     Injections,
@@ -17,7 +19,7 @@ export interface NodesModel extends CrudRepository<Node, Node.Id> {
   tags$add: Thunk<
     NodesModel,
     {
-      node: Node.Id
+      id: Node.Id
       tag: Node.Id
     }
   >
