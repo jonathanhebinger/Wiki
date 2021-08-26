@@ -1,39 +1,66 @@
 import { useEffect, useMemo, useRef } from 'react'
-import { Badge } from 'src/blocs/badge'
-import { Search, SearchOptionProps, useSearchContext, useSearchStore } from 'src/blocs/search'
-import { Node_Id } from 'src/node/type'
-import { useStoreState } from 'src/store'
+import {
+  Search,
+  SearchContext,
+  SearchOptionProps,
+  useSearchContext,
+  useSearchStore,
+} from 'src/blocs/search'
+import { Badge } from 'src/blocs/structure/badge'
+import { Node } from 'src/features/node/type'
+import { useStoreState } from 'src/features/root/root.store'
 
-export function NodeSearch() {
+export function NodeSearch({
+  multiple = false,
+  exclude = [],
+  onChange,
+}: {
+  multiple?: boolean
+  exclude?: Node['id'][]
+  onChange: (
+    ids: Node['id'][],
+    context: SearchContext<NodeSearch_Option>,
+  ) => void
+}) {
   const nodes = useStoreState(state => state.nodes.entities)
   const nodes_map = useStoreState(state => state.nodes.dictionnary)
 
   const options = useMemo<NodeSearch_Option[]>(
     () =>
-      nodes.map(node => ({
-        id: node.id,
-        name: node.name,
-        test: node.name.toLowerCase(),
-        tags: node.tags,
-        tags_name: node.tags.map(tag => nodes_map[tag]?.name || ''),
-      })),
-    [nodes],
+      nodes
+        .filter(node => !exclude.includes(node.id))
+        .map(node => ({
+          id: node.id,
+          name: node.name,
+          test: node.name.toLowerCase(),
+          tags: node.tags,
+          tags_name: node.tags.map(tag => nodes_map[tag]?.name || ''),
+        })),
+    [nodes, exclude],
   )
 
   const store = useSearchStore({
     options: options,
     Option: Option,
     Selected: ({ option }) => <div>{option.name}</div>,
+    multiple,
   })
+
+  useEffect(() => {
+    onChange(
+      store.state.selected.map(option => option.id),
+      store,
+    )
+  }, [store.state.selected])
 
   return <Search store={store} />
 }
 
 interface NodeSearch_Option {
-  id: Node_Id
+  id: Node['id']
   name: string
   test: string
-  tags: Node_Id[]
+  tags: Node['id'][]
   tags_name: string[]
 }
 

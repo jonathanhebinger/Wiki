@@ -21,12 +21,21 @@ export interface SearchStore<O> {
   $unfocus: Action<this>
   $change: Action<this, string>
   selected$add: Action<this, O>
+  selected$clear: Action<this>
   selected$remove: Action<this, number>
   filters$add: Action<this, SearchFilter<O>>
   filters$remove: Action<this, SearchFilter<O>>
 
   // ThunksOn
   $refocus: ThunkOn<this>
+}
+
+export interface SearchStoreConfig<O> {
+  options: O[]
+  filterSelected?: boolean
+  multiple?: boolean
+  Option: SearchOption<O>
+  Selected: SearchSelected<O>
 }
 
 export interface SearchOptionProps<O> {

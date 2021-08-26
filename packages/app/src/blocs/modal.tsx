@@ -1,84 +1,46 @@
-import constate from 'constate'
 import { useState } from 'react'
-import { Surface } from 'src/blocs/surface'
+import { Surface } from 'src/blocs/structure/surface'
+import { QuickProps } from 'src/blocs/type'
+import { DivProps, mergeClassNames } from 'src/blocs/util'
 
-export type Modal_Props = {
-  children?: React.ReactNode
-  className?: string
-  bgClassName?: string
-  control: ModalControl
+export type Modal_Props = QuickProps & {
+  opened: boolean
+  onClickOut?: () => void
+  backgroundProps?: DivProps
 }
 
-const BG_POSITION = 'absolute -inset-0 z-10' //tw
-const BG_BACKGROUND = 'bg-gray-500 bg-opacity-25' //tw
-const BG_FLEX = 'flex items-center justify-center' //tw
-
-const BG_CLASS = `${BG_POSITION} ${BG_BACKGROUND} ${BG_FLEX}`
+export const MODAL_BG_CLASS = mergeClassNames(
+  'h-full w-full overflow-auto', //tw
+  'fixed -inset-0 z-10', //tw
+  'bg-gray-500 bg-opacity-25', //tw
+  'flex items-center justify-center', //tw
+)
 
 export function Modal({
   className = '',
-  bgClassName = '',
   children,
-  control,
+  opened,
+  onClickOut,
+  htmlProps,
+  backgroundProps,
 }: Modal_Props) {
-  if (!control.opened) return null
+  if (!opened) return null
 
   return (
-    <ModalControlContextProvider control={control}>
-      <div
-        className={`${BG_CLASS} ${bgClassName}`}
-        onClick={control.handleClickOut}
+    <div
+      className={`${MODAL_BG_CLASS} ${backgroundProps?.className || ''}`}
+      onClick={onClickOut}
+      {...backgroundProps}
+    >
+      <Surface
+        className={`bg-white ${className}`}
+        htmlProps={{
+          onClick: e => e.stopPropagation(),
+          ...htmlProps,
+        }}
       >
-        <Surface
-          className={`bg-white ${className}`}
-          htmlProps={{
-            onClick: e => e.stopPropagation(),
-          }}
-        >
-          {children}
-        </Surface>
-      </div>
-    </ModalControlContextProvider>
+        {children}
+      </Surface>
+    </div>
   )
 }
-
-export type ModalControlProps = {
-  onClose?: () => void
-  closeOnClickOut?: boolean
-}
-export type ModalControl = {
-  opened: boolean
-  open: () => void
-  close: () => void
-  handleClickOut: () => void
-}
-export function useModalControl({
-  onClose,
-  closeOnClickOut = false,
-}: ModalControlProps = {}): ModalControl {
-  const [opened, opened$set] = useState(false)
-
-  function close() {
-    opened$set(false)
-    onClose && onClose()
-  }
-  function open() {
-    opened$set(true)
-  }
-  function handleClickOut() {
-    closeOnClickOut && close()
-  }
-
-  return {
-    opened,
-    open,
-    close,
-    handleClickOut,
-  }
-}
-
-export const [ModalControlContextProvider, useModalControlContext] = constate(
-  ({ control }: { control: ModalControl }) => {
-    return control
-  },
-)

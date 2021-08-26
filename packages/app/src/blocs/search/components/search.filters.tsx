@@ -1,4 +1,4 @@
-import { Badge } from 'src/blocs/badge'
+import { Badge } from 'src/blocs/structure/badge'
 
 import { useSearchContext } from '../search.context'
 
@@ -16,5 +16,5 @@ export function SearchFilters() {
     )
   })
 
-  return <div className="flex flex-wrap p-1">{Filters}</div>
+  return <div className="flex flex-wrap">{Filters}</div>
 }

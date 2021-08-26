@@ -1,6 +1,7 @@
 import React from 'react'
-import { Divider } from 'src/blocs/divider'
-import { surface_className } from 'src/blocs/surface'
+import { Divider } from 'src/blocs/structure/divider'
+
+import { Surface$class } from './surface.class'
 
 export interface Badge_Props {
   className?: string
@@ -14,6 +15,17 @@ export interface Badge_Props {
   }[]
 }
 export type Badge_Props_Sizing = 'small' | 'medium'
+
+const SPACING: Record<Badge_Props_Sizing, string> = {
+  small: 'px-2', //tw
+  medium: 'px-3 py-1', //tw
+}
+const SURFACE = Surface$class({
+  border: 'md',
+  shadow: 'md',
+  radius: 'lg',
+})
+const CONTENT = 'flex justify-between overflow-hidden' //tw
 
 export function Badge({
   size = 'small',
@@ -58,7 +70,7 @@ export interface BadgeActionProps {
 export function BadgeAction({ action, children, size }: BadgeActionProps) {
   return (
     <div className="flex">
-      <Divider direction="vertical" />
+      <Divider />
       <span
         className={`${SPACING[size]} hover:bg-gray-100 cursor-pointer`}
         onClick={e => {
@@ -71,14 +83,3 @@ export function BadgeAction({ action, children, size }: BadgeActionProps) {
     </div>
   )
 }
-
-const SPACING: Record<Badge_Props_Sizing, string> = {
-  small: 'px-2', //tw
-  medium: 'px-3 py-1', //tw
-}
-const SURFACE = surface_className({
-  border: 'rounded',
-  shadow: 'normal',
-  radius: 'large',
-})
-const CONTENT = 'flex justify-between overflow-hidden' //tw

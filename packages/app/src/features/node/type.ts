@@ -1,21 +1,30 @@
-export type Id<Key extends string> = string & { key?: Key }
+export namespace Util {
+  export type Id<Key extends string> = string & { key?: Key }
+}
 
-export type Node_Id = Id<'node'>
+export type Node_Id = Util.Id<'node'>
 export type Node_Info = any
 export type Node_Data = { [index: string]: Node_Data_Item }
 export type Node_Data_Item = any
 
 export type Node = {
-  id: Node_Id
+  id: Node.Id
 
-  tags: Node_Id[]
-  tagged: Node_Id[]
+  tags: Node.Id[]
+  tagged: Node.Id[]
 
   name: string
-  info?: Node_Info
-  data: Node_Data
+  info?: Node.Info
+  data: Node.Data
 
   references?: Node_Id[]
+}
+
+export namespace Node {
+  export type Id = Util.Id<'node'>
+  export type Info = any
+  export type Data = { [index: string]: Node_Data_Item }
+  export type Data_Item = any
 }
 
 export namespace Type {
@@ -32,6 +41,7 @@ export namespace Type {
   }
   export type Object = Base<'object'> & {
     keys: {
+      id: string
       name: string
       type: Any
       required: boolean
@@ -41,4 +51,19 @@ export namespace Type {
   export type Node = Base<'node'>
 
   export type Any = Type | Boolean | Number | String | Array | Object | Node
+}
+
+export type Data = Data.Any
+export namespace Data {
+  export type Array = Any[]
+  export type Object = { [index: string]: Any }
+  export type Any =
+    | undefined
+    | boolean
+    | number
+    | string
+    | Array
+    | Object
+    | Node['id']
+    | Type.Any
 }

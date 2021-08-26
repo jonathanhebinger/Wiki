@@ -1,4 +1,4 @@
-import { Surface } from 'src/blocs/surface'
+import { Surface } from 'src/blocs/structure/surface'
 
 import { useSearchContext } from '../search.context'
 
@@ -20,11 +20,10 @@ export function SearchOptions() {
   })
 
   return (
-    <Surface
-      className="bg-white relative bottom-0 overflow-auto -mx-1"
-      shadow="large"
-    >
-      {Options}
-    </Surface>
+    <div className="bg-white absolute bot-0 w-full overflow-visible">
+      <Surface shadow="xl" className="-mx-1" border="lg">
+        {Options}
+      </Surface>
+    </div>
   )
 }
