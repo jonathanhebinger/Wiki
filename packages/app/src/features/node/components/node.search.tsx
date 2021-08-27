@@ -39,9 +39,11 @@ export function NodeSearch({
     [nodes, exclude],
   )
 
+  console.log(options, exclude)
+
   const store = useSearchStore({
-    options: options,
-    Option: Option,
+    options,
+    Option,
     Selected: ({ option }) => <div>{option.name}</div>,
     multiple,
   })

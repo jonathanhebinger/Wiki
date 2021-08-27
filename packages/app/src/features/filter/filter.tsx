@@ -1,10 +1,11 @@
 import { Block } from 'src/blocs/structure/block'
 import { Shelf } from 'src/blocs/structure/shelf'
-import { ValueProps } from 'src/features/value/value'
-import { ValueBlock } from 'src/features/value/value.block'
-import { ValueInline } from 'src/features/value/value.inline'
 
-export function Value({ Label: name, type, onChange }: ValueProps) {
+import { ValueProps } from '../data/components/data'
+import { ValueBlock } from '../data/components/data.block'
+import { ValueInline } from '../data/components/data.inline'
+
+export function Value({ Label: name, type }: ValueProps) {
   switch (type.type) {
     case 'boolean':
     case 'number':

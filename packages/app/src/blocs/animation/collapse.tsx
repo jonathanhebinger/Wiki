@@ -68,7 +68,7 @@ export function Collapse({
     <div
       ref={ref}
       className={mergeClassNames(
-        'transition-all overflow-hidden',
+        'transition-all',
         display ? '' : 'hidden',
         className,
       )}

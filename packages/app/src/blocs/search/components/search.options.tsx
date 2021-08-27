@@ -7,6 +7,8 @@ export function SearchOptions() {
 
   if (!state.opened || state.filtered.options.length === 0) return null
 
+  console.log(state.filtered.options.length)
+
   const Options = state.filtered.options.map((option, index) => {
     return (
       <Option
@@ -20,8 +22,8 @@ export function SearchOptions() {
   })
 
   return (
-    <div className="bg-white absolute bot-0 w-full overflow-visible">
-      <Surface shadow="xl" className="-mx-1" border="lg">
+    <div className="bg-white absolute bot-0 w-full overflow-visible z-10">
+      <Surface shadow="xl" className="mx-1" border="lg">
         {Options}
       </Surface>
     </div>

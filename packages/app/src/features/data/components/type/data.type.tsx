@@ -1,19 +1,19 @@
 import { useEffect } from 'react'
 import { useState } from 'react'
 import { Shelf } from 'src/blocs/structure/shelf'
+import { ValueTypeItem } from 'src/features/data/components/type/data.type.item'
+import { ValueTypeSelect } from 'src/features/data/components/type/data.type.select'
+import { DataContextProvider, useDataContext } from 'src/features/data/data.context'
 import { Type } from 'src/features/node/type'
-import { ValueTypeItem } from 'src/features/value/type/value.type.item'
-import { ValueTypeSelect } from 'src/features/value/type/value.type.select'
-import { DataContextProvider, useDataContext } from 'src/features/value/value.context'
 
 type ValueTypeRecordItem = {
   draft: Type.Any
-  saved: Type.Any
+  saved: Type.Any | undefined
 }
 type ValueTypeRecord = Partial<Record<Type.Any['type'], ValueTypeRecordItem>>
 
 export function ValueType() {
-  const { draft, saved, $change, $save } = useDataContext<Type.Type, Type.Any>()
+  const { draft, saved, $change } = useDataContext<Type.Type, Type.Any>()
 
   const [current, current$set] = useState<ValueTypeRecordItem>({
     draft,
@@ -60,7 +60,6 @@ export function ValueType() {
     }
 
     if (current) {
-      console.log(current.draft)
       $change(current.draft)
     }
   }
@@ -68,7 +67,7 @@ export function ValueType() {
   useEffect(() => {
     const current = {
       draft,
-      saved: saved.type === draft.type ? saved : draft,
+      saved: saved?.type === draft.type ? saved : draft,
     }
 
     current$set(current)
@@ -83,7 +82,6 @@ export function ValueType() {
         saved={current.saved}
         draft={current.draft}
         onChange={$change as any}
-        onSave={$save as any}
       >
         <ValueTypeItem />
       </DataContextProvider>

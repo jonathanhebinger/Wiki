@@ -21,8 +21,8 @@ export function init() {
     data: {
       type: 'object',
       keys: [
-        { id: 'X', name: 'X', required: true, type: { type: 'number' } },
-        { id: 'Y', name: 'Y', required: true, type: { type: 'number' } },
+        { id: 'X', name: 'X', type: { type: 'number' } },
+        { id: 'Y', name: 'Y', type: { type: 'number' } },
       ],
     },
   })
@@ -36,40 +36,41 @@ export function init() {
     type: location,
     data: { X: 0, Y: 2 },
   })
-}
 
-const Node_System = [
-  {
-    id: 'System:Key',
-    tags: ['System:Type'],
+  const template = actions.nodes.$create({
+    name: 'System:Template',
+    tags: [type],
+  })
+  actions.nodes.data$set({
+    id: template,
+    type: type,
     data: {
-      'System:Type': { type: 'type' },
-    },
-  },
-  {
-    id: 'System:Template',
-    tags: ['System:Type'],
-    data: {
-      'System:Type': {
-        type: 'array',
-        of: {
-          type: 'object',
-          keys: [
-            {
-              id: 'node',
-              name: 'node',
-              required: true,
-              type: { type: 'node' },
-            },
-            {
-              id: 'required',
-              name: 'required',
-              required: true,
-              type: { type: 'number' },
-            },
-          ],
-        },
+      type: 'array',
+      of: {
+        type: 'object',
+        keys: [
+          {
+            id: 'node',
+            name: 'node',
+            type: { type: 'node' },
+          },
+          {
+            id: 'required',
+            name: 'required',
+            type: { type: 'boolean' },
+          },
+        ],
       },
     },
-  },
-]
+  })
+
+  const template_demo = actions.nodes.$create({
+    name: 'Template:Demo',
+    tags: [template],
+  })
+  actions.nodes.data$set({
+    id: template_demo,
+    type: template,
+    data: [],
+  })
+}

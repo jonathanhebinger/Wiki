@@ -1,11 +1,11 @@
-import { SearchFilters } from 'src/blocs/search/components/search.filters'
-import { SearchOptions } from 'src/blocs/search/components/search.options'
-import { SearchSelected } from 'src/blocs/search/components/search.selected'
 import { Surface } from 'src/blocs/structure/surface'
 
 import { SearchContextProvider } from '../search.context'
 import { SearchContext } from '../search.type'
+import { SearchFilters } from './search.filters'
 import { SearchInput } from './search.input'
+import { SearchOptions } from './search.options'
+import { SearchSelected } from './search.selected'
 
 export interface SearchProps {
   store: SearchContext<any>

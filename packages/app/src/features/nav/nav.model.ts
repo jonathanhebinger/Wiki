@@ -29,7 +29,7 @@ export const navModel: NavModel = {
       (_state, store) => store.nodes.dictionnary,
     ],
     (infos, nodes) => {
-      return infos.reverse().map(info => {
+      return [...infos].reverse().map(info => {
         return {
           ...info,
           node: nodes[info.id] as Node,

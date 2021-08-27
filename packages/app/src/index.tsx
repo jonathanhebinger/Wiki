@@ -17,7 +17,7 @@ function Root() {
       <DialogContextProvider>
         <Dialog />
         <Shelf
-          className="min-h-screen text-gray-500 font-medium"
+          className="min-h-screen text-gray-500 font-medium bg-gray-100"
           spacing="lg"
           row
         >

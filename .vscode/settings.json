@@ -3,9 +3,9 @@
   "editor.rulers": [80, 100],
   "editor.wordWrapColumn": 100,
   "files.exclude": {
-    "**/node_modules": false,
-    "**/pnpm-lock.yaml": false,
-    "**/package-lock.json": false
+    "**/node_modules": true,
+    "**/pnpm-lock.yaml": true,
+    "**/package-lock.json": true
   },
   "typescript.format.insertSpaceAfterFunctionKeywordForAnonymousFunctions": false,
   "typescript.format.insertSpaceAfterKeywordsInControlFlowStatements": false,
@@ -14,7 +14,7 @@
   "typescript.format.insertSpaceAfterOpeningAndBeforeClosingTemplateStringBraces": true,
   "typescript.format.placeOpenBraceOnNewLineForFunctions": false,
   "typescript.format.semicolons": "remove",
-  "typescript.preferences.importModuleSpecifier": "non-relative",
+  "typescript.preferences.importModuleSpecifier": "shortest",
   "typescript.preferences.quoteStyle": "single",
   "typescript.suggest.completeFunctionCalls": true,
   "typescriptHero.imports.insertSemicolons": false,

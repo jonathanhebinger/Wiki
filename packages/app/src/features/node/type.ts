@@ -47,7 +47,6 @@ export namespace Type {
     id: string
     name: string
     type: Any
-    required: boolean
   }
 
   export type Node = Base<'node'>
