@@ -70,6 +70,7 @@ export function Collapse({
       className={mergeClassNames(
         'transition-all',
         display ? '' : 'hidden',
+        collapsed && 'overflow-hidden',
         className,
       )}
     >

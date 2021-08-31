@@ -7,7 +7,7 @@ export function NavActions() {
   const actions = useStoreActions(state => state)
 
   function handleCreate() {
-    actions.nodes.$create({ name: 'New Node', tags: [] })
+    actions.templates.$create('New Template')
   }
   function handleCloseAll() {
     actions.nav.$close_all()

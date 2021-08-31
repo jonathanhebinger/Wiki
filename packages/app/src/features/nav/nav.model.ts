@@ -25,6 +25,7 @@ export interface NavModel {
   $close_all: Action<NavModel>
 
   on_nodes$create: ThunkOn<NavModel, Injections, RootModel>
+  on_templates$create: ThunkOn<NavModel, Injections, RootModel>
 }
 
 export const navModel: NavModel = {
@@ -39,6 +40,7 @@ export const navModel: NavModel = {
       return [...infos]
         .reverse()
         .map<RefJoined>(({ collapsed, ...info }): any => {
+          console.log(info)
           switch (info.type) {
             case 'node':
               const node = nodes[info.node] as Node
@@ -98,7 +100,19 @@ export const navModel: NavModel = {
   on_nodes$create: thunkOn(
     (state, store) => store.nodes.$create,
     (actions, target) => {
-      actions.$open(target.result)
+      actions.$open({
+        type: 'node',
+        node: target.result,
+      })
+    },
+  ),
+  on_templates$create: thunkOn(
+    (state, store) => store.templates.$create,
+    (actions, target) => {
+      actions.$open({
+        type: 'template',
+        template: target.result.id,
+      })
     },
   ),
 }

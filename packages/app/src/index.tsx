@@ -5,8 +5,9 @@ import ReactDOM from 'react-dom'
 import { Dialog, DialogContextProvider } from 'src/blocs/dialog'
 import { Shelf } from 'src/blocs/structure/shelf'
 import { Nav } from 'src/features/nav/components/nav'
-import { Nodes } from 'src/features/node/components/nodes'
 import { store } from 'src/features/root/root.store'
+
+import { MainList } from './features/root/main.list'
 
 ReactDOM.render(<Root />, document.getElementById('root'))
 
@@ -24,7 +25,7 @@ function Root() {
             <Nav />
           </div>
           <div className="w-3/4">
-            <Nodes />
+            <MainList />
           </div>
         </Shelf>
       </DialogContextProvider>
