@@ -1,7 +1,7 @@
 import { thunk } from 'easy-peasy'
 import { NodesModel } from 'src/features/node/nodes.model'
-import { Node } from 'src/features/node/type'
 import { crudRepository } from 'src/repository'
+import { Node } from 'src/types/node'
 
 export const nodes_model: NodesModel = {
   ...crudRepository({}),
@@ -13,6 +13,7 @@ export const nodes_model: NodesModel = {
       const node: Node = {
         id,
         name,
+        info: '',
         tags: [],
         tagged: [],
         data: {},

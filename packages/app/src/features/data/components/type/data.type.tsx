@@ -4,7 +4,7 @@ import { Shelf } from 'src/blocs/structure/shelf'
 import { ValueTypeItem } from 'src/features/data/components/type/data.type.item'
 import { ValueTypeSelect } from 'src/features/data/components/type/data.type.select'
 import { DataContextProvider, useDataContext } from 'src/features/data/data.context'
-import { Type } from 'src/features/node/type'
+import { Type } from 'src/types/type'
 
 type ValueTypeRecordItem = {
   draft: Type.Any

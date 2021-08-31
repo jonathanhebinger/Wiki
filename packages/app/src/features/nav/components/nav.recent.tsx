@@ -18,7 +18,7 @@ export function NavRecent() {
     return (
       <Surface
         htmlProps={{
-          onClick: () => actions.$open(node.id),
+          onClick: () => actions.$open({ type: 'node', node: node.id }),
         }}
         key={node.id}
         className="p-1"

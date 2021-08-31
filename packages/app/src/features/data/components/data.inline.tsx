@@ -1,6 +1,7 @@
 import { Checkbox, Input } from 'src/blocs/forms/input'
 import { useDataContext } from 'src/features/data/data.context'
-import { Node, Type } from 'src/features/node/type'
+import { NodeId } from 'src/types/node'
+import { Type } from 'src/types/type'
 
 export function ValueInline() {
   const { type, draft, $change } = useDataContext()
@@ -16,9 +17,9 @@ export function ValueInline() {
       return <>{`{ Object - ${type.keys.length} }`}</>
     case 'array':
       return <>{`{ Array - ${(draft as any[]).length} }`}</>
+    case 'join':
+      return <>{`{ Join - ${draft as NodeId} }`}</>
     case 'type':
       return <>{`{ Type - ${(draft as Type.Any).type} }`}</>
-    case 'node':
-      return <>{`{ Node - ${draft as Node.Id} }`}</>
   }
 }

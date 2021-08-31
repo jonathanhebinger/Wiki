@@ -1,4 +1,5 @@
-import { Data, Type } from 'src/features/node/type'
+import { Data } from 'src/types/data'
+import { Type } from 'src/types/type'
 
 export function Data$get_default(type: Type.Any): Data.Any {
   switch (type.type) {
@@ -12,9 +13,7 @@ export function Data$get_default(type: Type.Any): Data.Any {
       return []
     case 'object':
       return {}
-    case 'type':
-      return { type: 'type' }
-    case 'node':
+    case 'join':
       return ''
   }
 }

@@ -43,7 +43,7 @@ export class NodeActionService {
 
     this.io.emit(socket, {
       type: 'open',
-      payload: node.id,
+      payload: NodeId,
     })
 
     return node

@@ -35,7 +35,6 @@ function DataEContent({ Label }: { Label: React.ReactNode }) {
     case 'string':
       inline = true
       break
-    case 'type':
     case 'array':
     case 'object':
       break

@@ -1,7 +1,7 @@
 import { Select } from 'src/blocs/forms/select'
 import { Block } from 'src/blocs/structure/block'
 import { Shelf } from 'src/blocs/structure/shelf'
-import { Type } from 'src/features/node/type'
+import { Type } from 'src/types/type'
 
 export function ValueTypeSelect({
   type,
@@ -10,15 +10,7 @@ export function ValueTypeSelect({
   type: Type.Any['type']
   onChange: (type: Type.Any['type']) => void
 }) {
-  const options = [
-    'boolean',
-    'number',
-    'string',
-    'array',
-    'object',
-    'type',
-    'node',
-  ]
+  const options = ['boolean', 'number', 'string', 'array', 'object', 'join']
 
   const Inline = (
     <Select

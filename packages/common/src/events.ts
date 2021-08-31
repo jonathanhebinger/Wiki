@@ -11,9 +11,9 @@ export declare namespace Event {
 
     export type Init = { nodes: Node[] }
     export type Set = Node[]
-    export type Delete = Node['id']
+    export type Delete = NodeId
 
-    export type Open = Node['id']
+    export type Open = NodeId
   }
   export type Multiple = Event<'multiple', Payload.Multiple>
 

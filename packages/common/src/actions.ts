@@ -9,7 +9,7 @@ export declare namespace Action {
   export namespace Payload {
     export type Create = Pick<Node, 'name' | 'tags'>
     export type Update = Pick<Node, 'id' | 'name'>
-    export type Delete = Node['id']
+    export type Delete = NodeId
   }
 
   export type Create = Action<'create', Payload.Create>
@@ -18,10 +18,10 @@ export declare namespace Action {
 
   export namespace Tag {
     export namespace Payload {
-      export type Create = { node: Node['id']; name: string }
-      export type Add = { node: Node['id']; tag: Node['id'] }
-      export type Move = { node: Node['id']; tag: Node['id']; index: number }
-      export type Remove = { node: Node['id']; tag: Node['id'] }
+      export type Create = { node: NodeId; name: string }
+      export type Add = { node: NodeId; tag: NodeId }
+      export type Move = { node: NodeId; tag: NodeId; index: number }
+      export type Remove = { node: NodeId; tag: NodeId }
     }
 
     export type Create = Action<'tag.create', Payload.Create>

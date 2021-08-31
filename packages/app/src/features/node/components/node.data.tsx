@@ -5,9 +5,9 @@ import { Section } from 'src/blocs/structure/section'
 import { Shelf } from 'src/blocs/structure/shelf'
 import { DataE } from 'src/features/data/components/data'
 import { Data$get_default } from 'src/features/data/data.default'
+import { Data } from 'src/types/data'
 
 import { NodeDataKey, useNode } from '../node.context'
-import { Data } from '../type'
 
 export function NodeData() {
   const { keys } = useNode()
@@ -35,18 +35,19 @@ export function NodeDataItem({ item }: { item: NodeDataKey }) {
   }
 
   function handleSave() {
-    console.log(draft)
     data$set(item.typeNode.id, draft)
   }
 
+  const Label = (
+    <div className="flex justify-between">
+      <div>{item.typeNode.name}</div>
+      {modified && <ButtonIcon icon={faSave} onClick={handleSave} />}
+    </div>
+  )
+
   return (
     <DataE
-      Label={
-        <div className="flex justify-between">
-          <div>{item.typeNode.name}</div>
-          {modified && <ButtonIcon icon={faSave} onClick={handleSave} />}
-        </div>
-      }
+      Label={Label}
       type={item.type}
       draft={draft}
       saved={item.data}

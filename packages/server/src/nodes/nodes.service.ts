@@ -4,14 +4,14 @@ import { v4 } from 'uuid'
 
 import { AutoMap } from '../utils/automap'
 
-type Table = Map<Node['id'], Data>
+type Table = Map<NodeId, Data>
 
 @Injectable()
 export class NodesService {
-  datas: AutoMap<Node['id'], Table>
+  datas: AutoMap<NodeId, Table>
 
-  nodes: Map<Node['id'], Node>
-  types: Map<Node['id'], Type.Any>
+  nodes: Map<NodeId, Node>
+  types: Map<NodeId, Type.Any>
 
   constructor() {
     this.datas = new AutoMap(() => new Map())
@@ -71,7 +71,7 @@ export class NodesService {
     return [...this.nodes.values()]
   }
 
-  findOne(node: Node['id']) {
+  findOne(node: NodeId) {
     return this.nodes.get(node)
   }
 
@@ -111,7 +111,7 @@ export class NodesService {
     return this.nodes.delete(id)
   }
 
-  private patch(id: Node['id'], patcher: (node: Node) => void) {
+  private patch(id: NodeId, patcher: (node: Node) => void) {
     const node = this.nodes.get(id)
 
     if (!node) throw new Error()
@@ -121,7 +121,7 @@ export class NodesService {
     return node
   }
 
-  private isTagged(id: Node['id']) {
+  private isTagged(id: NodeId) {
     return [...this.nodes.values()].some(node => node.tags.includes(id))
   }
 }

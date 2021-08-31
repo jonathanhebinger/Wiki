@@ -22,7 +22,6 @@ export function Value({ Label: name, type }: ValueProps) {
         />
       )
 
-    case 'type':
     case 'array':
     case 'object':
       return (

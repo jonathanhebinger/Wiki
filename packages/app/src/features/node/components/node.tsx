@@ -10,8 +10,8 @@ import { NodeData } from 'src/features/node/components/node.data'
 import { Node_Tagged } from 'src/features/node/components/node.tagged'
 import { Node_Tags } from 'src/features/node/components/node.tags'
 import { NodeProvider } from 'src/features/node/node.context'
-import { Node as iNode } from 'src/features/node/type'
 import { useStoreActions } from 'src/features/root/root.store'
+import { Node as iNode } from 'src/types/node'
 
 export function Node({ node }: { node: iNode }) {
   const [collapsed, collapsed$set] = useState(false)
@@ -36,7 +36,7 @@ export function Node({ node }: { node: iNode }) {
               contrast
               icon={faTrash}
               onClick={e => {
-                $close(node.id)
+                $close({ type: 'node', node: node.id })
                 e.stopPropagation()
               }}
             />
@@ -44,7 +44,7 @@ export function Node({ node }: { node: iNode }) {
               contrast
               icon={faTimes}
               onClick={e => {
-                $close(node.id)
+                $close({ type: 'node', node: node.id })
                 e.stopPropagation()
               }}
             />

@@ -1,4 +1,4 @@
-import { Type } from 'src/features/node/type'
+import { Type } from 'src/types/type'
 
 import { useDataContext } from '../../data.context'
 import { DataE } from '../data'
@@ -22,7 +22,7 @@ export function ValueTypeItem() {
         />
       )
 
-    case 'node':
+    case 'join':
       return null
 
     default:

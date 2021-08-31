@@ -5,13 +5,13 @@ import { Badge } from 'src/blocs/structure/badge'
 import { Shelf } from 'src/blocs/structure/shelf'
 import { NodeSearch } from 'src/features/node/components/node.search'
 import { useNode } from 'src/features/node/node.context'
-import { Node } from 'src/features/node/type'
+import { NodeId } from 'src/types/node'
 
 export function NodeTagsAdd({}: {}) {
   const { node, tags$add } = useNode()
 
   const [opened, opened$set] = useState(false)
-  const [selected, selected$set] = useState<Node.Id[]>([])
+  const [selected, selected$set] = useState<NodeId[]>([])
 
   function handleAdd() {
     selected.map(tags$add)

@@ -9,20 +9,20 @@ export function NavOpened() {
   const opened_nodes = useStoreState(state => state.nav.opened_nodes)
   const actions = useStoreActions(state => state.nav)
 
-  const Nodes = opened_nodes.map(({ node }) => {
+  const Nodes = opened_nodes.map(({ name, collapsed, ...info }) => {
     return (
       <Surface
-        key={node.id}
+        key={name}
         squared
         shadow="sm"
         className="flex justify-between p-1"
       >
-        {node.name}
+        {name}
         <ButtonIcon
           contrast
           size="xs"
           icon={faTimes}
-          onClick={() => actions.$close(node.id)}
+          onClick={() => actions.$close(info as any)}
         />
       </Surface>
     )

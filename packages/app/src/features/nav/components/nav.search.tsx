@@ -11,7 +11,7 @@ export function NavSearch() {
       <Title>Search</Title>
       <NodeSearch
         onChange={(ids, context) => {
-          ids.map(id => actions.$open(id))
+          // ids.map(id => actions.$open(id))
 
           if (ids.length > 0) {
             context.actions.selected$clear()

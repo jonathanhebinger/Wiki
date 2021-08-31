@@ -1,4 +1,3 @@
-import { Node } from './node'
 import { Type } from './type'
 
 export type Data = Data.Any
@@ -12,6 +11,6 @@ export namespace Data {
     | string
     | Array
     | Object
-    | Node['id']
+    | NodeId
     | Type.Any
 }

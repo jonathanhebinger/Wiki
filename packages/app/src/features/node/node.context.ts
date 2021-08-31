@@ -1,7 +1,8 @@
 import constate from 'constate'
 import { useMemo } from 'react'
-import { Data, Node } from 'src/features/node/type'
 import { useStoreActions, useStoreState } from 'src/features/root/root.store'
+import { Data } from 'src/types/data'
+import { Node, NodeId } from 'src/types/node'
 
 export const [NodeProvider, useNode] = constate(({ node }: { node: Node }) => {
   const nodes = useStoreState(state => state.nodes.dictionnary)
@@ -14,21 +15,21 @@ export const [NodeProvider, useNode] = constate(({ node }: { node: Node }) => {
     return node.tagged.map(id => nodes[id] as Node)
   }, [node.tagged])
 
-  function tags$add(parent: Node['id']) {
+  function tags$add(parent: NodeId) {
     actions.tags$add({ id: node.id, tag: parent })
   }
-  function tags$remove(parent: Node['id']) {
+  function tags$remove(parent: NodeId) {
     actions.tags$remove({ node: node.id, tag: parent })
   }
 
-  function tagged$add(tagged: Node['id']) {
+  function tagged$add(tagged: NodeId) {
     actions.tags$add({ id: tagged, tag: node.id })
   }
-  function tagged$remove(tagged: Node['id']) {
+  function tagged$remove(tagged: NodeId) {
     actions.tags$remove({ node: tagged, tag: node.id })
   }
 
-  function data$set(type: Node.Id, data: Data.Any) {
+  function data$set(type: NodeId, data: Data.Any) {
     actions.data$set({
       id: node.id,
       type,

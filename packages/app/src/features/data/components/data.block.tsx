@@ -4,8 +4,9 @@ import { Shelf } from 'src/blocs/structure/shelf'
 import { Surface } from 'src/blocs/structure/surface'
 import { Title } from 'src/blocs/typo/title'
 import { NodeSearch } from 'src/features/node/components/node.search'
-import { Node, Type } from 'src/features/node/type'
 import { useStoreActions, useStoreState } from 'src/features/root/root.store'
+import { NodeId } from 'src/types/node'
+import { Type } from 'src/types/type'
 
 import { useDataContext } from '../data.context'
 import { ValueArray } from './data.array'
@@ -16,14 +17,14 @@ export function ValueBlock() {
   const { type } = useDataContext()
 
   switch (type.type) {
-    case 'type':
-      return <ValueType />
     case 'array':
       return <ValueArray />
     case 'object':
       return <ValueObject />
-    case 'node':
+    case 'join':
       return <ValueNode />
+    case 'type':
+      return <ValueType />
   }
 
   return null
@@ -31,13 +32,13 @@ export function ValueBlock() {
 
 function ValueNode() {
   const actions = useStoreActions()
-  const { draft, $change } = useDataContext<Type.Node, Node.Id>()
+  const { draft, $change } = useDataContext<Type.Join, NodeId>()
 
-  function handleChange([id]: Node.Id[]) {
+  function handleChange([id]: NodeId[]) {
     id && $change(id)
   }
   function handleClick() {
-    actions.nav.$open(draft)
+    actions.nav.$open({ type: 'node', node: draft })
   }
 
   const node = useStoreState(state => state.nodes.dictionnary)[draft]

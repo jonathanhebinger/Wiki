@@ -3,7 +3,8 @@ import { Shelf } from 'src/blocs/structure/shelf'
 import { DataE } from 'src/features/data/components/data'
 import { useDataContext } from 'src/features/data/data.context'
 import { Data$get_default } from 'src/features/data/data.default'
-import { Data, Type } from 'src/features/node/type'
+import { Data } from 'src/types/data'
+import { Type } from 'src/types/type'
 
 export function ValueObject() {
   const { type } = useDataContext<Type.Object, Data.Object>()

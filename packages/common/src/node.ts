@@ -5,7 +5,7 @@ export interface Node {
   id: Id<'node'>
 
   name: string
-  tags: Node['id'][]
+  tags: NodeId[]
   data: { [index: string]: Data }
   info?: any
 }

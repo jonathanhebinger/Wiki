@@ -1,52 +1,98 @@
 import { Action, action, Computed, computed, ThunkOn, thunkOn } from 'easy-peasy'
-import { Node } from 'src/features/node/type'
 import { Injections, RootModel } from 'src/features/root/root.model'
+import { Node, NodeId } from 'src/types/node'
+import { Template, TemplateData, TemplateDataId, TemplateId } from 'src/types/template'
 
-interface NavOpenedInfo {
-  id: Node['id']
+type Ref = RefPayload & {
   collapsed: boolean
 }
-interface NavOpenedInfoLinked extends NavOpenedInfo {
-  node: Node
-}
+type RefPayload =
+  | { type: 'node'; node: NodeId }
+  | { type: 'template'; template: TemplateId }
+  | { type: 'data'; template: TemplateId; data: TemplateDataId }
+type RefJoined = { collapsed: boolean; name: string } & (
+  | { type: 'node'; node: Node }
+  | { type: 'template'; template: Template }
+  | { type: 'data'; template: Template; data: TemplateData }
+)
 
 export interface NavModel {
-  opened_ids: NavOpenedInfo[]
-  opened_nodes: Computed<NavModel, NavOpenedInfoLinked[], RootModel>
+  opened: Ref[]
+  opened_nodes: Computed<NavModel, RefJoined[], RootModel>
 
-  $open: Action<NavModel, Node['id']>
-  $close: Action<NavModel, Node['id']>
+  $open: Action<NavModel, RefPayload>
+  $close: Action<NavModel, RefPayload>
   $close_all: Action<NavModel>
 
   on_nodes$create: ThunkOn<NavModel, Injections, RootModel>
 }
 
 export const navModel: NavModel = {
-  opened_ids: [],
+  opened: [],
   opened_nodes: computed(
     [
-      (state, _store) => state.opened_ids,
+      (state, _store) => state.opened,
       (_state, store) => store.nodes.dictionnary,
+      (_state, store) => store.templates.dictionnary,
     ],
-    (infos, nodes) => {
-      return [...infos].reverse().map(info => {
-        return {
-          ...info,
-          node: nodes[info.id] as Node,
-        }
-      })
+    (infos, nodes, templates) => {
+      return [...infos]
+        .reverse()
+        .map<RefJoined>(({ collapsed, ...info }): any => {
+          switch (info.type) {
+            case 'node':
+              const node = nodes[info.node] as Node
+              return {
+                type: info.type,
+                collapsed,
+                node,
+                name: node.name,
+              }
+            case 'template': {
+              const template = templates[info.template] as Template
+
+              return {
+                type: info.type,
+                collapsed,
+                template,
+                name: template.name,
+              }
+            }
+            case 'data': {
+              const template = templates[info.template] as Template
+
+              const data = template.data.find(item => {
+                return item.id === info.data
+              })
+
+              return {
+                type: info.type,
+                collapsed,
+                template,
+                data,
+                name: template.name,
+              }
+            }
+            default:
+              throw new Error()
+          }
+        })
     },
   ),
 
-  $open: action((state, id) => {
-    state.opened_ids = state.opened_ids.filter(v => v.id !== id)
-    state.opened_ids.push({ id, collapsed: false })
+  $open: action((state, info) => {
+    state.opened = state.opened.filter(item => {
+      return info$test_equality(item, info)
+    })
+    state.opened.push({ ...info, collapsed: false } as any)
   }),
-  $close: action((state, id) => {
-    state.opened_ids = state.opened_ids.filter(v => v.id !== id)
+  $close: action((state, info) => {
+    state.opened = state.opened.filter(v => {
+      return info$test_equality(v, info)
+    })
   }),
   $close_all: action(state => {
-    state.opened_ids = []
+    state.opened = []
   }),
 
   on_nodes$create: thunkOn(
@@ -55,4 +101,8 @@ export const navModel: NavModel = {
       actions.$open(target.result)
     },
   ),
+}
+
+function info$test_equality(a: Ref, b: RefPayload) {
+  return Object.keys(b).every(key => (a as any)[key] === (b as any)[key])
 }

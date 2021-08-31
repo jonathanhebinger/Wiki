@@ -7,8 +7,8 @@ import {
   useSearchStore,
 } from 'src/blocs/search'
 import { Badge } from 'src/blocs/structure/badge'
-import { Node } from 'src/features/node/type'
 import { useStoreState } from 'src/features/root/root.store'
+import { NodeId } from 'src/types/node'
 
 export function NodeSearch({
   multiple = false,
@@ -16,11 +16,8 @@ export function NodeSearch({
   onChange,
 }: {
   multiple?: boolean
-  exclude?: Node['id'][]
-  onChange: (
-    ids: Node['id'][],
-    context: SearchContext<NodeSearch_Option>,
-  ) => void
+  exclude?: NodeId[]
+  onChange: (ids: NodeId[], context: SearchContext<NodeSearch_Option>) => void
 }) {
   const nodes = useStoreState(state => state.nodes.entities)
   const nodes_map = useStoreState(state => state.nodes.dictionnary)
@@ -38,8 +35,6 @@ export function NodeSearch({
         })),
     [nodes, exclude],
   )
-
-  console.log(options, exclude)
 
   const store = useSearchStore({
     options,
@@ -59,10 +54,10 @@ export function NodeSearch({
 }
 
 interface NodeSearch_Option {
-  id: Node['id']
+  id: NodeId
   name: string
   test: string
-  tags: Node['id'][]
+  tags: NodeId[]
   tags_name: string[]
 }
 

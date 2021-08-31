@@ -7,8 +7,6 @@ export function SearchOptions() {
 
   if (!state.opened || state.filtered.options.length === 0) return null
 
-  console.log(state.filtered.options.length)
-
   const Options = state.filtered.options.map((option, index) => {
     return (
       <Option

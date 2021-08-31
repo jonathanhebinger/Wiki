@@ -1,120 +1,14 @@
 import { v4 } from 'uuid'
 
 import { Data$get_default } from './features/data/data.default'
-
-export type Id<Key extends string> = string & { key?: Key }
-
-export type NodeId = Id<'node'>
-export type Node = {
-  id: NodeId
-  name: string
-  info: any
-}
-
-export namespace Type {
-  export type Base<Type extends string> = { type: Type }
-
-  export type Type = Base<'type'>
-
-  export type Boolean = Base<'boolean'>
-  export type Number = Base<'number'>
-  export type String = Base<'string'>
-
-  export type Array = Base<'array'> & {
-    of: Any
-  }
-
-  export type Object = Base<'object'> & {
-    keys: ObjectKey[]
-  }
-  export type ObjectKey = {
-    id: string
-    name: string
-    type: Any
-  }
-
-  export type Node = Base<'node'>
-
-  export type Join = Base<'join'> & {
-    template: TemplateId
-    reflect?: TemplateKeyId
-  }
-
-  export type Any = Type | Boolean | Number | String | Array | Object | Node
-}
-
-export type Data = Data.Any
-export namespace Data {
-  export type Array = Any[]
-  export type Object = { [index: string]: Any }
-  export type Any =
-    | undefined
-    | boolean
-    | number
-    | string
-    | Array
-    | Object
-    | Node['id']
-    | Type.Any
-}
-
-export namespace Filter {
-  export type Array = {
-    type: 'match-none' | 'match-some' | 'match-every'
-    matcher: any
-  }
-
-  export type Object = {
-    type: 'match-none' | 'match-some' | 'match-every'
-    matcher: any
-  }
-
-  export type NumberBase = {
-    type: 'sup' | 'sup-strict' | 'inf' | 'inf-strict' | 'equal' | 'diff'
-    to: number
-  }
-  export type NumberRange = {
-    type: 'between' | 'outside'
-    range: [number, number]
-  }
-  export type Number = NumberBase | NumberRange
-
-  export type Boolean = boolean
-
-  export type Logic =
-    | { type: 'or' | 'and'; filters: any[] }
-    | { type: 'not'; filter: any }
-}
-
-type TemplateKeyId = Id<'template-key'>
-type TemplateKey = {
-  id: TemplateKeyId
-  name: string
-  info: string
-  type: Type.Any
-  required: boolean
-}
-
-type TemplateDataId = Id<'template-data'>
-type TemplateData = {
-  id: TemplateDataId
-  info: string
-  keys: {
-    [index: string]: Data.Any
-  }
-}
-
-type TemplateId = Id<'template'>
-type Template = {
-  id: TemplateId
-  name: string
-  info: string
-  keys: TemplateKey[]
-  data: TemplateData[]
-  computed: {
-    name: TemplateKeyId
-  }
-}
+import {
+  Template,
+  TemplateData,
+  TemplateDataId,
+  TemplateId,
+  TemplateKey,
+  TemplateKeyId,
+} from './types/template'
 
 const TEMPLATES = new Map<TemplateId, Template>()
 const APP = {
@@ -157,16 +51,12 @@ const APP = {
         const template = APP.template.select(template_id)
 
         const id = v4()
-        const data: TemplateData = {
-          id,
-          info: '',
-          keys: {},
-        }
+        const data: TemplateData = { id }
 
         template.keys.map(key => {
           if (!key.required) return
 
-          data.keys[key.id] = Data$get_default(key.type)
+          data[key.id] = Data$get_default(key.type)
         })
 
         template.data.push(data)

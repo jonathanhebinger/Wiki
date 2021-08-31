@@ -1,5 +1,6 @@
 import constate from 'constate/'
-import { Data, Type } from 'src/features/node/type'
+import { Data } from 'src/types/data'
+import { Type } from 'src/types/type'
 
 export interface DataContextProps<Type = Type.Any, Data = any> {
   saved: Data | undefined

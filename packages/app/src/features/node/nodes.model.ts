@@ -1,49 +1,50 @@
 import { Thunk } from 'easy-peasy'
-import { Data, Node } from 'src/features/node/type'
 import { Injections, RootModel } from 'src/features/root/root.model'
 import { CrudRepository } from 'src/repository'
+import { Data } from 'src/types/data'
+import { Node, NodeId } from 'src/types/node'
 
-export interface NodesModel extends CrudRepository<Node, Node.Id> {
+export interface NodesModel extends CrudRepository<Node, NodeId> {
   $create: Thunk<
     NodesModel,
     {
       id?: string
       name: string
-      tags: Node.Id[]
+      tags: NodeId[]
     },
     Injections,
     RootModel,
-    Node.Id
+    NodeId
   >
 
   tags$add: Thunk<
     NodesModel,
     {
-      id: Node.Id
-      tag: Node.Id
+      id: NodeId
+      tag: NodeId
     }
   >
   tags$remove: Thunk<
     NodesModel,
     {
-      node: Node.Id
-      tag: Node.Id
+      node: NodeId
+      tag: NodeId
     }
   >
 
   data$set: Thunk<
     NodesModel,
     {
-      id: Node.Id
-      type: Node.Id
+      id: NodeId
+      type: NodeId
       data: Data.Any
     }
   >
   data$delete: Thunk<
     NodesModel,
     {
-      id: Node.Id
-      type: Node.Id
+      id: NodeId
+      type: NodeId
     }
   >
 }
