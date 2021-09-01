@@ -2,7 +2,7 @@ import React from 'react'
 import { Button } from 'src/blocs/button'
 import { Section } from 'src/blocs/structure/section'
 import { Shelf } from 'src/blocs/structure/shelf'
-import { DataE } from 'src/features/data'
+import { DataItem } from 'src/features/data'
 import { Type } from 'src/types/type'
 
 import { useTemplate } from '../templates.context'
@@ -17,19 +17,10 @@ const KEY_TYPE: Type.Object = {
 }
 
 export function TemplateKeys() {
-  const { keys, keys$update, keys$create } = useTemplate()
+  const { keys, keys$create } = useTemplate()
 
   const Keys = keys.map(key => {
-    return (
-      <DataE
-        key={key.id}
-        Label={<>{key.name}</>}
-        draft={key}
-        saved={key}
-        type={KEY_TYPE}
-        onChange={keys$update}
-      ></DataE>
-    )
+    return <TemplateKey key={key.id} saved={key}/>
   })
 
   return (
@@ -41,5 +32,38 @@ export function TemplateKeys() {
         </Button>
       </Shelf>
     </Section>
+  )
+}
+
+export function TemplateKey({ saved }: { saved: TemplateKey }) {
+  const { keys$update } = useTemplate()
+
+  const [draft, draft$set] = useState(saved)
+
+  const modified = JSON.stringify(saved) !== JSON.stringify(draft)
+
+  function handleChange(key: TemplateKey) {
+    draft$set(key)
+  }
+
+  function handleSave() {
+    keys$update(item.typeNode.id, draft)
+  }
+
+  const Label = (
+    <div className="flex justify-between">
+      <div>{key.name}</div>
+      {modified && <ButtonIcon icon={faSave} onClick={handleSave} />}
+    </div>
+  )
+
+  return (
+    <DataItem
+      Label={Label}
+      draft={draft}
+      saved={saved}
+      type={KEY_TYPE}
+      onChange={handleChange}
+    />
   )
 }
