@@ -40,7 +40,6 @@ export const navModel: NavModel = {
       return [...infos]
         .reverse()
         .map<RefJoined>(({ collapsed, ...info }): any => {
-          console.log(info)
           switch (info.type) {
             case 'node':
               const node = nodes[info.node] as Node
@@ -90,7 +89,7 @@ export const navModel: NavModel = {
   }),
   $close: action((state, info) => {
     state.opened = state.opened.filter(v => {
-      return info$test_equality(v, info)
+      return !info$test_equality(v, info)
     })
   }),
   $close_all: action(state => {

@@ -12,7 +12,7 @@ type ValueTypeRecordItem = {
 }
 type ValueTypeRecord = Partial<Record<Type.Any['type'], ValueTypeRecordItem>>
 
-export function ValueType() {
+export function DataType() {
   const { draft, saved, $change } = useDataContext<Type.Type, Type.Any>()
 
   const [current, current$set] = useState<ValueTypeRecordItem>({

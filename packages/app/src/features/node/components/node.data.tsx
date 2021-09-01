@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { ButtonIcon } from 'src/blocs/button.icon'
 import { Section } from 'src/blocs/structure/section'
 import { Shelf } from 'src/blocs/structure/shelf'
-import { DataE } from 'src/features/data/components/data'
+import { DataItem } from 'src/features/data/components/data'
 import { Data$get_default } from 'src/features/data/data.default'
 import { Data } from 'src/types/data'
 
@@ -46,7 +46,7 @@ export function NodeDataItem({ item }: { item: NodeDataKey }) {
   )
 
   return (
-    <DataE
+    <DataItem
       Label={Label}
       type={item.type}
       draft={draft}

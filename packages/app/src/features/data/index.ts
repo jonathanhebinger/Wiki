@@ -1,1 +1,1 @@
-export { DataE } from './components/data'
+export { DataItem as DataE } from './components/data'

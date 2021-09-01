@@ -1,6 +1,13 @@
 import { Thunk } from 'easy-peasy'
 import { CrudRepository } from 'src/repository'
-import { Template, TemplateData, TemplateDataId, TemplateId } from 'src/types/template'
+import {
+  Template,
+  TemplateData,
+  TemplateDataId,
+  TemplateId,
+  TemplateKey,
+  TemplateKeyId,
+} from 'src/types/template'
 
 type MyThunk<
   P = undefined,
@@ -20,6 +27,16 @@ export type TemplateDataDeletePayload = {
   data_id: TemplateDataId
 }
 
+export type TemplateKeysCreatePayload = { template_id: TemplateId }
+export type TemplateKeysUpdatePayload = {
+  template_id: TemplateId
+  key: TemplateKey
+}
+export type TemplateKeysDeletePayload = {
+  template_id: TemplateId
+  key_id: TemplateKeyId
+}
+
 export interface TemplatesModel extends CrudRepository<Template, TemplateId> {
   $create: MyThunk<string, Template>
   $update: MyThunk<Template, Template>
@@ -28,4 +45,8 @@ export interface TemplatesModel extends CrudRepository<Template, TemplateId> {
   data$create: MyThunk<TemplateDataCreatePayload, TemplateData>
   data$update: MyThunk<TemplateDataUpdatePayload, TemplateData>
   data$delete: MyThunk<TemplateDataDeletePayload>
+
+  keys$create: MyThunk<TemplateKeysCreatePayload, TemplateKey>
+  keys$update: MyThunk<TemplateKeysUpdatePayload, TemplateKey>
+  keys$delete: MyThunk<TemplateKeysDeletePayload>
 }

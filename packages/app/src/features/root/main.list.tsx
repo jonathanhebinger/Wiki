@@ -1,7 +1,7 @@
 import { Shelf } from 'src/blocs/structure/shelf'
 
 import { Node } from '../node/components/node'
-import { TemplateE } from '../templates'
+import { TemplateE } from '../templates/components/template'
 import { useStoreState } from './root.store'
 
 export function MainList() {

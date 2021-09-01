@@ -2,8 +2,8 @@ import { Block } from 'src/blocs/structure/block'
 import { Shelf } from 'src/blocs/structure/shelf'
 
 import { ValueProps } from '../data/components/data'
-import { ValueBlock } from '../data/components/data.block'
-import { ValueInline } from '../data/components/data.inline'
+import { DataBlock } from '../data/components/data.block'
+import { DataInline } from '../data/components/data.inline'
 
 export function Value({ Label: name, type }: ValueProps) {
   switch (type.type) {
@@ -13,10 +13,10 @@ export function Value({ Label: name, type }: ValueProps) {
       return (
         <Block
           Label={name}
-          Inline={<ValueInline />}
+          Inline={<DataInline />}
           Content={
             <Shelf>
-              <ValueInline />
+              <DataInline />
             </Shelf>
           }
         />
@@ -27,8 +27,8 @@ export function Value({ Label: name, type }: ValueProps) {
       return (
         <Block
           Label={name}
-          Inline={<ValueInline />}
-          Content={<ValueBlock />}
+          Inline={<DataInline />}
+          Content={<DataBlock />}
           inlineClickable
         />
       )

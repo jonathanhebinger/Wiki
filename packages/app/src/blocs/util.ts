@@ -1,4 +1,6 @@
-export function mergeClassNames(...classNames: (string | undefined | false)[]) {
+export function mergeClassNames(
+  ...classNames: (string | undefined | boolean)[]
+) {
   return classNames.filter(className => className).join(' ')
 }
 

@@ -1,7 +1,7 @@
 import { Type } from 'src/types/type'
 
 import { useDataContext } from '../../data.context'
-import { DataE } from '../data'
+import { DataItem } from '../data'
 import { ValueTypeObject } from './data.type.object'
 
 export function ValueTypeItem() {
@@ -13,7 +13,7 @@ export function ValueTypeItem() {
 
     case 'array':
       return (
-        <DataE
+        <DataItem
           Label="Of Type"
           type={{ type: 'type' }}
           saved={(saved as Type.Array)?.of}

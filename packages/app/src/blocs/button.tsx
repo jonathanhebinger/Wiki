@@ -23,13 +23,13 @@ export function Button({
     }),
     'px-1',
     'cursor-pointer uppercase font-bold text-center', //tw
-    'border-gray-300', //tw
+    'border-gray-100', //tw
     contrast
       ? 'text-white' //tw
       : 'text-gray-400', //tw
     contrast
       ? 'bg-gray-300 hover:bg-gray-400' //tw
-      : 'hover:bg-gray-200', //tw
+      : 'hover:bg-gray-100', //tw
     contrast
       ? 'active:bg-gray-500 transition-colors' //tw
       : 'active:bg-gray-300 transition-colors', //tw

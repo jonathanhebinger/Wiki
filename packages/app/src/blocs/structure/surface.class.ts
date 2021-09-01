@@ -22,6 +22,8 @@ export interface Surface$class_Props {
   shadow?: Theme.Shadow
   squared?: boolean
   contrast?: boolean
+  borderless?: boolean
+  shadowless?: boolean
 }
 export function Surface$class({
   className = '',
@@ -30,11 +32,13 @@ export function Surface$class({
   shadow = 'md',
   squared = false,
   contrast = false,
+  borderless = false,
+  shadowless = false,
 }: Surface$class_Props): string {
   return mergeClassNames(
-    theme$border(border),
-    theme$radius(squared ? 'none' : radius),
-    theme$shadow(shadow),
+    borderless || theme$border(border),
+    squared || theme$radius(radius),
+    shadowless || theme$shadow(shadow),
     contrast ? 'bg-gray-200' : 'bg-white',
     className,
   )

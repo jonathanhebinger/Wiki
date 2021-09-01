@@ -1,5 +1,5 @@
 import { faTimes, faTrash } from '@fortawesome/free-solid-svg-icons'
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { Collapse } from 'src/blocs/animation/collapse'
 import { ButtonIcon } from 'src/blocs/button.icon'
 import { GroupItem } from 'src/blocs/structure/group'
@@ -7,11 +7,10 @@ import { Section } from 'src/blocs/structure/section'
 import { Shelf } from 'src/blocs/structure/shelf'
 import { Title } from 'src/blocs/typo/title'
 import { TemplateId } from 'src/types/template'
-import { Type } from 'src/types/type'
 
-import { DataE } from '../data'
-import { useStoreActions } from '../root/root.store'
-import { TemplateProvider, useTemplate } from './templates.context'
+import { useStoreActions } from '../../root/root.store'
+import { TemplateProvider, useTemplate } from '../templates.context'
+import { TemplateKeys } from './template.keys'
 
 export interface TemplateEProps {
   templateId: TemplateId
@@ -41,22 +40,13 @@ export function TemplateE({ templateId: templateId }: TemplateEProps) {
   )
 }
 
-const KEY_TYPE: Type.Object = {
-  type: 'object',
-  keys: [
-    { id: 'name', name: 'name', type: { type: 'string' } },
-    { id: 'type', name: 'type', type: { type: 'type' } },
-    { id: 'required', name: 'required', type: { type: 'boolean' } },
-  ],
-}
-
 function TemplateTitle({ toggle }: { toggle: () => void }) {
   const { name, id } = useTemplate()
 
   const $close = useStoreActions(state => state.nav.$close)
 
   function handleClose(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
-    //$close(template.id)
+    $close({ type: 'template', template: id })
     e.stopPropagation()
   }
 
@@ -76,46 +66,12 @@ function TemplateTitle({ toggle }: { toggle: () => void }) {
   )
 }
 
-function TemplateKeys() {
-  const { keys } = useTemplate()
-
-  const Keys = keys.map(key => {
-    return (
-      <DataE
-        Label={<>{key.name}</>}
-        draft={key}
-        saved={key}
-        type={KEY_TYPE}
-        onChange={console.log}
-      ></DataE>
-    )
-  })
-
-  return (
-    <Section Label={<>Keys - {keys.length}</>}>
-      <Shelf noPadding>{Keys}</Shelf>
-    </Section>
-  )
-}
-
 function TemplateData() {
   const { keys } = useTemplate()
 
-  const Keys = keys.map(key => {
-    return (
-      <DataE
-        Label={<>{key.name}</>}
-        draft={key}
-        saved={key}
-        type={KEY_TYPE}
-        onChange={console.log}
-      ></DataE>
-    )
-  })
-
   return (
     <Section Label={<>Data - {keys.length}</>}>
-      <Shelf noPadding>{Keys}</Shelf>
+      <Shelf noPadding>{}</Shelf>
     </Section>
   )
 }

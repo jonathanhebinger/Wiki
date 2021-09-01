@@ -6,9 +6,9 @@ import { Type } from 'src/types/type'
 
 import { useDataContext } from '../data.context'
 import { Data$get_default } from '../data.default'
-import { DataE } from './data'
+import { DataItem } from './data'
 
-export function ValueArray() {
+export function DataArray() {
   const { type, draft, saved, $change } = useDataContext<
     Type.Array,
     Data.Array
@@ -25,7 +25,7 @@ export function ValueArray() {
 
     return (
       <GroupItem key={index}>
-        <DataE
+        <DataItem
           type={type.of}
           draft={draft[index]}
           saved={saved && saved[index]}
@@ -37,7 +37,7 @@ export function ValueArray() {
   })
 
   function handleAdd() {
-    $change([...draft, Data$get_default(type)])
+    $change([...draft, Data$get_default(type.of)])
   }
 
   return (

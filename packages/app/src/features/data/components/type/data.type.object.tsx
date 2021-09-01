@@ -1,14 +1,15 @@
 import { faTrash } from '@fortawesome/free-solid-svg-icons'
+import React from 'react'
+import { Button } from 'src/blocs/button'
 import { ButtonIcon } from 'src/blocs/button.icon'
 import { Block } from 'src/blocs/structure/block'
-import { GroupItem } from 'src/blocs/structure/group'
 import { Shelf } from 'src/blocs/structure/shelf'
 import { useStoreActions } from 'src/features/root/root.store'
 import { Type } from 'src/types/type'
 
 import { useDataContext } from '../../data.context'
-import { DataE } from '../data'
-import { ValueInline } from '../data.inline'
+import { DataItem } from '../data'
+import { DataInline } from '../data.inline'
 
 const OBJECT: Type.Object = {
   type: 'object',
@@ -22,7 +23,7 @@ export function ValueTypeObject() {
   return (
     <Block
       Label="Keys"
-      Inline={<ValueInline />}
+      Inline={<DataInline />}
       Content={<ValueTypeObjectKeys />}
       inlineClickable
     />
@@ -76,27 +77,21 @@ export function ValueTypeObjectKeys() {
     )
 
     return (
-      <DataE
+      <DataItem
         key={key.id}
         Label={Label}
         type={OBJECT}
         saved={savedMap.get(id) || draftMap.get(id)}
         draft={draftMap.get(id)}
         onChange={keys$update(id) as any}
-      ></DataE>
+      ></DataItem>
     )
   })
 
   return (
     <Shelf>
       {Keys}
-      <GroupItem
-        squared
-        className="p-2 cursor-pointer"
-        htmlProps={{ onClick: keys$add }}
-      >
-        Add Item
-      </GroupItem>
+      <Button onClick={keys$add}>Add Item</Button>
     </Shelf>
   )
 }

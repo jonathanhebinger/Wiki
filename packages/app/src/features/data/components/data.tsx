@@ -4,14 +4,14 @@ import { Block } from 'src/blocs/structure/block'
 import { Shelf } from 'src/blocs/structure/shelf'
 
 import { DataContextProps, DataContextProvider, useDataContext } from '../data.context'
-import { ValueBlock } from './data.block'
-import { ValueInline } from './data.inline'
+import { DataBlock } from './data.block'
+import { DataInline } from './data.inline'
 
 export interface ValueProps extends DataContextProps {
   Label: React.ReactNode
 }
 
-export function DataE({ Label, type, saved, draft, onChange }: ValueProps) {
+export function DataItem({ Label, type, saved, draft, onChange }: ValueProps) {
   return (
     <DataContextProvider
       type={type}
@@ -42,10 +42,10 @@ function DataEContent({ Label }: { Label: React.ReactNode }) {
 
   const Content = inline ? (
     <Shelf>
-      <ValueInline />
+      <DataInline />
     </Shelf>
   ) : (
-    <ValueBlock />
+    <DataBlock />
   )
 
   return (
@@ -56,7 +56,7 @@ function DataEContent({ Label }: { Label: React.ReactNode }) {
           <DataActions />
         </Shelf>
       }
-      Inline={<ValueInline />}
+      Inline={<DataInline />}
       Content={Content}
       inlineClickable={!inline}
     />
@@ -65,6 +65,8 @@ function DataEContent({ Label }: { Label: React.ReactNode }) {
 
 function DataActions() {
   const { modified, $undo } = useDataContext()
+
+  if (!modified) return null
 
   return (
     <Shelf noPadding row sm>

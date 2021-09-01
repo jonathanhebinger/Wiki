@@ -1,7 +1,7 @@
 import { Shelf } from 'src/blocs/structure/shelf'
 import { Node } from 'src/features/node/components/node'
 import { useStoreState } from 'src/features/root/root.store'
-import { TemplateE } from 'src/features/templates'
+import { TemplateE } from 'src/features/templates/components/template'
 
 export function Nodes() {
   const nodes = useStoreState(state => state.nav.opened_nodes)

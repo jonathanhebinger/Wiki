@@ -9,28 +9,28 @@ import { NodeId } from 'src/types/node'
 import { Type } from 'src/types/type'
 
 import { useDataContext } from '../data.context'
-import { ValueArray } from './data.array'
-import { ValueObject } from './data.object'
-import { ValueType } from './type/data.type'
+import { DataArray } from './data.array'
+import { DataObject } from './data.object'
+import { DataType } from './type/data.type'
 
-export function ValueBlock() {
+export function DataBlock() {
   const { type } = useDataContext()
 
   switch (type.type) {
     case 'array':
-      return <ValueArray />
+      return <DataArray />
     case 'object':
-      return <ValueObject />
+      return <DataObject />
     case 'join':
-      return <ValueNode />
+      return <DataNode />
     case 'type':
-      return <ValueType />
+      return <DataType />
   }
 
   return null
 }
 
-function ValueNode() {
+function DataNode() {
   const actions = useStoreActions()
   const { draft, $change } = useDataContext<Type.Join, NodeId>()
 

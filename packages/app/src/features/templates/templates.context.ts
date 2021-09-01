@@ -1,12 +1,12 @@
 import constate from 'constate'
 import { useStoreActions, useStoreState } from 'src/features/root/root.store'
-import { Template, TemplateId } from 'src/types/template'
+import { Template, TemplateId, TemplateKey } from 'src/types/template'
 
 export const [TemplateProvider, useTemplate] = constate(
-  ({ templateId }: { templateId: TemplateId }) => {
+  ({ templateId: template_id }: { templateId: TemplateId }) => {
     const template = useStoreState(state => state.templates.dictionnary)[
-      templateId
-    ]
+      template_id
+    ] as Template
 
     if (!template) throw new Error()
 
@@ -15,8 +15,14 @@ export const [TemplateProvider, useTemplate] = constate(
     function $update(template: Template) {
       actions.$update(template)
     }
+    function keys$update(key: TemplateKey) {
+      actions.keys$update({ template_id, key })
+    }
+    function keys$create() {
+      actions.keys$create({ template_id })
+    }
 
-    return { ...template }
+    return { ...template, $update, keys$update, keys$create }
   },
 )
 

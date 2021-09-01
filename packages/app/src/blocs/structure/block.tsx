@@ -1,9 +1,9 @@
 import React, { useState } from 'react'
 import { Collapse } from 'src/blocs/animation/collapse'
-import { Divider } from 'src/blocs/structure/divider'
-import { GroupItem } from 'src/blocs/structure/group'
 import { Shelf } from 'src/blocs/structure/shelf'
 import { mergeClassNames } from 'src/blocs/util'
+
+import { Surface } from './surface'
 
 export interface BlockProps {
   Label: React.ReactNode
@@ -12,12 +12,7 @@ export interface BlockProps {
   inlineClickable?: boolean
 }
 
-export function Block({
-  Label,
-  Inline,
-  Content,
-  inlineClickable: collapsedClickable,
-}: BlockProps) {
+export function Block({ Label, Inline, Content, inlineClickable }: BlockProps) {
   const [opened, opened$set] = useState(false)
   const [hovered, hovered$set] = useState(false)
 
@@ -25,43 +20,47 @@ export function Block({
     opened$set(!opened)
   }
 
+  function handleHeaderClick() {
+    inlineClickable && toggle()
+  }
+
   return (
-    <GroupItem
-      radius="none"
+    <Surface
+      squared
+      borderless
       htmlProps={{
         onMouseEnter: () => hovered$set(true),
         onMouseLeave: () => hovered$set(false),
       }}
     >
-      <div className="flex">
-        <div
+      <div className="flex" onClick={handleHeaderClick}>
+        <Surface
+          squared
+          shadowless
           className={mergeClassNames(
-            'flex-grow flex cursor-pointer self-stretch bg-gray-50',
-            hovered && 'bg-gray-200',
+            'flex-grow',
+            'flex items-center px-2 py-1 cursor-pointer',
+            hovered ? 'bg-gray-200' : 'bg-gray-50',
           )}
-          onClick={toggle}
+          htmlProps={{ onClick: toggle }}
         >
-          <div className="px-2 py-1 flex-grow self-center">{Label}</div>
-        </div>
+          <div className="flex-grow">{Label}</div>
+        </Surface>
         <Collapse
           collapsed={opened}
-          className="w-1/2 flex items-center self-stretch"
+          className="w-1/2 items-center overflow-hidden"
           direction="both"
         >
-          <Divider />
-          <Shelf
-            spacing="sm"
-            className="flex-grow max-h-full overflow-hidden"
-            htmlProps={collapsedClickable ? { onClick: toggle } : {}}
-          >
-            {Inline}
-          </Shelf>
+          <Surface squared shadowless className="h-full flex items-center">
+            <Shelf spacing="sm">{Inline}</Shelf>
+          </Surface>
         </Collapse>
       </div>
       <Collapse collapsed={!opened}>
-        <Divider />
-        {Content}
+        <Surface squared shadowless>
+          {Content}
+        </Surface>
       </Collapse>
-    </GroupItem>
+    </Surface>
   )
 }
