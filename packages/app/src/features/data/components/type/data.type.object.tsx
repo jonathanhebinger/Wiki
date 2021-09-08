@@ -4,8 +4,8 @@ import { Button } from 'src/blocs/button'
 import { ButtonIcon } from 'src/blocs/button.icon'
 import { Block } from 'src/blocs/structure/block'
 import { Shelf } from 'src/blocs/structure/shelf'
-import { useStoreActions } from 'src/features/root/root.store'
 import { Type } from 'src/types/type'
+import { v4 } from 'uuid'
 
 import { useDataContext } from '../../data.context'
 import { DataItem } from '../data'
@@ -37,10 +37,8 @@ export function ValueTypeObjectKeys() {
   const draftMap = new Map(draft.keys.map(key => [key.id, key]))
   const savedMap = new Map(saved?.keys.map(key => [key.id, key]))
 
-  const actions = useStoreActions(actions => actions)
-
   function keys$add() {
-    const id = actions.id$generate()
+    const id = v4()
 
     draftMap.set(id, {
       id,

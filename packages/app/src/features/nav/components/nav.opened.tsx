@@ -3,11 +3,11 @@ import { ButtonIcon } from 'src/blocs/button.icon'
 import { Section } from 'src/blocs/structure/section'
 import { Shelf } from 'src/blocs/structure/shelf'
 import { Surface } from 'src/blocs/structure/surface'
-import { useStoreActions, useStoreState } from 'src/features/root/root.store'
+
+import { useNavContext } from '../nav.store'
 
 export function NavOpened() {
-  const opened_nodes = useStoreState(state => state.nav.opened_nodes)
-  const actions = useStoreActions(state => state.nav)
+  const [{ opened_nodes }, actions] = useNavContext()
 
   const Nodes = opened_nodes.map(({ name, collapsed, ...info }) => {
     const key =
@@ -26,7 +26,7 @@ export function NavOpened() {
           contrast
           size="xs"
           icon={faTimes}
-          onClick={() => actions.$close(info as any)}
+          onClick={() => actions.close(info as any)}
         />
       </Surface>
     )

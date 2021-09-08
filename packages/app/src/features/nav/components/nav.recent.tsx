@@ -2,11 +2,13 @@ import { useState } from 'react'
 import { Section } from 'src/blocs/structure/section'
 import { Shelf } from 'src/blocs/structure/shelf'
 import { Surface } from 'src/blocs/structure/surface'
-import { useStoreActions, useStoreState } from 'src/features/root/root.store'
+import { useTemplatesContext } from 'src/features/templates/templates.store'
+
+import { useNavContext } from '../nav.store'
 
 export function NavRecent() {
-  const nodes = useStoreState(state => state.templates.entities)
-  const actions = useStoreActions(state => state.nav)
+  const [{ list }] = useTemplatesContext()
+  const [, actions] = useNavContext()
 
   const [collapsed, collapsed$set] = useState(false)
 
@@ -14,9 +16,9 @@ export function NavRecent() {
     collapsed$set(!collapsed)
   }
 
-  const Nodes = nodes.map(template => {
+  const Nodes = list.map(template => {
     const handleOpen = () => {
-      actions.$open({ type: 'template', template: template.id })
+      actions.open({ type: 'template', template: template.id })
     }
     return (
       <Surface

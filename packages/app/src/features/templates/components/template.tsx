@@ -4,10 +4,11 @@ import { Block } from 'src/blocs/structure/block'
 import { Section } from 'src/blocs/structure/section'
 import { Shelf } from 'src/blocs/structure/shelf'
 import { Title } from 'src/blocs/typo/title'
+import { useNavContext } from 'src/features/nav/nav.store'
 import { TemplateId } from 'src/types/template'
 
-import { useStoreActions } from '../../root/root.store'
 import { TemplateProvider, useTemplate } from '../templates.context'
+import { useTemplatesContext } from '../templates.store'
 import { TemplateInfos } from './template.info'
 import { TemplateKeys } from './template.keys'
 
@@ -15,15 +16,15 @@ export interface TemplateMainProps {
   templateId: TemplateId
 }
 export function TemplateMain({ templateId: templateId }: TemplateMainProps) {
-  const $close = useStoreActions(state => state.nav.$close)
-  const { data$create } = useStoreActions(state => state.templates)
+  const [, nav] = useNavContext()
+  const [, templates] = useTemplatesContext()
 
   function handleClose() {
-    $close({ type: 'template', template: templateId })
+    nav.close({ type: 'template', template: templateId })
   }
 
   function handleNewData() {
-    data$create({ templateId })
+    templates.data_create(templateId)
   }
 
   return (

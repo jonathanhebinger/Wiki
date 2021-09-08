@@ -4,8 +4,9 @@ import { Icon } from 'src/blocs/icon'
 import { Block } from 'src/blocs/structure/block'
 import { DataObject } from 'src/features/data/components/data.object'
 import { DataContextProvider } from 'src/features/data/data.context'
-import { useStoreActions } from 'src/features/root/root.store'
 import { Template, TemplateData } from 'src/types/template'
+
+import { useTemplatesContext } from '../templates.store'
 
 export function TemplateDataMain({
   template,
@@ -14,7 +15,7 @@ export function TemplateDataMain({
   template: Template
   data: TemplateData
 }) {
-  const { data$update } = useStoreActions().templates
+  const [, templatesActions] = useTemplatesContext()
 
   const [draft, draft$set] = useState(data)
 
@@ -23,7 +24,7 @@ export function TemplateDataMain({
   }
 
   function handleSave() {
-    data$update({ template_id: template.id, data })
+    templatesActions.data_update(template.id, data.id, data)
   }
 
   const modified = JSON.stringify(data) !== JSON.stringify(draft)

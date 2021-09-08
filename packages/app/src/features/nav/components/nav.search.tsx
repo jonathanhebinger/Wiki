@@ -1,9 +1,8 @@
 import { Shelf } from 'src/blocs/structure/shelf'
 import { Title } from 'src/blocs/typo/title'
-import { useStoreActions } from 'src/features/root/root.store'
 
 export function NavSearch() {
-  const actions = useStoreActions(state => state.nav)
+  // const actions = useStoreActions(state => state.nav)
 
   return (
     <Shelf noPadding>

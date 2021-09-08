@@ -1,22 +1,24 @@
-import { action, computed, thunkOn } from 'easy-peasy'
+import constate from 'constate'
+import { useObserve, useSystem } from 'src/bang/hooks/system'
 import { Template } from 'src/types/template'
 
-import { NavModel, NavRef, NavRefJoined, NavRefPayload } from './nav.model'
+import { useTemplatesContext } from '../templates/templates.store'
+import { NavRef, NavRefPayload } from './nav.model'
 
-export const navModel: NavModel = {
-  opened: [],
-  opened_nodes: computed(
-    [
-      (state, _store) => state.opened,
-      (_state, store) => store.templates.dictionnary,
-    ],
-    (infos, templates) => {
-      return [...infos]
+export const [NavContextProvider, useNavContext] = constate(() => {
+  const [, , templateRefs] = useTemplatesContext()
+
+  const tuple = useSystem({
+    opened: [] as NavRef[],
+    templates: templateRefs.map,
+
+    get opened_nodes() {
+      return [...this.opened]
         .reverse()
-        .map<NavRefJoined>(({ collapsed, ...info }): any => {
+        .map(({ collapsed, ...info }: NavRef): any => {
           switch (info.type) {
             case 'template': {
-              const template = templates[info.template] as Template
+              const template = this.templates[info.template] as Template
 
               return {
                 type: info.type,
@@ -26,7 +28,7 @@ export const navModel: NavModel = {
               }
             }
             case 'data': {
-              const template = templates[info.template] as Template
+              const template = this.templates[info.template] as Template
 
               const data = template.data.find(item => {
                 return item.id === info.data
@@ -45,43 +47,41 @@ export const navModel: NavModel = {
           }
         })
     },
-  ),
 
-  $open: action((state, info) => {
-    state.opened = state.opened.filter(item => {
-      return !info$test_equality(item, info)
-    })
-    state.opened.push({ ...info, collapsed: false } as any)
-  }),
-  $close: action((state, info) => {
-    state.opened = state.opened.filter(v => {
-      return !info$test_equality(v, info)
-    })
-  }),
-  $close_all: action(state => {
-    state.opened = []
-  }),
-
-  on_templates$create: thunkOn(
-    (state, store) => store.templates.$create,
-    (actions, target) => {
-      actions.$open({
-        type: 'template',
-        template: target.result.id,
+    open(info: NavRefPayload) {
+      this.opened = this.opened.filter(item => {
+        return !info$test_equality(item, info)
+      })
+      this.opened.push({ ...info, collapsed: false } as any)
+    },
+    close(info: NavRefPayload) {
+      this.opened = this.opened.filter(v => {
+        return !info$test_equality(v, info)
       })
     },
-  ),
-  on_templatesData$create: thunkOn(
-    (state, store) => store.templates.data$create,
-    (actions, target) => {
-      actions.$open({
-        type: 'data',
-        template: target.payload.templateId,
-        data: target.result.id,
-      })
+    close_all() {
+      this.opened = []
     },
-  ),
-}
+  })
+
+  const [, actions] = tuple
+
+  useObserve(templateRefs.create, ({ result }) => {
+    actions.open({
+      type: 'template',
+      template: result.id,
+    })
+  })
+  useObserve(templateRefs.data_create, ({ args: [template_id], result }) => {
+    actions.open({
+      type: 'data',
+      template: template_id,
+      data: result.id,
+    })
+  })
+
+  return tuple
+})
 
 function info$test_equality(a: NavRef, b: NavRefPayload) {
   if (a.type === 'template' && b.type === 'template') {

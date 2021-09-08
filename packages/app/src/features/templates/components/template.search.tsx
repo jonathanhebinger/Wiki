@@ -1,12 +1,8 @@
 import { useEffect, useMemo, useRef } from 'react'
-import {
-  Search,
-  SearchContext,
-  SearchOptionProps,
-  useSearchStore,
-} from 'src/blocs/search'
-import { useStoreState } from 'src/features/root/root.store'
+import { Search, SearchContext, SearchOptionProps, useSearchStore } from 'src/blocs/search'
 import { TemplateId } from 'src/types/template'
+
+import { useTemplatesContext } from '../templates.store'
 
 export function TemplateSearch({
   multiple = false,
@@ -20,11 +16,11 @@ export function TemplateSearch({
     context: SearchContext<TemplateSearch_Option>,
   ) => void
 }) {
-  const templates = useStoreState(state => state.templates.entities)
+  const [templates] = useTemplatesContext()
 
   const options = useMemo<TemplateSearch_Option[]>(
     () =>
-      templates
+      templates.list
         .filter(template => !exclude.includes(template.id))
         .map(template => ({
           id: template.id,

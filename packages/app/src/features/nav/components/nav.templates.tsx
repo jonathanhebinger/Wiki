@@ -2,11 +2,13 @@ import { useState } from 'react'
 import { Section } from 'src/blocs/structure/section'
 import { Shelf } from 'src/blocs/structure/shelf'
 import { Surface } from 'src/blocs/structure/surface'
-import { useStoreActions, useStoreState } from 'src/features/root/root.store'
+import { useTemplatesContext } from 'src/features/templates/templates.store'
+
+import { useNavContext } from '../nav.store'
 
 export function NavTemplates() {
-  const templates = useStoreState(state => state.templates.entities)
-  const actions = useStoreActions(state => state.nav)
+  const [{ list }] = useTemplatesContext()
+  const [, actions] = useNavContext()
 
   const [collapsed, collapsed$set] = useState(false)
 
@@ -14,12 +16,12 @@ export function NavTemplates() {
     collapsed$set(!collapsed)
   }
 
-  const Nodes = templates.map(template => {
+  const Nodes = list.map(template => {
     return (
       <Surface
         htmlProps={{
           onClick: () =>
-            actions.$open({ type: 'template', template: template.id }),
+            actions.open({ type: 'template', template: template.id }),
         }}
         key={template.id}
         className="p-1"
@@ -32,7 +34,7 @@ export function NavTemplates() {
   })
 
   return (
-    <Section Label={<>Templates - {templates.length}</>}>
+    <Section Label={<>Templates - {list.length}</>}>
       <Shelf noPadding>{Nodes}</Shelf>
     </Section>
   )

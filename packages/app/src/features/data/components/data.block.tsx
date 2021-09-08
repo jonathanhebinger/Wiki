@@ -3,7 +3,8 @@ import { Icon } from 'src/blocs/icon'
 import { Shelf } from 'src/blocs/structure/shelf'
 import { Surface } from 'src/blocs/structure/surface'
 import { Title } from 'src/blocs/typo/title'
-import { useStoreActions, useStoreState } from 'src/features/root/root.store'
+import { useNavContext } from 'src/features/nav/nav.store'
+import { useTemplatesContext } from 'src/features/templates/templates.store'
 import { TemplateDataId } from 'src/types/template'
 import { Type } from 'src/types/type'
 
@@ -30,19 +31,20 @@ export function DataBlock() {
 }
 
 function JoinNode() {
-  const actions = useStoreActions()
+  const [, actions] = useNavContext()
   const { type, draft, $change } = useDataContext<Type.Join, TemplateDataId>()
 
   function handleChange([id]: TemplateDataId[]) {
     id && $change(id)
   }
   function handleClick() {
-    actions.nav.$open({ type: 'data', template: type.template, data: draft })
+    actions.open({ type: 'data', template: type.template, data: draft })
   }
 
-  const data = useStoreState(state => state.templates.dictionnary)[
-    type.template
-  ]?.data.find(data => data.id === draft)
+  const [{ list }] = useTemplatesContext()
+  const data = list
+    .find(template => template.id === type.template)
+    ?.data.find(data => data.id === draft)
 
   return (
     <Shelf>

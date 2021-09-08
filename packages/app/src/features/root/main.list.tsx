@@ -1,13 +1,15 @@
 import { Shelf } from 'src/blocs/structure/shelf'
 
+import { useNavContext } from '../nav/nav.store'
 import { TemplateMain } from '../templates/components/template'
 import { TemplateDataMain } from '../templates/components/template.data'
-import { useStoreState } from './root.store'
 
 export function MainList() {
-  const items = useStoreState(state => state.nav.opened_nodes)
+  const [{ opened_nodes }] = useNavContext()
 
-  const Items = items.map(item => {
+  console.log(opened_nodes)
+
+  const Items = opened_nodes.map(item => {
     switch (item.type) {
       case 'template':
         return (
