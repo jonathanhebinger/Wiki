@@ -10,9 +10,13 @@ export function NavOpened() {
   const actions = useStoreActions(state => state.nav)
 
   const Nodes = opened_nodes.map(({ name, collapsed, ...info }) => {
+    const key =
+      info.type === 'template'
+        ? info.template.id
+        : info.template.id + info.data.id
     return (
       <Surface
-        key={name}
+        key={key}
         squared
         shadow="sm"
         className="flex justify-between p-1"

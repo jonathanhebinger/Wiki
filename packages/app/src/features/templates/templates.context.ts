@@ -12,8 +12,13 @@ export const [TemplateProvider, useTemplate] = constate(
 
     const actions = useStoreActions(actions => actions.templates)
 
-    function $update(template: Template) {
-      actions.$update(template)
+    const { id, name, info } = template
+
+    function name$update(name: string) {
+      actions.$update({ id, name, info })
+    }
+    function info$update(info: string) {
+      actions.$update({ id, name, info })
     }
     function keys$update(key: TemplateKey) {
       actions.keys$update({ template_id, key })
@@ -22,7 +27,7 @@ export const [TemplateProvider, useTemplate] = constate(
       actions.keys$create({ template_id })
     }
 
-    return { ...template, $update, keys$update, keys$create }
+    return { ...template, name$update, info$update, keys$update, keys$create }
   },
 )
 

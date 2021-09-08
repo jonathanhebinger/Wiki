@@ -9,7 +9,6 @@ import { Type } from 'src/types/type'
 
 import { useDataContext } from '../../data.context'
 import { DataItem } from '../data'
-import { DataInline } from '../data.inline'
 
 const OBJECT: Type.Object = {
   type: 'object',
@@ -20,10 +19,12 @@ const OBJECT: Type.Object = {
 }
 
 export function ValueTypeObject() {
+  const { draft } = useDataContext<Type.Object, Type.Object>()
+
   return (
     <Block
       Label="Keys"
-      Inline={<DataInline />}
+      Inline={<>{draft.keys.length} keys</>}
       Content={<ValueTypeObjectKeys />}
       inlineClickable
     />

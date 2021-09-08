@@ -25,16 +25,14 @@ export const templates_model: TemplatesModel = {
 
     return template
   }),
-  $update: thunk((actions, template) => {
-    actions.crud.setOne(template)
-
-    return template
+  $update: thunk((actions, { id, ...patch }) => {
+    actions.crud.updateOne({ id, patch })
   }),
   $delete: thunk((actions, template_id) => {
     actions.crud.removeOne(template_id)
   }),
 
-  data$create: thunk((actions, { template_id }) => {
+  data$create: thunk((actions, { templateId: template_id }) => {
     const data: TemplateData = { id: v4() }
 
     actions.crud.updateOne({

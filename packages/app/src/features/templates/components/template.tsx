@@ -1,8 +1,6 @@
-import { faTimes, faTrash } from '@fortawesome/free-solid-svg-icons'
-import React, { useState } from 'react'
-import { Collapse } from 'src/blocs/animation/collapse'
-import { ButtonIcon } from 'src/blocs/button.icon'
-import { GroupItem } from 'src/blocs/structure/group'
+import { faPlus, faTimes, faTrash } from '@fortawesome/free-solid-svg-icons'
+import { Icon } from 'src/blocs/icon'
+import { Block } from 'src/blocs/structure/block'
 import { Section } from 'src/blocs/structure/section'
 import { Shelf } from 'src/blocs/structure/shelf'
 import { Title } from 'src/blocs/typo/title'
@@ -10,58 +8,51 @@ import { TemplateId } from 'src/types/template'
 
 import { useStoreActions } from '../../root/root.store'
 import { TemplateProvider, useTemplate } from '../templates.context'
+import { TemplateInfos } from './template.info'
 import { TemplateKeys } from './template.keys'
 
-export interface TemplateEProps {
+export interface TemplateMainProps {
   templateId: TemplateId
 }
-export function TemplateE({ templateId: templateId }: TemplateEProps) {
-  const [collapsed, collapsed$set] = useState(false)
+export function TemplateMain({ templateId: templateId }: TemplateMainProps) {
+  const $close = useStoreActions(state => state.nav.$close)
+  const { data$create } = useStoreActions(state => state.templates)
 
-  function toggle() {
-    collapsed$set(!collapsed)
+  function handleClose() {
+    $close({ type: 'template', template: templateId })
+  }
+
+  function handleNewData() {
+    data$create({ templateId })
   }
 
   return (
     <TemplateProvider templateId={templateId}>
-      <GroupItem shadow="lg" border="none">
-        <TemplateTitle toggle={toggle} />
-        <Collapse collapsed={collapsed}>
+      <Block
+        Label={<TemplateTitle />}
+        Content={
           <Shelf>
-            <Section Label={<>Info</>}>
-              <Shelf noPadding></Shelf>
-            </Section>
+            <TemplateInfos />
             <TemplateKeys />
             <TemplateData />
           </Shelf>
-        </Collapse>
-      </GroupItem>
+        }
+        actions={[
+          { Label: <Icon icon={faPlus} />, handler: handleNewData },
+          { Label: <Icon icon={faTrash} />, handler: handleClose },
+          { Label: <Icon icon={faTimes} />, handler: handleClose },
+        ]}
+      ></Block>
     </TemplateProvider>
   )
 }
 
-function TemplateTitle({ toggle }: { toggle: () => void }) {
-  const { name, id } = useTemplate()
-
-  const $close = useStoreActions(state => state.nav.$close)
-
-  function handleClose(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
-    $close({ type: 'template', template: id })
-    e.stopPropagation()
-  }
+function TemplateTitle() {
+  const { name } = useTemplate()
 
   return (
-    <Title
-      className="px-2 py-1 flex justify-between"
-      pointer
-      size="lg"
-      onClick={toggle}
-    >
+    <Title underline={false} uppercase>
       {name}
-      <Shelf noPadding row>
-        <ButtonIcon contrast icon={faTrash} onClick={handleClose} />
-        <ButtonIcon contrast icon={faTimes} onClick={handleClose} />
-      </Shelf>
     </Title>
   )
 }

@@ -10,6 +10,7 @@ export function useSearchStore<O>({
   multiple = true,
   Option,
   Selected,
+  onChange,
 }: SearchStoreConfig<O>): SearchContext<O> {
   const input_ref = useRef<HTMLInputElement>(null)
   const block_ref = useRef<HTMLDivElement>(null)
@@ -91,6 +92,10 @@ export function useSearchStore<O>({
     }),
     [options, Option],
   )
+
+  useEffect(() => {
+    onChange && onChange(state.selected)
+  }, [state.selected])
 
   useEffect(() => {
     function listener(event: KeyboardEvent) {

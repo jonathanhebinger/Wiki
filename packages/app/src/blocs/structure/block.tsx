@@ -5,14 +5,26 @@ import { mergeClassNames } from 'src/blocs/util'
 
 import { Surface } from './surface'
 
-export interface BlockProps {
-  Label: React.ReactNode
-  Inline: React.ReactNode
-  Content: React.ReactNode
-  inlineClickable?: boolean
+export interface BlockAction {
+  Label: string | React.ReactNode
+  handler: () => void
 }
 
-export function Block({ Label, Inline, Content, inlineClickable }: BlockProps) {
+export interface BlockProps {
+  Label: React.ReactNode
+  Inline?: React.ReactNode
+  Content: React.ReactNode
+  inlineClickable?: boolean
+  actions?: BlockAction[]
+}
+
+export function Block({
+  Label,
+  Inline,
+  Content,
+  inlineClickable,
+  actions = [],
+}: BlockProps) {
   const [opened, opened$set] = useState(false)
   const [hovered, hovered$set] = useState(false)
 
@@ -23,6 +35,22 @@ export function Block({ Label, Inline, Content, inlineClickable }: BlockProps) {
   function handleHeaderClick() {
     inlineClickable && toggle()
   }
+
+  const Actions = actions.map(({ Label, handler }, index) => {
+    return (
+      <Surface
+        key={index}
+        squared
+        shadowless
+        className={mergeClassNames(
+          'flex items-center px-2 cursor-pointer hover:bg-gray-100',
+        )}
+        htmlProps={{ onClick: handler }}
+      >
+        {Label}
+      </Surface>
+    )
+  })
 
   return (
     <Surface
@@ -46,15 +74,20 @@ export function Block({ Label, Inline, Content, inlineClickable }: BlockProps) {
         >
           <div className="flex-grow">{Label}</div>
         </Surface>
-        <Collapse
-          collapsed={opened}
-          className="w-1/2 items-center overflow-hidden"
-          direction="both"
-        >
-          <Surface squared shadowless className="h-full flex items-center">
-            <Shelf spacing="sm">{Inline}</Shelf>
-          </Surface>
-        </Collapse>
+        <div className="flex">{Actions}</div>
+        {Inline && (
+          <Collapse
+            collapsed={opened}
+            className="w-1/2 items-center overflow-hidden"
+            direction="both"
+          >
+            <Surface squared shadowless className="h-full flex items-center">
+              <Shelf spacing="sm" className="flex-grow">
+                {Inline}
+              </Shelf>
+            </Surface>
+          </Collapse>
+        )}
       </div>
       <Collapse collapsed={!opened}>
         <Surface squared shadowless>

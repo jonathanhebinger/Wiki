@@ -17,7 +17,9 @@ type MyThunk<
   M extends object = TemplatesModel,
 > = Thunk<M, P, I, S, R>
 
-export type TemplateDataCreatePayload = { template_id: TemplateId }
+export type TemplateUpdatePayload = Pick<Template, 'id' | 'name' | 'info'>
+
+export type TemplateDataCreatePayload = { templateId: TemplateId }
 export type TemplateDataUpdatePayload = {
   template_id: TemplateId
   data: TemplateData
@@ -39,7 +41,7 @@ export type TemplateKeysDeletePayload = {
 
 export interface TemplatesModel extends CrudRepository<Template, TemplateId> {
   $create: MyThunk<string, Template>
-  $update: MyThunk<Template, Template>
+  $update: MyThunk<TemplateUpdatePayload>
   $delete: MyThunk<TemplateId>
 
   data$create: MyThunk<TemplateDataCreatePayload, TemplateData>

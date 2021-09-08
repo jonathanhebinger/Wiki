@@ -4,8 +4,8 @@ import { Shelf } from 'src/blocs/structure/shelf'
 import { Surface } from 'src/blocs/structure/surface'
 import { useStoreActions, useStoreState } from 'src/features/root/root.store'
 
-export function NavRecent() {
-  const nodes = useStoreState(state => state.templates.entities)
+export function NavTemplates() {
+  const templates = useStoreState(state => state.templates.entities)
   const actions = useStoreActions(state => state.nav)
 
   const [collapsed, collapsed$set] = useState(false)
@@ -14,14 +14,12 @@ export function NavRecent() {
     collapsed$set(!collapsed)
   }
 
-  const Nodes = nodes.map(template => {
-    const handleOpen = () => {
-      actions.$open({ type: 'template', template: template.id })
-    }
+  const Nodes = templates.map(template => {
     return (
       <Surface
         htmlProps={{
-          onClick: handleOpen,
+          onClick: () =>
+            actions.$open({ type: 'template', template: template.id }),
         }}
         key={template.id}
         className="p-1"
@@ -34,7 +32,7 @@ export function NavRecent() {
   })
 
   return (
-    <Section Label={<>Recent</>}>
+    <Section Label={<>Templates - {templates.length}</>}>
       <Shelf noPadding>{Nodes}</Shelf>
     </Section>
   )

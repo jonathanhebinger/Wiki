@@ -1,9 +1,10 @@
 import { Shelf } from 'src/blocs/structure/shelf'
 import { Surface } from 'src/blocs/structure/surface'
-import { NavActions } from 'src/features/nav/components/nav.actions'
-import { NavOpened } from 'src/features/nav/components/nav.opened'
-import { NavRecent } from 'src/features/nav/components/nav.recent'
-import { NavSearch } from 'src/features/nav/components/nav.search'
+
+import { NavActions } from './nav.actions'
+import { NavOpened } from './nav.opened'
+import { NavSearch } from './nav.search'
+import { NavTemplates } from './nav.templates'
 
 export function Nav() {
   return (
@@ -11,8 +12,8 @@ export function Nav() {
       <Shelf>
         <NavActions />
         <NavSearch />
-        <NavRecent />
         <NavOpened />
+        <NavTemplates />
       </Shelf>
     </Surface>
   )

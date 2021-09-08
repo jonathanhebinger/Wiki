@@ -1,4 +1,5 @@
 import './index.css'
+import './pg'
 
 import { StoreProvider } from 'easy-peasy'
 import ReactDOM from 'react-dom'
@@ -20,6 +21,7 @@ function Root() {
           className="min-h-screen text-gray-500 font-medium bg-gray-100"
           spacing="lg"
           row
+          htmlProps={{ style: { fontSize: '14px' } }}
         >
           <div className="w-1/4">
             <Nav />
@@ -32,3 +34,4 @@ function Root() {
     </StoreProvider>
   )
 }
+

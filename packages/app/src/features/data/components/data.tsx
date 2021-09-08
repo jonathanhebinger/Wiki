@@ -1,76 +1,102 @@
-import { faUndo } from '@fortawesome/free-solid-svg-icons'
-import { ButtonIcon } from 'src/blocs/button.icon'
-import { Block } from 'src/blocs/structure/block'
+import { faSave, faUndo } from '@fortawesome/free-solid-svg-icons'
+import { Icon } from 'src/blocs/icon'
+import { Block, BlockAction } from 'src/blocs/structure/block'
 import { Shelf } from 'src/blocs/structure/shelf'
 
-import { DataContextProps, DataContextProvider, useDataContext } from '../data.context'
+import {
+  DataContextProps,
+  DataContextProvider,
+  useDataContext,
+} from '../data.context'
 import { DataBlock } from './data.block'
 import { DataInline } from './data.inline'
 
 export interface ValueProps extends DataContextProps {
   Label: React.ReactNode
+  actions?: BlockAction[]
 }
 
-export function DataItem({ Label, type, saved, draft, onChange }: ValueProps) {
+export function DataItem({
+  Label,
+  type,
+  saved,
+  draft,
+  onChange,
+  onSave,
+  actions,
+}: ValueProps) {
   return (
     <DataContextProvider
       type={type}
       saved={saved}
       draft={draft}
       onChange={onChange}
+      onSave={onSave}
     >
-      <DataEContent Label={Label} />
+      <DataEContent Label={Label} actions={actions} />
     </DataContextProvider>
   )
 }
 
-function DataEContent({ Label }: { Label: React.ReactNode }) {
-  const { type } = useDataContext()
+function DataEContent({
+  Label,
+  actions = [],
+}: {
+  Label: React.ReactNode
+  actions?: BlockAction[]
+}) {
+  const { type, modified, $undo, $save } = useDataContext()
 
   let inline = false
+  let Content: JSX.Element
 
   switch (type.type) {
     case 'boolean':
     case 'number':
     case 'string':
-      inline = true
+      Content = (
+        <Shelf>
+          <DataInline />
+        </Shelf>
+      )
       break
+    case 'join':
+    case 'type':
     case 'array':
     case 'object':
+      Content = <DataBlock />
       break
   }
 
-  const Content = inline ? (
-    <Shelf>
-      <DataInline />
-    </Shelf>
-  ) : (
-    <DataBlock />
-  )
+  switch (type.type) {
+    case 'boolean':
+    case 'number':
+    case 'string':
+    case 'type':
+      inline = true
+      break
+  }
 
+  if (modified) {
+    actions.push({
+      Label: <Icon icon={faUndo} />,
+      handler: $undo,
+    })
+  }
+
+  if (modified && $save) {
+    actions.push({
+      Label: <Icon icon={faSave} />,
+      handler: $save,
+    })
+  }
   return (
     <Block
-      Label={
-        <Shelf row noPadding className="justify-between">
-          <div className="flex-grow">{Label}</div>
-          <DataActions />
-        </Shelf>
-      }
+      Label={Label}
+      actions={actions}
       Inline={<DataInline />}
       Content={Content}
       inlineClickable={!inline}
     />
-  )
-}
-
-function DataActions() {
-  const { modified, $undo } = useDataContext()
-
-  if (!modified) return null
-
-  return (
-    <Shelf noPadding row sm>
-      {modified && <ButtonIcon icon={faUndo} onClick={$undo} />}
-    </Shelf>
   )
 }

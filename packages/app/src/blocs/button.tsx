@@ -4,11 +4,12 @@ import { Surface$class } from 'src/blocs/structure/surface.class'
 import { QuickProps } from 'src/blocs/type'
 import { mergeClassNames } from 'src/blocs/util'
 
-export type ButtonProps = Pick<Surface_Props, 'contrast'> &
+export type ButtonProps = Pick<Surface_Props, 'contrast' | 'squared'> &
   QuickProps<HTMLButtonElement, 'onClick'>
 
 export function Button({
   contrast,
+  squared,
   children,
   className,
   htmlProps,
@@ -20,6 +21,7 @@ export function Button({
       border: contrast ? 'none' : 'md',
       radius: 'sm',
       shadow: 'lg',
+      squared,
     }),
     'px-1',
     'cursor-pointer uppercase font-bold text-center', //tw

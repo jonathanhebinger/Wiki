@@ -1,9 +1,7 @@
 import { useState } from 'react'
-import { Button } from 'src/blocs/button'
 import { Section } from 'src/blocs/structure/section'
 import { Shelf } from 'src/blocs/structure/shelf'
 import { DataItem } from 'src/features/data'
-import { TemplateKey } from 'src/types/template'
 import { Type } from 'src/types/type'
 
 import { useTemplate } from '../templates.context'
@@ -17,38 +15,47 @@ const KEY_TYPE: Type.Object = {
   ],
 }
 
-export function TemplateKeys() {
-  const { keys, keys$create } = useTemplate()
-
-  const Keys = keys.map(key => {
-    return <TemplateKeyE key={key.id} saved={key} />
-  })
-
+export function TemplateInfos() {
   return (
-    <Section Label={<>Keys - {keys.length}</>}>
+    <Section Label={<>Info</>}>
       <Shelf noPadding>
-        {Keys}
-        <Button className="p-1" onClick={keys$create} contrast>
-          Add Key
-        </Button>
+        <TemplateName />
+        <TemplateInfo />
       </Shelf>
     </Section>
   )
 }
 
-export function TemplateKeyE({ saved }: { saved: TemplateKey }) {
-  const { keys$update } = useTemplate()
+export function TemplateName() {
+  const { name, name$update } = useTemplate()
 
-  const [draft, draft$set] = useState(saved)
+  const [draft, draft$set] = useState(name)
 
   return (
     <DataItem
-      Label={<>{saved.name}</>}
+      Label={<>Name</>}
       draft={draft}
-      saved={saved}
-      type={KEY_TYPE}
+      saved={name}
+      type={{ type: 'string' }}
       onChange={draft$set}
-      onSave={keys$update}
+      onSave={name$update}
+    />
+  )
+}
+
+export function TemplateInfo() {
+  const { info, info$update } = useTemplate()
+
+  const [draft, draft$set] = useState(info)
+
+  return (
+    <DataItem
+      Label={<>About</>}
+      draft={draft}
+      saved={info}
+      type={{ type: 'string' }}
+      onChange={draft$set}
+      onSave={info$update}
     />
   )
 }

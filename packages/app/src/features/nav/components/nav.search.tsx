@@ -1,6 +1,5 @@
 import { Shelf } from 'src/blocs/structure/shelf'
 import { Title } from 'src/blocs/typo/title'
-import { NodeSearch } from 'src/features/node/components/node.search'
 import { useStoreActions } from 'src/features/root/root.store'
 
 export function NavSearch() {
@@ -9,7 +8,7 @@ export function NavSearch() {
   return (
     <Shelf noPadding>
       <Title>Search</Title>
-      <NodeSearch
+      {/* <NodeSearch
         onChange={(ids, context) => {
           // ids.map(id => actions.$open(id))
 
@@ -17,7 +16,7 @@ export function NavSearch() {
             context.actions.selected$clear()
           }
         }}
-      />
+      /> */}
     </Shelf>
   )
 }

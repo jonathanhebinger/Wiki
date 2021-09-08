@@ -1,7 +1,7 @@
 import { Shelf } from 'src/blocs/structure/shelf'
 
-import { Node } from '../node/components/node'
-import { TemplateE } from '../templates/components/template'
+import { TemplateMain } from '../templates/components/template'
+import { TemplateDataMain } from '../templates/components/template.data'
 import { useStoreState } from './root.store'
 
 export function MainList() {
@@ -9,11 +9,17 @@ export function MainList() {
 
   const Items = items.map(item => {
     switch (item.type) {
-      case 'node':
-        return <Node node={item.node} key={item.node.id} />
       case 'template':
         return (
-          <TemplateE templateId={item.template.id} key={item.template.id} />
+          <TemplateMain templateId={item.template.id} key={item.template.id} />
+        )
+      case 'data':
+        return (
+          <TemplateDataMain
+            template={item.template}
+            data={item.data}
+            key={item.template.id + item.data.id}
+          />
         )
     }
   })

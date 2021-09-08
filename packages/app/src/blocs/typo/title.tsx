@@ -25,7 +25,7 @@ export type TitleProps = Pick<DivProps, 'onClick'> &
 export function Title({
   size = 'md',
   color = 'primary',
-  uppercase = true,
+  uppercase = false,
   underline = true,
   bold = true,
   pointer = false,

@@ -36,6 +36,7 @@ export interface SearchStoreConfig<O> {
   multiple?: boolean
   Option: SearchOption<O>
   Selected: SearchSelected<O>
+  onChange?: (selected: O[]) => void
 }
 
 export interface SearchOptionProps<O> {

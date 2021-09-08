@@ -3,9 +3,8 @@ import { Icon } from 'src/blocs/icon'
 import { Shelf } from 'src/blocs/structure/shelf'
 import { Surface } from 'src/blocs/structure/surface'
 import { Title } from 'src/blocs/typo/title'
-import { NodeSearch } from 'src/features/node/components/node.search'
 import { useStoreActions, useStoreState } from 'src/features/root/root.store'
-import { NodeId } from 'src/types/node'
+import { TemplateDataId } from 'src/types/template'
 import { Type } from 'src/types/type'
 
 import { useDataContext } from '../data.context'
@@ -22,7 +21,7 @@ export function DataBlock() {
     case 'object':
       return <DataObject />
     case 'join':
-      return <DataNode />
+      return <JoinNode />
     case 'type':
       return <DataType />
   }
@@ -30,22 +29,24 @@ export function DataBlock() {
   return null
 }
 
-function DataNode() {
+function JoinNode() {
   const actions = useStoreActions()
-  const { draft, $change } = useDataContext<Type.Join, NodeId>()
+  const { type, draft, $change } = useDataContext<Type.Join, TemplateDataId>()
 
-  function handleChange([id]: NodeId[]) {
+  function handleChange([id]: TemplateDataId[]) {
     id && $change(id)
   }
   function handleClick() {
-    actions.nav.$open({ type: 'node', node: draft })
+    actions.nav.$open({ type: 'data', template: type.template, data: draft })
   }
 
-  const node = useStoreState(state => state.nodes.dictionnary)[draft]
+  const data = useStoreState(state => state.templates.dictionnary)[
+    type.template
+  ]?.data.find(data => data.id === draft)
 
   return (
     <Shelf>
-      {node && (
+      {data && (
         <Surface
           className="cursor-pointer"
           htmlProps={{ onClick: handleClick }}
@@ -53,12 +54,12 @@ function DataNode() {
           <Title>
             <Shelf row>
               <Icon icon={faLink}></Icon>
-              <div>{node.name}</div>
+              <div>{data.name}</div>
             </Shelf>
           </Title>
         </Surface>
       )}
-      <NodeSearch onChange={handleChange} />
+      {/* <NodeSearch onChange={handleChange} /> */}
     </Shelf>
   )
 }
