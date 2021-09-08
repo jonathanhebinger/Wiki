@@ -1,8 +1,21 @@
 import { useEffect, useMemo, useRef } from 'react'
+import { useSystem } from 'src/bang/hooks/system'
+import { Particle } from 'src/bang/particle'
 import { Search, SearchContext, SearchOptionProps, useSearchStore } from 'src/blocs/search'
-import { TemplateId } from 'src/types/template'
+import { Template, TemplateId } from 'src/types/template'
 
 import { useTemplatesContext } from '../templates.store'
+
+function useParticle<S>(state: S) {
+  const particle = new Particle(state)
+
+  useEffect(() => {
+    particle.state = state
+    particle.emit()
+  }, [state])
+
+  return particle
+}
 
 export function TemplateSearch({
   multiple = false,
@@ -16,7 +29,26 @@ export function TemplateSearch({
     context: SearchContext<TemplateSearch_Option>,
   ) => void
 }) {
-  const [templates] = useTemplatesContext()
+  const [templates, , refs] = useTemplatesContext()
+
+  const excludeParticle = useParticle(exclude)
+
+  useSystem({
+    list: refs.list,
+    exclude: excludeParticle,
+
+    get options() {
+      const list = this.list as Template[]
+
+      return list
+        .filter(template => !this.exclude.includes(template.id))
+        .map(template => ({
+          id: template.id,
+          name: template.name,
+          test: template.name.toLowerCase(),
+        }))
+    },
+  })
 
   const options = useMemo<TemplateSearch_Option[]>(
     () =>

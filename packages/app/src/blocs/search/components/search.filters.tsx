@@ -11,7 +11,7 @@ export function SearchFilters() {
         key={index}
         className="m-1"
         label={filter.name + ' - ' + state.filtered.sizes[index]}
-        onDelete={() => actions.filters$remove(filter)}
+        onDelete={() => actions.filters_remove(filter)}
       />
     )
   })

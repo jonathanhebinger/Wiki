@@ -17,7 +17,7 @@ export function Search({ store }: SearchProps) {
         <Surface
           className="flex flex-col"
           htmlProps={{
-            onClick: () => store.actions.$focus(),
+            onClick: () => store.actions.focus(),
           }}
         >
           <SearchFilters />

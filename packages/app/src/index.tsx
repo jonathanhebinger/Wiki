@@ -10,7 +10,7 @@ import { NavContextProvider } from './features/nav/nav.store'
 import { MainList } from './features/root/main.list'
 import { TemplatesContextProvider } from './features/templates/templates.store'
 
-ReactDOM.render( <Root />, document.getElementById( 'root' ) )
+ReactDOM.render(<Root />, document.getElementById('root'))
 
 function Root() {
   return (
@@ -36,4 +36,3 @@ function Root() {
     </TemplatesContextProvider>
   )
 }
-

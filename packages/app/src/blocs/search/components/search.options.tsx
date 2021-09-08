@@ -13,7 +13,7 @@ export function SearchOptions() {
         option={option}
         selected={state.selected.includes(option)}
         focused={false}
-        onSelect={() => actions.selected$add(option)}
+        onSelect={() => actions.selected_add(option)}
         key={index}
       />
     )

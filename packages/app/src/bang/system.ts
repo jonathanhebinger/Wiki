@@ -1,6 +1,7 @@
 import { Action } from './action'
 import { Atom } from './atom'
 import { Computed } from './computed'
+import { Particle } from './particle'
 import { Universe } from './universe'
 
 type IfEquals<X, Y, A = X, B = never> = (<T>() => T extends X ? 1 : 2) extends <
@@ -23,19 +24,31 @@ type ReadonlyKeys<T> = {
     P
   >
 }[keyof T]
+type ParticleKeys<T> = {
+  [P in keyof T]-?: T[P] extends Particle<any> ? P : never
+}[keyof T]
 type AtomsKeys<T> = {
   [P in keyof T]-?: T[P] extends Atom<any> ? P : never
 }[keyof T]
-type NotAtomsKeys<T> = {
-  [P in keyof T]-?: T[P] extends Atom<any> ? never : P
+type OtherKeys<T> = {
+  [P in keyof T]-?: T[P] extends Atom<any>
+    ? never
+    : T[P] extends Particle<any>
+    ? never
+    : P
 }[keyof T]
 
 export type SystemStructureThis<C extends object> = ThisType<
   {
-    [K in NotAtomsKeys<C>]: C[K]
+    [K in OtherKeys<C>]: C[K]
   } &
     {
       readonly [K in AtomsKeys<C>]: C[K] extends Atom<infer S> ? S : never
+    } &
+    {
+      readonly [K in ParticleKeys<C>]: C[K] extends Particle<infer S>
+        ? S
+        : never
     }
 >
 
@@ -59,6 +72,8 @@ export type SystemRefs<C extends object> = {
     readonly [K in WritableKeys<C>]: C[K] extends (...args: any[]) => any
       ? Action<Parameters<C[K]>, ReturnType<C[K]>>
       : C[K] extends Atom<any>
+      ? C[K]
+      : C[K] extends Particle<any>
       ? C[K]
       : Atom<C[K]>
   }
@@ -92,7 +107,18 @@ export function createSystem<C extends object>(
   })
 
   s.forEach((item, key) => {
-    if (item instanceof Computed) {
+    if (item instanceof Particle) {
+      const atom = new Atom(universe, item.state, item)
+
+      refs[key] = atom
+
+      Object.defineProperty(system, key, {
+        get() {
+          return atom.get()
+        },
+        configurable: false,
+      })
+    } else if (item instanceof Computed) {
       const atom = Atom.portalReadonly(universe, item)
 
       refs[key] = atom
