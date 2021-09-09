@@ -1,8 +1,7 @@
+import { Data, Type } from '@brainote/common'
 import produce from 'immer'
 import { GroupItem } from 'src/blocs/structure/group'
 import { Shelf } from 'src/blocs/structure/shelf'
-import { Data } from 'src/types/data'
-import { Type } from 'src/types/type'
 
 import { useDataContext } from '../data.context'
 import { Data$get_default } from '../data.default'

@@ -10,10 +10,7 @@ export function NavOpened() {
   const [{ opened_nodes }, actions] = useNavContext()
 
   const Nodes = opened_nodes.map(({ name, collapsed, ...info }) => {
-    const key =
-      info.type === 'template'
-        ? info.template.id
-        : info.template.id + info.data.id
+    const key = info.type === 'template' ? info.template.id : info.node.id
     return (
       <Surface
         key={key}

@@ -11,6 +11,5 @@ export namespace Data {
     | string
     | Array
     | Object
-    | NodeId
     | Type.Any
 }

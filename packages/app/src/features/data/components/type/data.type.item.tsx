@@ -1,4 +1,4 @@
-import { Type } from 'src/types/type'
+import { Type } from '@brainote/common'
 
 import { useDataContext } from '../../data.context'
 import { DataItem } from '../data'

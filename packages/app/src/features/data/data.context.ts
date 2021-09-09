@@ -1,6 +1,5 @@
+import { Data, Type } from '@brainote/common'
 import constate from 'constate/'
-import { Data } from 'src/types/data'
-import { Type } from 'src/types/type'
 
 export interface DataContextProps<Type = Type.Any, Data = any> {
   saved: Data | undefined

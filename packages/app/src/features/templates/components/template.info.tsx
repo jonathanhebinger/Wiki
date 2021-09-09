@@ -1,8 +1,8 @@
+import { Type } from '@brainote/common'
 import { useState } from 'react'
 import { Section } from 'src/blocs/structure/section'
 import { Shelf } from 'src/blocs/structure/shelf'
 import { DataItem } from 'src/features/data'
-import { Type } from 'src/types/type'
 
 import { useTemplate } from '../templates.context'
 

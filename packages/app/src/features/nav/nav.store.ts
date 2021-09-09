@@ -1,45 +1,53 @@
+import { Node, Template } from '@brainote/common'
 import constate from 'constate'
 import { useObserve, useSystem } from 'src/bang/hooks/system'
-import { Template } from 'src/types/template'
 
-import { useTemplatesContext } from '../templates/templates.store'
-import { NavRef, NavRefPayload } from './nav.model'
+import { nodes } from '../nodes/nodes.system'
+import { NavRef, NavRefJoined, NavRefPayload } from './nav.model'
 
 export const [NavContextProvider, useNavContext] = constate(() => {
-  const [, , templateRefs] = useTemplatesContext()
-
-  const tuple = useSystem({
+  const tuple = useSystem(() => ({
     opened: [] as NavRef[],
-    templates: templateRefs.map,
+    template: nodes.$$.template,
+    node: nodes.$$.node,
 
-    get opened_nodes() {
+    get opened_nodes(): NavRefJoined[] {
       return [...this.opened]
         .reverse()
         .map(({ collapsed, ...info }: NavRef): any => {
+          const type = info.type
+
           switch (info.type) {
             case 'template': {
-              const template = this.templates[info.template] as Template
+              const template = this.template(info.template) as Template
 
               return {
-                type: info.type,
+                type,
                 collapsed,
                 template,
                 name: template.name,
               }
             }
             case 'data': {
-              const template = this.templates[info.template] as Template
-
-              const data = template.data.find(item => {
-                return item.id === info.data
-              })
+              const template = this.template(info.template) as Template
+              const node = this.node(info.node) as Node
 
               return {
-                type: info.type,
+                type,
                 collapsed,
                 template,
-                data,
+                node,
                 name: template.name,
+              }
+            }
+            case 'node': {
+              const node = this.node(info.node) as Node
+
+              return {
+                type,
+                collapsed,
+                node,
+                name: node.name,
               }
             }
             default:
@@ -62,34 +70,45 @@ export const [NavContextProvider, useNavContext] = constate(() => {
     close_all() {
       this.opened = []
     },
-  })
+  }))
 
   const [, actions] = tuple
 
-  useObserve(templateRefs.create, ({ result }) => {
+  useObserve(nodes.$$.create, ({ result }) => {
     actions.open({
-      type: 'template',
-      template: result.id,
+      type: 'node',
+      node: result.id,
     })
   })
-  useObserve(templateRefs.data_create, ({ args: [template_id], result }) => {
-    actions.open({
-      type: 'data',
-      template: template_id,
-      data: result.id,
-    })
+  useObserve(nodes.$$.attach, ({ args: [node, template] }) => {
+    if (template === 'template') {
+      actions.open({
+        type: 'template',
+        template: node,
+      })
+    } else {
+      actions.open({
+        type: 'data',
+        template,
+        node,
+      })
+    }
   })
 
   return tuple
 })
 
 function info$test_equality(a: NavRef, b: NavRefPayload) {
+  if (a.type === 'node' && b.type === 'node') {
+    return a.node === b.node
+  }
+
   if (a.type === 'template' && b.type === 'template') {
     return a.template === b.template
   }
 
   if (a.type === 'data' && b.type === 'data') {
-    return a.template === b.template && a.data === b.data
+    return a.template === b.template && a.node === b.node
   }
 
   return false

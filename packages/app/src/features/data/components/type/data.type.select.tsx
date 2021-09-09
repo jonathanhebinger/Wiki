@@ -1,8 +1,8 @@
+import { Type } from '@brainote/common'
 import { useEffect } from 'react'
 import { useState } from 'react'
 import { Select } from 'src/blocs/forms/select'
 import { useDataContext } from 'src/features/data/data.context'
-import { Type } from 'src/types/type'
 
 type ValueTypeRecordItem = {
   draft: Type.Any

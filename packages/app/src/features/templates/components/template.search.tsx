@@ -1,10 +1,14 @@
-import { useEffect, useMemo, useRef } from 'react'
+import { Template, TemplateId } from '@brainote/common'
+import { useEffect, useMemo } from 'react'
 import { useSystem } from 'src/bang/hooks/system'
 import { Particle } from 'src/bang/particle'
-import { Search, SearchContext, SearchOptionProps, useSearchStore } from 'src/blocs/search'
-import { Template, TemplateId } from 'src/types/template'
-
-import { useTemplatesContext } from '../templates.store'
+import {
+  Search,
+  SearchContext,
+  SearchOptionProps,
+  useSearchStore,
+} from 'src/blocs/search'
+import { useNodesContext } from 'src/features/nodes/nodes.system'
 
 function useParticle<S>(state: S) {
   const particle = new Particle(state)
@@ -29,15 +33,15 @@ export function TemplateSearch({
     context: SearchContext<TemplateSearch_Option>,
   ) => void
 }) {
-  const [templates, , refs] = useTemplatesContext()
+  const [nodes, , refs] = useNodesContext()
 
   const excludeParticle = useParticle(exclude)
 
-  useSystem({
+  useSystem(() => ({
     list: refs.list,
     exclude: excludeParticle,
 
-    get options() {
+    get options(): TemplateSearch_Option[] {
       const list = this.list as Template[]
 
       return list
@@ -48,18 +52,18 @@ export function TemplateSearch({
           test: template.name.toLowerCase(),
         }))
     },
-  })
+  }))
 
   const options = useMemo<TemplateSearch_Option[]>(
     () =>
-      templates.list
+      nodes.list
         .filter(template => !exclude.includes(template.id))
         .map(template => ({
           id: template.id,
           name: template.name,
           test: template.name.toLowerCase(),
         })),
-    [templates, exclude],
+    [nodes, exclude],
   )
 
   const store = useSearchStore({

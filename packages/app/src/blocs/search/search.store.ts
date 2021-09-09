@@ -15,7 +15,7 @@ export function useSearchStore<O>({
   const input_ref = useRef<HTMLInputElement>(null)
   const block_ref = useRef<HTMLDivElement>(null)
 
-  const tuple = useSystem({
+  const tuple = useSystem(() => ({
     options,
 
     value: '',
@@ -81,7 +81,7 @@ export function useSearchStore<O>({
     filters_remove(filter: SearchFilter<O>) {
       this.filters = this.filters.filter(f => f.id !== filter.id)
     },
-  })
+  }))
 
   const [state, actions, refs] = tuple
 

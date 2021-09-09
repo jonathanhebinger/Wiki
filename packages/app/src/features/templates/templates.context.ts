@@ -1,34 +1,47 @@
+import { Key, Template, TemplateId } from '@brainote/common'
 import constate from 'constate'
-import { Template, TemplateId, TemplateKey } from 'src/types/template'
 
-import { useTemplatesContext } from './templates.store'
+import { useNodesContext } from '../nodes/nodes.system'
 
 export const [TemplateProvider, useTemplate] = constate(
   ({ templateId: template_id }: { templateId: TemplateId }) => {
-    const [templates, actions] = useTemplatesContext()
+    const [nodes, actions] = useNodesContext()
 
-    const template = templates.list.find(
-      template => template.id === template_id,
-    )
+    const template = nodes.template(template_id)
 
-    if (!template) throw new Error()
-
-    const { id, name, info } = template
+    const { id, name, info, data } = template
 
     function name$update(name: string) {
-      actions.update(id, { name, info })
+      actions.update(id, { name })
     }
     function info$update(info: string) {
-      actions.update(id, { name, info })
+      actions.update(id, { info })
     }
-    function keys$update(key: TemplateKey) {
-      actions.keys_update(template_id, key.id, key)
+    function keys$update(key: Key) {
+      actions.update(key.id, key)
     }
     function keys$create() {
-      actions.keys_create(template_id)
+      const key = actions.create(name)
+
+      actions.attach(key.id, 'key')
+
+      actions.update(id, template => {
+        ;(template as Template).data['template.keys'].push(key.id)
+      })
     }
 
-    return { ...template, name$update, info$update, keys$update, keys$create }
+    const keys = data['template.keys'].map(nodes.key)
+
+    return {
+      id,
+      name,
+      info,
+      keys,
+      name$update,
+      info$update,
+      keys$update,
+      keys$create,
+    }
   },
 )
 

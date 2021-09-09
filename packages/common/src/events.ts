@@ -1,4 +1,4 @@
-import { Node } from './node'
+import { Node, NodeId } from './node'
 
 export interface Event<Type extends string, Payload> {
   type: Type

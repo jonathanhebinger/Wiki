@@ -1,6 +1,40 @@
 import { Data } from './data'
 
-export declare namespace Filter {
+export namespace Filter {
+  export type Array = {
+    type: 'array.none' | 'array.some' | 'array.every'
+    matcher: any
+  }
+
+  export type Object = {
+    type: 'match-none' | 'match-some' | 'match-every'
+    matcher: any
+  }
+
+  export type NumberBase = {
+    type:
+      | 'number.>='
+      | 'number.>'
+      | 'number.<='
+      | 'number.<'
+      | 'number.=='
+      | 'number.!='
+    to: number
+  }
+  export type NumberRange = {
+    type: 'number.<>' | 'number.><'
+    range: [number, number]
+  }
+  export type Number = NumberBase | NumberRange
+
+  export type Boolean = boolean
+
+  export type Logic =
+    | { type: 'or' | 'and'; filters: any[] }
+    | { type: 'not'; filter: any }
+}
+
+export declare namespace Filter2 {
   export namespace Boolean {
     export interface Equal {
       type: 'boolean.equal'
@@ -52,17 +86,17 @@ export declare namespace Filter {
 
     export interface None {
       type: 'array.none'
-      filter: Filter.Any
+      filter: Filter2.Any
     }
 
     export interface Some {
       type: 'array.some'
-      filter: Filter.Any
+      filter: Filter2.Any
     }
 
     export interface Every {
       type: 'array.every'
-      filter: Filter.Any
+      filter: Filter2.Any
     }
 
     export type Any = Equal | Includes | None | Some | Every
@@ -76,7 +110,7 @@ export declare namespace Filter {
     }
 
     export interface Matcher {
-      [index: string]: Filter.Any
+      [index: string]: Filter2.Any
     }
 
     export interface Match {

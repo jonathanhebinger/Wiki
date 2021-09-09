@@ -1,12 +1,14 @@
-import { Template, TemplateData, TemplateDataId, TemplateId } from 'src/types/template'
+import { Node, NodeId, Template, TemplateId } from '@brainote/common'
 
 export type NavRef = NavRefPayload & {
   collapsed: boolean
 }
 export type NavRefPayload =
   | { type: 'template'; template: TemplateId }
-  | { type: 'data'; template: TemplateId; data: TemplateDataId }
+  | { type: 'data'; node: NodeId; template: TemplateId }
+  | { type: 'node'; node: NodeId }
 export type NavRefJoined = { collapsed: boolean; name: string } & (
   | { type: 'template'; template: Template }
-  | { type: 'data'; template: Template; data: TemplateData }
+  | { type: 'data'; node: Node; template: Template }
+  | { type: 'node'; node: Node }
 )

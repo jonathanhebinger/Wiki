@@ -1,30 +1,35 @@
+import { Node, Template } from '@brainote/common'
 import { faSave } from '@fortawesome/free-solid-svg-icons'
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { Icon } from 'src/blocs/icon'
 import { Block } from 'src/blocs/structure/block'
 import { DataObject } from 'src/features/data/components/data.object'
 import { DataContextProvider } from 'src/features/data/data.context'
-import { Template, TemplateData } from 'src/types/template'
+import { useNodesContext } from 'src/features/nodes/nodes.system'
 
-import { useTemplatesContext } from '../templates.store'
+import { useTemplate } from '../templates.context'
 
 export function TemplateDataMain({
   template,
   data,
 }: {
   template: Template
-  data: TemplateData
+  data: Node
 }) {
-  const [, templatesActions] = useTemplatesContext()
+  const { keys } = useTemplate()
 
-  const [draft, draft$set] = useState(data)
+  const [, nodes] = useNodesContext()
 
-  function handleChange(data: TemplateData) {
+  const [draft, draft$set] = useState(data.data)
+
+  function handleChange(data: Node['data']) {
     draft$set(data)
   }
 
   function handleSave() {
-    templatesActions.data_update(template.id, data.id, data)
+    nodes.update(data.id, node => {
+      Object.assign(node.data, draft)
+    })
   }
 
   const modified = JSON.stringify(data) !== JSON.stringify(draft)
@@ -36,9 +41,9 @@ export function TemplateDataMain({
   return (
     <DataContextProvider
       draft={draft}
-      saved={data}
+      saved={data.data}
       onChange={handleChange as any}
-      type={{ type: 'object', keys: template.keys }}
+      type={{ type: 'object', keys: keys as any }}
     >
       <Block
         Label={<>{template.name}</>}

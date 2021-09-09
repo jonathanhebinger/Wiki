@@ -61,7 +61,10 @@ export type SystemActionsKeys<T> = {
 
 export type SystemState<C extends object> = {
   readonly [K in SystemStateKeys<C>]: C[K]
-}
+} &
+  {
+    readonly [K in ReadonlyKeys<C>]: C[K]
+  }
 export type SystemActions<C extends object> = {
   readonly [K in SystemActionsKeys<C>]: C[K]
 }
@@ -79,14 +82,15 @@ export type SystemRefs<C extends object> = {
   }
 export type System<C extends object> = {
   readonly [K in keyof C]: C[K] extends Atom<infer S> ? S : C[K]
+} & {
+  readonly $$: SystemRefs<C>
 }
 
 export function createSystem<C extends object>(
   structure: C & SystemStructureThis<C>,
   universe: Universe = new Universe(),
-): [System<C>, SystemRefs<C>] {
-  const system: any = {}
-  const refs: any = {}
+): System<C> {
+  const system: any = { $$: {} }
 
   const s = new Map<string, any>()
   const c = new Map<string, () => any>()
@@ -110,7 +114,7 @@ export function createSystem<C extends object>(
     if (item instanceof Particle) {
       const atom = new Atom(universe, item.state, item)
 
-      refs[key] = atom
+      system.$$[key] = atom
 
       Object.defineProperty(system, key, {
         get() {
@@ -121,7 +125,7 @@ export function createSystem<C extends object>(
     } else if (item instanceof Computed) {
       const atom = Atom.portalReadonly(universe, item)
 
-      refs[key] = atom
+      system.$$[key] = atom
 
       Object.defineProperty(system, key, {
         get() {
@@ -139,7 +143,7 @@ export function createSystem<C extends object>(
           ? Atom.portalReadonly(universe, item)
           : new Atom(universe, item)
 
-      refs[key] = atom
+      system.$$[key] = atom
 
       Object.defineProperty(system, key, {
         set(state) {
@@ -156,7 +160,7 @@ export function createSystem<C extends object>(
   c.forEach((compute, key) => {
     const computed = new Computed(universe, compute.bind(system))
 
-    refs[key] = computed
+    system.$$[key] = computed
 
     Object.defineProperty(system, key, {
       get() {
@@ -169,7 +173,7 @@ export function createSystem<C extends object>(
   a.forEach((handler, key) => {
     const action = new Action(universe, handler.bind(system))
 
-    refs[key] = action
+    system.$$[key] = action
 
     Object.defineProperty(system, key, {
       value: action.execute.bind(action),
@@ -178,5 +182,5 @@ export function createSystem<C extends object>(
     })
   })
 
-  return [system, refs]
+  return system
 }

@@ -1,7 +1,7 @@
+import { NodeId } from '@brainote/common'
 import { Checkbox } from 'src/blocs/forms/checkbox'
 import { Input } from 'src/blocs/forms/input'
 import { useDataContext } from 'src/features/data/data.context'
-import { NodeId } from 'src/types/node'
 
 import { ValueTypeSelect } from './type/data.type.select'
 

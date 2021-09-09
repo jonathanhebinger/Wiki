@@ -6,29 +6,32 @@ import { useNodesContext } from 'src/features/nodes/nodes.system'
 
 import { useNavContext } from '../nav.store'
 
-export function NavTemplates() {
-  const [{ templates }] = useNodesContext()
+export function NavNodes() {
+  const [{ list }] = useNodesContext()
   const [, actions] = useNavContext()
 
-  const Nodes = templates.map(template => {
+  const Nodes = list.map(node => {
+    function handleOpen() {
+      actions.open({ type: 'node', node: node.id })
+    }
+
     return (
       <Surface
         htmlProps={{
-          onClick: () =>
-            actions.open({ type: 'template', template: template.id }),
+          onClick: handleOpen,
         }}
-        key={template.id}
+        key={node.id}
         className="p-1"
         squared
         shadow="sm"
       >
-        {template.name}
+        {node.name}
       </Surface>
     )
   })
 
   return (
-    <Section Label={<>Templates - {templates.length}</>}>
+    <Section Label={<>Nodes - {list.length}</>}>
       <Shelf noPadding>{Nodes}</Shelf>
     </Section>
   )

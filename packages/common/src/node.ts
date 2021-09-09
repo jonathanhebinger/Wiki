@@ -1,11 +1,14 @@
-import { Data } from 'src/data'
-import { Id } from 'src/util'
+import { Data } from './data'
+import { Id } from './id'
+import { TemplateId } from './template'
 
-export interface Node {
-  id: Id<'node'>
-
+export type NodeId = Id<'node'>
+export type Node = {
+  id: NodeId
   name: string
-  tags: NodeId[]
-  data: { [index: string]: Data }
-  info?: any
+  info: string
+  templates: TemplateId[]
+  data: {
+    [index: string]: Data.Any
+  }
 }

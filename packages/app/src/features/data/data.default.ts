@@ -1,5 +1,4 @@
-import { Data } from 'src/types/data'
-import { Type } from 'src/types/type'
+import { Data, Type } from '@brainote/common'
 
 export function Data$get_default(type: Type.Any): Data.Any {
   switch (type.type) {

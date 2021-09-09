@@ -18,7 +18,7 @@
   "typescript.preferences.quoteStyle": "single",
   "typescript.suggest.completeFunctionCalls": true,
   "typescriptHero.imports.insertSemicolons": false,
-  "typescriptHero.imports.multiLineWrapThreshold": 100,
+  "typescriptHero.imports.multiLineWrapThreshold": 80,
   "typescriptHero.imports.organizeOnSave": true,
   "tailwindCSS.experimental.classRegex": ["[^']*'([^']*)'[^']*//tw"],
   "typescript.tsdk": "node_modules\\typescript\\lib"

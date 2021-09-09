@@ -7,14 +7,14 @@ import { Shelf } from 'src/blocs/structure/shelf'
 import { Nav } from 'src/features/nav/components/nav'
 
 import { NavContextProvider } from './features/nav/nav.store'
+import { NodesContextProvider } from './features/nodes/nodes.system'
 import { MainList } from './features/root/main.list'
-import { TemplatesContextProvider } from './features/templates/templates.store'
 
 ReactDOM.render(<Root />, document.getElementById('root'))
 
 function Root() {
   return (
-    <TemplatesContextProvider>
+    <NodesContextProvider>
       <NavContextProvider>
         <DialogContextProvider>
           <Dialog />
@@ -33,6 +33,6 @@ function Root() {
           </Shelf>
         </DialogContextProvider>
       </NavContextProvider>
-    </TemplatesContextProvider>
+    </NodesContextProvider>
   )
 }

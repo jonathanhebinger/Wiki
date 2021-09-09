@@ -1,19 +1,25 @@
+import { Key, Type } from '@brainote/common'
 import { useState } from 'react'
 import { Button } from 'src/blocs/button'
 import { Section } from 'src/blocs/structure/section'
 import { Shelf } from 'src/blocs/structure/shelf'
 import { DataItem } from 'src/features/data'
-import { TemplateKey } from 'src/types/template'
-import { Type } from 'src/types/type'
 
 import { useTemplate } from '../templates.context'
 
 const KEY_TYPE: Type.Object = {
   type: 'object',
   keys: [
-    { id: 'name', name: 'name', type: { type: 'string' } },
-    { id: 'type', name: 'type', type: { type: 'type' } },
-    { id: 'required', name: 'required', type: { type: 'boolean' } },
+    {
+      id: 'key.required',
+      name: 'key.required',
+      type: { type: 'boolean' },
+    },
+    {
+      id: 'key.type',
+      name: 'key.type',
+      type: { type: 'type' },
+    },
   ],
 }
 
@@ -36,16 +42,16 @@ export function TemplateKeys() {
   )
 }
 
-export function TemplateKeyE({ saved }: { saved: TemplateKey }) {
+export function TemplateKeyE({ saved }: { saved: Key }) {
   const { keys$update } = useTemplate()
 
-  const [draft, draft$set] = useState(saved)
+  const [draft, draft$set] = useState(saved.data)
 
   return (
     <DataItem
       Label={<>{saved.name}</>}
       draft={draft}
-      saved={saved}
+      saved={saved.data}
       type={KEY_TYPE}
       onChange={draft$set}
       onSave={keys$update}

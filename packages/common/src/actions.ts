@@ -1,4 +1,4 @@
-import { Node } from './node'
+import { Node, NodeId } from './node'
 
 export interface Action<Type extends string, Payload> {
   type: Type
@@ -7,7 +7,7 @@ export interface Action<Type extends string, Payload> {
 
 export declare namespace Action {
   export namespace Payload {
-    export type Create = Pick<Node, 'name' | 'tags'>
+    export type Create = Pick<Node, 'name'>
     export type Update = Pick<Node, 'id' | 'name'>
     export type Delete = NodeId
   }

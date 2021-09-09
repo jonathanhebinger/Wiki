@@ -6,6 +6,7 @@ import { Atom } from '../atom'
 import { Observable, Observer, ObserverTerminator } from '../observable'
 import {
   createSystem,
+  System,
   SystemActions,
   SystemRefs,
   SystemState,
@@ -14,17 +15,21 @@ import {
 import { Universe } from '../universe'
 
 export function useSystem<C extends object>(
-  structure: C & SystemStructureThis<C>,
+  structure: (() => C & SystemStructureThis<C>) | System<C>,
   universe?: Universe,
 ): [SystemState<C>, SystemActions<C>, SystemRefs<C>] {
   const { actions, refs, terminators, internalState } = useMemo(() => {
-    const [system, refs] = createSystem(structure, universe)
+    const system =
+      typeof structure === 'function'
+        ? createSystem(structure(), universe)
+        : structure
+    const refs = system.$$
 
     const internalState: any = {}
     const actions: any = {}
     const terminators = new Set<ObserverTerminator>()
 
-    Object.keys(refs).forEach(key => {
+    Object.keys(system.$$).forEach(key => {
       const item = refs[key as keyof typeof refs] as
         | Atom<any>
         | Action<any, any>
@@ -61,12 +66,10 @@ export function useSystem<C extends object>(
 }
 
 export function createSystemContext<C extends object>(
-  builder: () => C & SystemStructureThis<C>,
+  structure: (() => C & SystemStructureThis<C>) | System<C>,
   universe?: Universe,
 ) {
   return constate(() => {
-    const structure = builder()
-
     return useSystem(structure, universe)
   })
 }

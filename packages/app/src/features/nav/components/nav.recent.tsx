@@ -2,12 +2,12 @@ import { useState } from 'react'
 import { Section } from 'src/blocs/structure/section'
 import { Shelf } from 'src/blocs/structure/shelf'
 import { Surface } from 'src/blocs/structure/surface'
-import { useTemplatesContext } from 'src/features/templates/templates.store'
+import { useNodesContext } from 'src/features/nodes/nodes.system'
 
 import { useNavContext } from '../nav.store'
 
 export function NavRecent() {
-  const [{ list }] = useTemplatesContext()
+  const [{ list }] = useNodesContext()
   const [, actions] = useNavContext()
 
   const [collapsed, collapsed$set] = useState(false)

@@ -1,10 +1,10 @@
+import { Type } from '@brainote/common'
 import { faTrash } from '@fortawesome/free-solid-svg-icons'
 import React from 'react'
 import { Button } from 'src/blocs/button'
 import { ButtonIcon } from 'src/blocs/button.icon'
 import { Block } from 'src/blocs/structure/block'
 import { Shelf } from 'src/blocs/structure/shelf'
-import { Type } from 'src/types/type'
 import { v4 } from 'uuid'
 
 import { useDataContext } from '../../data.context'
