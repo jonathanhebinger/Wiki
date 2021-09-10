@@ -1,8 +1,7 @@
-import { Key, Node, NodeId, Template } from '@brainote/common'
-import { createSystemContext } from 'src/bang/hooks/system'
+import { Key, Node, NodeId, Template, TemplateId } from '@brainote/common'
+import { Action, action, Computed, computed, Thunk, thunk } from 'easy-peasy'
 import { v4 } from 'uuid'
 
-import { createSystem } from '../../bang/system'
 import { Data$get_default } from '../data/data.default'
 
 const KEY_KEYS: Key[] = [
@@ -61,7 +60,7 @@ const TEMPLATE_KEYS: Key[] = [
     templates: ['key'],
     data: {
       'key.required': true,
-      'key.type': { type: 'join', multiple: true },
+      'key.type': { type: 'join', template: '__self__', multiple: true },
     },
   },
 ]
@@ -83,49 +82,68 @@ const NODES: Node[] = [
   TEMPLATE_TEMPLATE,
 ]
 
-export const nodes = createSystem({
-  list: NODES as Node[],
+type Patch = Partial<Node> | ((node: Node) => void)
 
-  get keys(): Key[] {
-    return this.list.filter(node => {
+export interface NodesModel {
+  list: Node[]
+  keys: Computed<this, Key[]>
+  templates: Computed<this, Template[]>
+
+  node: Computed<this, (id: NodeId) => Node>
+  key: Computed<this, (id: NodeId) => Key>
+  template: Computed<this, (id: NodeId) => Template>
+
+  insert: Action<this, Node>
+  create: Thunk<this, { name: string }, any, {}, Node>
+  update: Action<this, { node_id: NodeId; patch: Patch }>
+  delete: Action<this, { node_id: NodeId }>
+
+  update_data: Action<this, { node_id: NodeId; data: Node['data'] }>
+
+  attach: Action<this, { node_id: NodeId; template_id: TemplateId }>
+  detach: Action<this, { node_id: NodeId; template_id: TemplateId }>
+}
+
+export const nodesModel: NodesModel = {
+  list: NODES,
+
+  keys: computed(state => {
+    return state.list.filter(node => {
       return node.templates.includes('key')
     }) as Key[]
-  },
-  get templates(): Template[] {
-    return this.list.filter(node => {
+  }),
+  templates: computed(state => {
+    return state.list.filter(node => {
       return node.templates.includes('template')
     }) as Template[]
-  },
+  }),
 
-  get node() {
-    const nodes = this.list
-
+  node: computed(state => {
     return (node_id: NodeId) => {
-      return nodes.find(node => {
+      return state.list.find(node => {
         return node.id === node_id
       }) as Node
     }
-  },
-  get template() {
-    const templates = this.templates
-
+  }),
+  template: computed(state => {
     return (template_id: NodeId) => {
-      return templates.find(node => {
-        return node.id === template_id
+      return state.templates.find(template => {
+        return template.id === template_id
       }) as Template
     }
-  },
-  get key() {
-    const key = this.keys
-
-    return (key_if: NodeId) => {
-      return key.find(node => {
-        return node.id === key_if
+  }),
+  key: computed(state => {
+    return (key_id: NodeId) => {
+      return state.keys.find(key => {
+        return key.id === key_id
       }) as Key
     }
-  },
+  }),
 
-  create(name: string) {
+  insert: action((state, node) => {
+    state.list.push(node)
+  }),
+  create: thunk((actions, { name }) => {
     const node: Node = {
       id: v4(),
       name,
@@ -134,41 +152,41 @@ export const nodes = createSystem({
       data: {},
     }
 
-    this.list.push(node)
+    actions.insert(node)
 
     return node
-  },
-  update(node_id: NodeId, patch: Partial<Node> | ((node: Node) => void)) {
-    const node = this.node(node_id)
+  }),
+  update: action((state, { node_id, patch }) => {
+    const node = state.node(node_id)
 
     if (typeof patch === 'function') {
       patch(node)
     } else {
       Object.assign(node, patch)
     }
-  },
-  delete(node_id: NodeId) {
-    this.list = this.list.filter(node => node.id !== node_id)
-  },
+  }),
+  delete: action((state, { node_id }) => {
+    state.list = state.list.filter(node => node.id !== node_id)
+  }),
 
-  update_data(node_id: NodeId, data: Node['data']) {
-    const node = this.node(node_id)
+  update_data: action((state, { node_id, data }) => {
+    const node = state.node(node_id)
 
     Object.entries(data).map(([key_id, data]) => {
-      const key = this.key(key_id)
+      const key = state.key(key_id)
 
       node.data[key.id] = data
     })
-  },
+  }),
 
-  attach(node_id: NodeId, template_id: NodeId) {
-    const node = this.node(node_id)
-    const template = this.template(template_id)
+  attach: action((state, { node_id, template_id }) => {
+    const node = state.node(node_id)
+    const template = state.template(template_id)
 
     node.templates.push(template.id)
 
     template.data['template.keys'].map(key_id => {
-      const key = this.key(key_id)
+      const key = state.key(key_id)
 
       if (node.data[key.id] !== undefined) return
       if (!key.data['key.required']) return
@@ -177,8 +195,22 @@ export const nodes = createSystem({
     })
 
     template.data['template.data'].push(template.id)
-  },
-})
+  }),
 
-export const [NodesContextProvider, useNodesContext] =
-  createSystemContext(nodes)
+  detach: action((state, { node_id, template_id }) => {
+    const node = state.node(node_id)
+
+    node.templates = node.templates.filter(id => id !== template_id)
+
+    const keys = node.templates
+      .map(state.template)
+      .map(template => template.data['template.keys'])
+      .flat()
+
+    Object.keys(node.data).map(key => {
+      if (!keys.includes(key)) {
+        delete node.data[key]
+      }
+    })
+  }),
+}

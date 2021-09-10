@@ -15,7 +15,7 @@ export function SearchInput() {
       ref={input_ref}
       type="text"
       className={INPUT_CLASS}
-      onChange={e => actions.change(e.target.value)}
+      onChange={e => actions.$change(e.target.value)}
     />
   )
 }

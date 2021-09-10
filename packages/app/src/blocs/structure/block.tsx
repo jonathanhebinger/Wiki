@@ -16,6 +16,7 @@ export interface BlockProps {
   Content: React.ReactNode
   inlineClickable?: boolean
   actions?: BlockAction[]
+  opened?: boolean
 }
 
 export function Block({
@@ -24,8 +25,9 @@ export function Block({
   Content,
   inlineClickable,
   actions = [],
+  opened: defaultOpened = false,
 }: BlockProps) {
-  const [opened, opened$set] = useState(false)
+  const [opened, opened$set] = useState(defaultOpened)
   const [hovered, hovered$set] = useState(false)
 
   function toggle() {
@@ -43,7 +45,7 @@ export function Block({
         squared
         shadowless
         className={mergeClassNames(
-          'flex items-center px-2 cursor-pointer hover:bg-gray-100',
+          'h-7 w-7 flex items-center justify-center cursor-pointer hover:bg-gray-100',
         )}
         htmlProps={{ onClick: handler }}
       >
@@ -61,7 +63,7 @@ export function Block({
         onMouseLeave: () => hovered$set(false),
       }}
     >
-      <div className="flex" onClick={handleHeaderClick}>
+      <div className="flex h-7" onClick={handleHeaderClick}>
         <Surface
           squared
           shadowless

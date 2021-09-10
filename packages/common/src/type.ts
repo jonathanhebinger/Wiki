@@ -22,7 +22,7 @@ export namespace Type {
   }
 
   export type Join = Base<'join'> & {
-    template?: TemplateId
+    template: TemplateId
     reflect?: TemplateKeyId
     multiple: boolean
   }

@@ -1,19 +1,23 @@
 import { faPlus, faTimes } from '@fortawesome/free-solid-svg-icons'
 import { ButtonIcon } from 'src/blocs/button.icon'
 import { Shelf } from 'src/blocs/structure/shelf'
-import { useNodesContext } from 'src/features/nodes/nodes.system'
-
-import { useNavContext } from '../nav.store'
+import { useActions, useNavActions } from 'src/features/root/root.store'
 
 export function NavActions() {
-  const [, nodes] = useNodesContext()
-  const [, nav] = useNavContext()
+  const actions = useActions(actions => actions.nodes)
+  const nav = useNavActions()
 
   function handleCreate() {
-    const node = nodes.create('New Template')
+    const node = actions.create({
+      name: 'New Template',
+    })
 
-    nodes.attach(node.id, 'template')
+    actions.attach({
+      node_id: node.id,
+      template_id: 'template',
+    })
   }
+
   function handleCloseAll() {
     nav.close_all()
   }

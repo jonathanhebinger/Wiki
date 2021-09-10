@@ -1,18 +1,16 @@
-import { useState } from 'react'
 import { Section } from 'src/blocs/structure/section'
 import { Shelf } from 'src/blocs/structure/shelf'
 import { Surface } from 'src/blocs/structure/surface'
-import { useNodesContext } from 'src/features/nodes/nodes.system'
-
-import { useNavContext } from '../nav.store'
+import { useModel, useNavActions } from 'src/features/root/root.store'
 
 export function NavNodes() {
-  const [{ list }] = useNodesContext()
-  const [, actions] = useNavContext()
+  const list = useModel(state => state.nodes.list)
+
+  const actions = useNavActions()
 
   const Nodes = list.map(node => {
     function handleOpen() {
-      actions.open({ type: 'node', node: node.id })
+      actions.open(node.id)
     }
 
     return (

@@ -1,29 +1,34 @@
+import { Action, Actions, Computed, State, ThunkOn } from 'easy-peasy'
+
 export interface SearchFilter<O> {
   id: string | number
   name: React.ReactNode
   test: (option: O) => boolean
 }
 
-export interface SearchStoreState<O> {
+export interface SearchStore<O> {
+  // State
   value: string
   opened: boolean
   filters: SearchFilter<O>[]
   selected: O[]
 
-  filtered: { options: O[]; sizes: number[] }
-}
-export interface SearchStoreActions<O> {
-  focus(): void
-  unfocus(): void
-  change(value: string): void
-  selected_add(option: O): void
-  selected_clear(): void
-  selected_remove(index: number): void
-  filters_add(filter: SearchFilter<O>): void
-  filters_remove(filter: SearchFilter<O>): void
-}
+  // Computed
+  filtered: Computed<this, { options: O[]; sizes: number[] }>
 
-export type SearchStore<O> = SearchStoreState<O> & SearchStoreActions<O>
+  // Actions
+  $focus: Action<this>
+  $unfocus: Action<this>
+  $change: Action<this, string>
+  selected$add: Action<this, O>
+  selected$clear: Action<this>
+  selected$remove: Action<this, number>
+  filters$add: Action<this, SearchFilter<O>>
+  filters$remove: Action<this, SearchFilter<O>>
+
+  // ThunksOn
+  $refocus: ThunkOn<this>
+}
 
 export interface SearchStoreConfig<O> {
   options: O[]
@@ -53,8 +58,8 @@ export type SearchSelected<O> = (
 ) => React.ReactElement
 
 export type SearchContext<O> = {
-  state: SearchStoreState<O>
-  actions: SearchStoreActions<O>
+  state: State<SearchStore<O>>
+  actions: Actions<SearchStore<O>>
   input_ref: React.RefObject<HTMLInputElement>
   block_ref: React.RefObject<HTMLDivElement>
   Option: SearchOption<O>

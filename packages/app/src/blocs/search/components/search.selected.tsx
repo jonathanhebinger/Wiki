@@ -11,7 +11,7 @@ export function SearchSelected() {
         key={index}
         className="m-1"
         label={<Selected option={option} index={index} />}
-        onDelete={() => actions.selected_remove(index)}
+        onDelete={() => actions.selected$remove(index)}
       />
     )
   })

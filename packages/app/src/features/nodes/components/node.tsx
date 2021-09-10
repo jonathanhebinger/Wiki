@@ -1,55 +1,86 @@
-import { Data, Key, NodeId } from '@brainote/common'
-import { faPlus, faTimes, faTrash } from '@fortawesome/free-solid-svg-icons'
+import { NodeId } from '@brainote/common'
+import {
+  faEye,
+  faEyeSlash,
+  faPlus,
+  faTimes,
+  faTrash,
+} from '@fortawesome/free-solid-svg-icons'
 import { useState } from 'react'
+import { useDialogContext } from 'src/blocs/dialog'
 import { Icon } from 'src/blocs/icon'
 import { Block } from 'src/blocs/structure/block'
-import { Section } from 'src/blocs/structure/section'
-import { Shelf } from 'src/blocs/structure/shelf'
 import { Title } from 'src/blocs/typo/title'
-import { DataItem } from 'src/features/data'
-import { useNavContext } from 'src/features/nav/nav.store'
-import { useNodesContext } from 'src/features/nodes/nodes.system'
-
 import {
-  NodeProvider,
-  NodeTemplate as INodeTemplate,
-  useNode,
-} from '../node.context'
+  useActions,
+  useModel,
+  useNavActions,
+} from 'src/features/root/root.store'
+import { TemplateSearch } from 'src/features/templates/template.search'
 
-export interface NodeMainProps {
-  nodeId: NodeId
-}
-export function NodeMain({ nodeId }: NodeMainProps) {
-  const [, nav] = useNavContext()
-  const [, nodes] = useNodesContext()
+import { NodeProvider, useNode } from '../node.context'
+import { NodeInfos } from './node.infos'
+import { NodeTemplates } from './node.templates'
+
+export function NodeMain({ id: node_id }: { id: NodeId }) {
+  const nav = useNavActions()
+
+  const nodes = useModel(state => state.nodes)
+  const actions = useActions(actions => actions.nodes)
 
   function handleClose() {
-    nav.close({ type: 'node', node: nodeId })
+    nav.close(node_id)
   }
+  const dialog = useDialogContext()
 
-  function handleNewData() {
-    const node = nodes.create('New node')
+  const [hidden, hidden$set] = useState(false)
 
-    nodes.attach(node.id, nodeId)
+  function handleTemplatesAdd() {
+    dialog.$open({
+      Content: (
+        <>
+          <TemplateSearch
+            onChange={ids => {
+              ids.forEach(template_id => {
+                actions.attach({
+                  node_id,
+                  template_id,
+                })
+                //  dialog.$close()
+              })
+            }}
+            exclude={nodes.node(node_id).templates}
+          />
+        </>
+      ),
+      clickOutsideHandler() {
+        dialog.$close()
+      },
+    })
+  }
+  function handleTemplatesHide() {
+    hidden$set(!hidden)
   }
 
   return (
-    <NodeProvider nodeId={nodeId}>
-      <Block
-        Label={<NodeTitle />}
-        Content={
-          <Shelf>
-            {/* <NodeInfos /> */}
-            {/* <NodeKeys /> */}
-            <NodeTemplateList />
-          </Shelf>
-        }
-        actions={[
-          { Label: <Icon icon={faPlus} />, handler: handleNewData },
-          { Label: <Icon icon={faTrash} />, handler: handleClose },
-          { Label: <Icon icon={faTimes} />, handler: handleClose },
-        ]}
-      ></Block>
+    <NodeProvider id={node_id}>
+      <div>
+        <Block
+          opened
+          Label={<NodeTitle />}
+          Content={<NodeInfos />}
+          actions={[
+            {
+              Label: <Icon icon={hidden ? faEye : faEyeSlash} />,
+              handler: handleTemplatesHide,
+            },
+            { Label: <Icon icon={faPlus} />, handler: handleTemplatesAdd },
+            { Label: <Icon icon={faTrash} />, handler: handleClose },
+            { Label: <Icon icon={faTimes} />, handler: handleClose },
+          ]}
+        />
+        {hidden || <NodeTemplates />}
+      </div>
     </NodeProvider>
   )
 }
@@ -61,66 +92,5 @@ function NodeTitle() {
     <Title underline={false} uppercase>
       {name}
     </Title>
-  )
-}
-
-function NodeTemplateList() {
-  const { templates } = useNode()
-
-  const Items = templates.map(({ data, template }) => {
-    return <NodeTemplate data={data} template={template} key={template.id} />
-  })
-
-  return <Shelf noPadding>{Items}</Shelf>
-}
-
-function NodeTemplate({ template, data }: INodeTemplate) {
-  return (
-    <Section
-      Label={
-        <>
-          {template.name} - {data.length}
-        </>
-      }
-    >
-      <Shelf noPadding>
-        {data.map(({ data, key }) => {
-          return (
-            <DataItem
-              key={key.id}
-              Label={<>{key.name}</>}
-              draft={data}
-              saved={data}
-              type={key.data['key.type']}
-              onChange={console.log}
-              onSave={console.log}
-            />
-          )
-        })}
-      </Shelf>
-    </Section>
-  )
-}
-
-function NodeTemplateKey({ data, key }: { key: Key; data: Data.Any }) {
-  const [, actions] = useNodesContext()
-  const { id } = useNode()
-
-  const [draft, draft$set] = useState(data)
-
-  function handleSave() {
-    actions.update_data(id, { [key.id]: draft })
-  }
-
-  return (
-    <DataItem
-      key={key.id}
-      Label={<>{key.name}</>}
-      draft={draft}
-      saved={data}
-      type={key.data['key.type']}
-      onChange={draft$set}
-      onSave={handleSave}
-    />
   )
 }

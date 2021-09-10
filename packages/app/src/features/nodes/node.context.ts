@@ -1,56 +1,52 @@
-import { Data, Key, Node, NodeId, Template } from '@brainote/common'
+import { Key, Node, NodeId, Template } from '@brainote/common'
 import constate from 'constate'
 
-import { useNodesContext } from './nodes.system'
+import { useActions, useModel } from '../root/root.store'
 
 export interface NodeTemplate {
   template: Template
-  data: {
-    key: Key
-    data: Data.Any
-  }[]
+  keys: Key[]
 }
 
-export const [NodeProvider, useNode] = constate(
-  ({ nodeId: node_id }: { nodeId: NodeId }) => {
-    const [nodes, actions] = useNodesContext()
+export const [NodeProvider, useNode] = constate(({ id }: { id: NodeId }) => {
+  const nodes = useModel(state => state.nodes)
+  const actions = useActions(actions => actions.nodes)
 
-    const node = nodes.node(node_id)
+  const node = nodes.node(id)
 
-    const { id, name, info, data } = node
+  const { name, info, data } = node
 
-    function name$update(name: string) {
-      actions.update(id, { name })
-    }
-    function info$update(info: string) {
-      actions.update(id, { info })
-    }
-
-    const keys = Object.keys(data).map(nodes.key)
-    const templates = node.templates.map(nodes.template).map(template => {
-      return {
-        template,
-        data: template.data['template.keys'].map(nodes.key).map(key => {
-          return {
-            key,
-            data: data[key.id],
-          }
-        }),
-      }
+  function name$update(name: string) {
+    actions.update({
+      node_id: id,
+      patch: { name },
     })
+  }
+  function info$update(info: string) {
+    actions.update({
+      node_id: id,
+      patch: { info },
+    })
+  }
 
-    return {
-      id,
-      name,
-      info,
-      data,
-      keys,
-      templates,
-      name$update,
-      info$update,
-    }
-  },
-)
+  const keys = Object.keys(data).map(nodes.key)
+  const templates = node.templates.map(nodes.template).map(template => {
+    const keys = template.data['template.keys'].map(nodes.key)
+
+    return { template, keys }
+  })
+
+  return {
+    id,
+    name,
+    info,
+    data,
+    keys,
+    templates,
+    name$update,
+    info$update,
+  }
+})
 
 export interface NodeDataKey {
   typeNode: Node

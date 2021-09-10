@@ -1,8 +1,13 @@
+import { action, computed, thunkOn, useLocalStore } from 'easy-peasy'
 import { useEffect, useRef } from 'react'
-import { useObserve, useSystem } from 'src/bang/hooks/system'
 import { useOnClickOutside } from 'src/util/useOnClickOutside'
 
-import { SearchContext, SearchFilter, SearchStoreConfig } from './search.type'
+import {
+  SearchContext,
+  SearchFilter,
+  SearchStore,
+  SearchStoreConfig,
+} from './search.type'
 
 export function useSearchStore<O>({
   options,
@@ -10,101 +15,93 @@ export function useSearchStore<O>({
   multiple = true,
   Option,
   Selected,
-  onChange,
 }: SearchStoreConfig<O>): SearchContext<O> {
   const input_ref = useRef<HTMLInputElement>(null)
   const block_ref = useRef<HTMLDivElement>(null)
 
-  const tuple = useSystem(() => ({
-    options,
+  const [state, actions] = useLocalStore<SearchStore<O>>(
+    previous => ({
+      value: '',
+      opened: false,
+      filters: [],
+      selected: [],
 
-    value: '',
-    opened: false,
-    filters: [] as SearchFilter<O>[],
-    selected: [] as O[],
+      ...previous,
 
-    get filtered() {
-      let options_filtered = options
+      filtered: computed(state => {
+        let options_filtered = options
 
-      if (filterSelected) {
-        options_filtered = options_filtered.filter(
-          option => !this.selected.includes(option),
-        )
-      }
+        if (filterSelected) {
+          options_filtered = options_filtered.filter(
+            option => !state.selected.includes(option),
+          )
+        }
 
-      const sizes: number[] = []
+        const sizes: number[] = []
 
-      options_filtered = this.filters.reduce((options, filter) => {
-        options = options.filter(option => filter.test(option))
+        options_filtered = state.filters.reduce((options, filter) => {
+          options = options.filter(option => filter.test(option))
 
-        sizes.push(options.length)
+          sizes.push(options.length)
 
-        return options
-      }, options_filtered)
+          return options
+        }, options_filtered)
 
-      return { options: options_filtered, sizes }
-    },
+        return { options: options_filtered, sizes }
+      }),
 
-    change(value: string) {
-      this.value = value
-    },
+      $focus: action(state => {
+        state.opened = true
+        input_ref.current?.focus()
+      }),
+      $unfocus: action(state => {
+        state.opened = false
+      }),
 
-    focus() {
-      this.opened = true
-      input_ref.current?.focus()
-    },
-    unfocus() {
-      this.opened = false
-    },
+      selected$add: action((state, option) => {
+        if (multiple) {
+          state.selected.includes(option) || state.selected.push(option)
+          state.opened = false
+        } else {
+          state.selected = [option]
+          state.opened = false
+        }
+      }),
+      selected$clear: action(state => {
+        state.selected = []
+      }),
+      selected$remove: action((state, index) => {
+        state.selected.splice(index, 1)
+      }),
 
-    selected_add(option: O) {
-      if (multiple) {
-        this.selected.includes(option) || this.selected.push(option)
-        this.opened = false
-      } else {
-        this.selected = [option]
-        this.opened = false
-      }
-    },
-    selected_clear() {
-      this.selected = []
-    },
-    selected_remove(index: number) {
-      this.selected.splice(index, 1)
-    },
+      $change: action((state, value) => {
+        state.value = value
+      }),
 
-    filters_add(filter: SearchFilter<O>) {
-      if (!this.filters.find(f => f.id === filter.id)) {
-        this.filters.push(filter)
-      }
-    },
-    filters_remove(filter: SearchFilter<O>) {
-      this.filters = this.filters.filter(f => f.id !== filter.id)
-    },
-  }))
+      filters$add: action((state, filter: SearchFilter<O>) => {
+        if (!state.filters.find(f => f.id === filter.id)) {
+          state.filters.push(filter)
+        }
+      }),
+      filters$remove: action((state, filter: SearchFilter<O>) => {
+        state.filters = state.filters.filter(f => f.id !== filter.id)
+      }),
 
-  const [state, actions, refs] = tuple
-
-  useEffect(() => {
-    onChange && onChange(state.selected)
-  }, [options])
-
-  useObserve(refs.filters_add, () => {
-    actions.focus()
-  })
-  useObserve(refs.filters_remove, () => {
-    actions.focus()
-  })
-
-  useEffect(() => {
-    onChange && onChange(state.selected)
-  }, [state.selected])
+      $refocus: thunkOn(
+        action => [action.filters$add, action.filters$remove],
+        actions => {
+          actions.$focus()
+        },
+      ),
+    }),
+    [options, Option],
+  )
 
   useEffect(() => {
     function listener(event: KeyboardEvent) {
       switch (event.key) {
         case 'Escape':
-          actions.unfocus()
+          actions.$unfocus()
       }
     }
 
@@ -114,7 +111,7 @@ export function useSearchStore<O>({
   }, [])
 
   useOnClickOutside(block_ref, e => {
-    actions.unfocus()
+    actions.$unfocus()
   })
 
   return {

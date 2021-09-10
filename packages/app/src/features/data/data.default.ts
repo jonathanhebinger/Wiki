@@ -17,7 +17,7 @@ export function Data$get_default(type: Type.Any): Data.Any {
         }),
       )
     case 'join':
-      return ''
+      return []
     case 'type':
       return { type: 'string' }
   }

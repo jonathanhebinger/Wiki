@@ -3,34 +3,33 @@ import { ButtonIcon } from 'src/blocs/button.icon'
 import { Section } from 'src/blocs/structure/section'
 import { Shelf } from 'src/blocs/structure/shelf'
 import { Surface } from 'src/blocs/structure/surface'
-
-import { useNavContext } from '../nav.store'
+import { useNav, useNavActions } from 'src/features/root/root.store'
 
 export function NavOpened() {
-  const [{ opened_nodes }, actions] = useNavContext()
+  const nav = useNav()
+  const navActions = useNavActions()
 
-  const Nodes = opened_nodes.map(({ name, collapsed, ...info }) => {
-    const key = info.type === 'template' ? info.template.id : info.node.id
+  const Nodes = nav.opened_nodes.map(node => {
     return (
       <Surface
-        key={key}
+        key={node.id}
         squared
         shadow="sm"
         className="flex justify-between p-1"
       >
-        {name}
+        {node.name}
         <ButtonIcon
           contrast
           size="xs"
           icon={faTimes}
-          onClick={() => actions.close(info as any)}
+          onClick={() => navActions.close(node.id)}
         />
       </Surface>
     )
   })
 
   return (
-    <Section Label={<>Opened - {opened_nodes.length}</>}>
+    <Section Label={<>Opened - {nav.opened_nodes.length}</>}>
       <Shelf noPadding>{Nodes}</Shelf>
     </Section>
   )
