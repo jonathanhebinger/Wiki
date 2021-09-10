@@ -1,4 +1,4 @@
-import { TemplateId } from '@brainote/common'
+import { NodeId } from '@brainote/common'
 import { useEffect, useMemo } from 'react'
 import {
   Search,
@@ -14,9 +14,9 @@ export function TemplateSearch({
   onChange,
 }: {
   multiple?: boolean
-  exclude?: TemplateId[]
+  exclude?: NodeId[]
   onChange: (
-    ids: TemplateId[],
+    ids: NodeId[],
     context: SearchContext<TemplateSearch_Option>,
   ) => void
 }) {
@@ -28,8 +28,8 @@ export function TemplateSearch({
         .filter(template => !exclude.includes(template.id))
         .map(template => ({
           id: template.id,
-          name: template.name,
-          test: template.name.toLowerCase(),
+          name: template['root.name'],
+          test: template['root.name'].toLowerCase(),
         })),
     [nodes, exclude],
   )
@@ -52,7 +52,7 @@ export function TemplateSearch({
 }
 
 interface TemplateSearch_Option {
-  id: TemplateId
+  id: NodeId
   name: string
   test: string
 }

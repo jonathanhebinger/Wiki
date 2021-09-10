@@ -17,7 +17,7 @@ export function NavOpened() {
         shadow="sm"
         className="flex justify-between p-1"
       >
-        {node.name}
+        {node['root.name']}
         <ButtonIcon
           contrast
           size="xs"

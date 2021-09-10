@@ -10,6 +10,7 @@ import {
 } from '../data.context'
 import { DataBlock } from './data.block'
 import { DataInline } from './data.inline'
+import { DataJoin } from './data.join'
 
 export interface ValueProps extends DataContextProps {
   Label: React.ReactNode
@@ -50,6 +51,10 @@ function DataEContent({
   let inline = false
   let Content: JSX.Element
 
+  if (type.type === 'join') {
+    return <DataJoin Label={Label} />
+  }
+
   switch (type.type) {
     case 'boolean':
     case 'number':
@@ -60,7 +65,6 @@ function DataEContent({
         </Shelf>
       )
       break
-    case 'join':
     case 'type':
     case 'array':
     case 'object':
@@ -90,6 +94,7 @@ function DataEContent({
       handler: $save,
     })
   }
+
   return (
     <Block
       Label={Label}

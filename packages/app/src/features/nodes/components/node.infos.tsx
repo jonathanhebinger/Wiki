@@ -1,48 +1,19 @@
 import { useState } from 'react'
 import { Shelf } from 'src/blocs/structure/shelf'
-import { DataItem } from 'src/features/data'
+import { useNodes } from 'src/features/root/root.store'
 
 import { useNode } from '../node.context'
+import { NodeTemplatesItemKey } from './node.templates'
 
 export function NodeInfos() {
-  return (
-    <Shelf>
-      <NodeName />
-      <NodeInfo />
-    </Shelf>
-  )
-}
+  const nodes = useNodes()
+  const { data } = useNode()
 
-function NodeName() {
-  const { name, name$update } = useNode()
+  const keys = nodes.template('root')['template.keys'].map(nodes.key)
 
-  const [draft, draft$set] = useState(name)
+  const Keys = keys.map(key => {
+    return <NodeTemplatesItemKey key={key.id} data={data[key.id]} _key={key} />
+  })
 
-  return (
-    <DataItem
-      Label={<>Name</>}
-      draft={draft}
-      saved={name}
-      type={{ type: 'string' }}
-      onChange={draft$set}
-      onSave={name$update}
-    />
-  )
-}
-
-function NodeInfo() {
-  const { info, info$update } = useNode()
-
-  const [draft, draft$set] = useState(info)
-
-  return (
-    <DataItem
-      Label={<>About</>}
-      draft={draft}
-      saved={info}
-      type={{ type: 'string' }}
-      onChange={draft$set}
-      onSave={info$update}
-    />
-  )
+  return <Shelf>{Keys}</Shelf>
 }

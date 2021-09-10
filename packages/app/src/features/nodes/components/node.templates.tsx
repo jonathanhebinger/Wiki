@@ -5,11 +5,7 @@ import { Icon } from 'src/blocs/icon'
 import { Block } from 'src/blocs/structure/block'
 import { Shelf } from 'src/blocs/structure/shelf'
 import { DataItem } from 'src/features/data'
-import {
-  useNavActions,
-  useNodes,
-  useNodesActions,
-} from 'src/features/root/root.store'
+import { useNavActions, useNodesActions } from 'src/features/root/root.store'
 
 import { NodeTemplate as NodeTemplate, useNode } from '../node.context'
 
@@ -26,14 +22,13 @@ export function NodeTemplates() {
 }
 
 function NodeTemplatesItem({ template, keys }: NodeTemplate) {
-  const nodes = useNodes()
   const nodesActions = useNodesActions()
+  const navActions = useNavActions()
 
-  const nav = useNavActions()
   const { id, data } = useNode()
 
   function handleOpen() {
-    nav.open(template.id)
+    navActions.open(template.id)
   }
   function handleDetach() {
     nodesActions.detach({
@@ -53,15 +48,20 @@ function NodeTemplatesItem({ template, keys }: NodeTemplate) {
 
   return (
     <Block
-      Label={<span className="capitalize">{template.name}</span>}
+      Label={<span className="capitalize">{template['root.name']}</span>}
       Content={<Shelf>{Keys}</Shelf>}
       actions={actions}
     />
   )
 }
 
-function NodeTemplatesItemKey({ data, _key }: { _key: Key; data: Data.Any }) {
-  const nodes = useNodes()
+export function NodeTemplatesItemKey({
+  data,
+  _key,
+}: {
+  _key: Key
+  data: Data.Any
+}) {
   const nodesActions = useNodesActions()
 
   const { id } = useNode()
@@ -78,10 +78,10 @@ function NodeTemplatesItemKey({ data, _key }: { _key: Key; data: Data.Any }) {
   return (
     <DataItem
       key={_key.id}
-      Label={_key.name}
+      Label={_key['root.name']}
       draft={draft}
       saved={data}
-      type={_key.data['key.type']}
+      type={_key['key.type']}
       onChange={draft$set}
       onSave={handleSave}
     />

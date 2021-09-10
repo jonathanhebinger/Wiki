@@ -1,5 +1,5 @@
 import { Data } from './data'
-import { TemplateId, TemplateKeyId } from './template'
+import { NodeId } from './node'
 
 export namespace Type {
   export type Base<Type extends string> = { type: Type }
@@ -22,8 +22,8 @@ export namespace Type {
   }
 
   export type Join = Base<'join'> & {
-    template: TemplateId
-    reflect?: TemplateKeyId
+    template: NodeId
+    reflect?: NodeId
     multiple: boolean
   }
 

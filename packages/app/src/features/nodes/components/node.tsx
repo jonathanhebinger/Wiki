@@ -49,7 +49,7 @@ export function NodeMain({ id: node_id }: { id: NodeId }) {
                 //  dialog.$close()
               })
             }}
-            exclude={nodes.node(node_id).templates}
+            exclude={nodes.node(node_id)['root.templates']}
           />
         </>
       ),

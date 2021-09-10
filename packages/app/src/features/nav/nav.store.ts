@@ -1,5 +1,12 @@
 import { Node, NodeId, Template } from '@brainote/common'
-import { Action, action, Computed, computed } from 'easy-peasy'
+import {
+  Action,
+  action,
+  Computed,
+  computed,
+  ThunkOn,
+  thunkOn,
+} from 'easy-peasy'
 
 import { RootModel } from '../root/root.model'
 
@@ -14,6 +21,8 @@ export interface NavModel {
   open: Action<this, NodeId>
   close: Action<this, NodeId>
   close_all: Action<this>
+
+  on_create: ThunkOn<this, any, RootModel>
 }
 
 export const navModel: NavModel = {
@@ -44,17 +53,11 @@ export const navModel: NavModel = {
   close_all: action(state => {
     state.opened = []
   }),
-}
 
-// useObserve(nodes.$$.create, ({ result }) => {
-//   nav.open({
-//     type: 'node',
-//     node: result.id,
-//   })
-// })
-// useObserve(nodes.$$.attach, ({ args: [node, template] }) => {
-//   nav.open({
-//     type: 'node',
-//     node,
-//   })
-// })
+  on_create: thunkOn(
+    (_, store) => [store.nodes.create],
+    (actions, target) => {
+      actions.open(target.result.id)
+    },
+  ),
+}

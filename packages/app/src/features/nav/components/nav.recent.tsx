@@ -28,7 +28,7 @@ export function NavRecent() {
         squared
         shadow="sm"
       >
-        {template.name}
+        {template['root.name']}
       </Surface>
     )
   })

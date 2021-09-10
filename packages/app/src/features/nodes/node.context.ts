@@ -10,37 +10,35 @@ export interface NodeTemplate {
 
 export const [NodeProvider, useNode] = constate(({ id }: { id: NodeId }) => {
   const nodes = useModel(state => state.nodes)
-  const actions = useActions(actions => actions.nodes)
+  const nodesActions = useActions(actions => actions.nodes)
 
   const node = nodes.node(id)
 
-  const { name, info, data } = node
-
   function name$update(name: string) {
-    actions.update({
+    nodesActions.update({
       node_id: id,
       patch: { name },
     })
   }
   function info$update(info: string) {
-    actions.update({
+    nodesActions.update({
       node_id: id,
       patch: { info },
     })
   }
 
-  const keys = Object.keys(data).map(nodes.key)
-  const templates = node.templates.map(nodes.template).map(template => {
-    const keys = template.data['template.keys'].map(nodes.key)
+  const keys = Object.keys(node).map(nodes.key)
+  const templates = node['root.templates'].map(nodes.template).map(template => {
+    const keys = template['template.keys'].map(nodes.key)
 
     return { template, keys }
   })
 
   return {
     id,
-    name,
-    info,
-    data,
+    name: node['root.name'],
+    info: node['root.info'],
+    data: node,
     keys,
     templates,
     name$update,

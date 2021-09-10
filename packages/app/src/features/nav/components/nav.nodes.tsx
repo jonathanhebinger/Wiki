@@ -23,7 +23,7 @@ export function NavNodes() {
         squared
         shadow="sm"
       >
-        {node.name}
+        {node['root.name']}
       </Surface>
     )
   })
