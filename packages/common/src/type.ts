@@ -24,7 +24,7 @@ export namespace Type {
   export type Join = Base<'join'> & {
     template: NodeId
     reflect?: NodeId
-    multiple: boolean
+    multiple?: boolean
   }
 
   export type Type = Base<'type'>

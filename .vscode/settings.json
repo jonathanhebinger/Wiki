@@ -14,7 +14,7 @@
   "typescript.format.insertSpaceAfterOpeningAndBeforeClosingTemplateStringBraces": true,
   "typescript.format.placeOpenBraceOnNewLineForFunctions": false,
   "typescript.format.semicolons": "remove",
-  "typescript.preferences.importModuleSpecifier": "shortest",
+  "typescript.preferences.importModuleSpecifier": "relative",
   "typescript.preferences.quoteStyle": "single",
   "typescript.suggest.completeFunctionCalls": true,
   "typescriptHero.imports.insertSemicolons": false,

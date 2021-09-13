@@ -13,7 +13,10 @@ module.exports = {
     {
       plugin: cracoBabelLoader,
       options: {
-        includes: [resolvePackage('../common')],
+        includes: [
+          resolvePackage('../common'),
+          resolvePackage('../ui'),
+        ],
         excludes: [/node_modules/]
       }
     }
