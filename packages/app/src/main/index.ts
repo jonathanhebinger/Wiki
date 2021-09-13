@@ -1,3 +1,3 @@
 export * from './root.model'
 export * from './root.store'
-export * from './main.list'
+export * from './components/main.list'

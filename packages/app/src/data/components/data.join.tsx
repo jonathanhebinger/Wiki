@@ -1,4 +1,4 @@
-import { NodeId, Type } from '@brainote/common'
+import { TemplateDataId, Type } from '@brainote/common'
 import { Icon } from '@brainote/ui/forms'
 import { Block, BlockAction } from '@brainote/ui/structure'
 import {
@@ -11,14 +11,13 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import React, { useMemo } from 'react'
 
-import { useNodesSearch } from '../../nodes/components/nodes.search'
-import { useNode } from '../../nodes/node.context'
-import { useActions, useModel, useNavActions } from '../../root'
+import { useActions, useMain, useModel, useNavActions } from '../../main'
+import { useTemplateDataSearch } from '../../templates/template.data.search'
 import { useDataContext } from '../data.context'
 
 export function DataJoin({ Label }: { Label: React.ReactNode }) {
-  const nodes = useModel(state => state.nodes)
-  const nodesActions = useActions(state => state.nodes)
+  const nodes = useModel(state => state.main)
+  const nodesActions = useActions(state => state.main)
   const navActions = useNavActions()
 
   const {
@@ -28,28 +27,16 @@ export function DataJoin({ Label }: { Label: React.ReactNode }) {
     handleUndo,
     handleQuickSave,
     handleDraftChange,
-  } = useDataContext<Type.Join, NodeId[]>()
+  } = useDataContext<Type.Join, TemplateDataId[]>()
+  const main = useMain()
 
-  const node = useNode()
+  const template_id = type.template
 
-  const template_id =
-    node && type.template === '__self__' ? node.id : type.template
-
-  const template = nodes.template(template_id)
-
-  if (!template) return null
-
-  const keys = template['template.keys'].map(nodes.key).map(key => ({
-    id: key.id,
-    name: key['root.name'],
-    type: key['key.type'],
-  }))
-
-  function handleSearchValidate(ids: NodeId[]) {
+  function handleSearchValidate(ids: TemplateDataId[]) {
     handleDraftChange([...draft, ...ids])
   }
 
-  const search = useNodesSearch({
+  const search = useTemplateDataSearch({
     onChange: handleSearchValidate,
     excluded: useMemo(() => ['root', ...draft], [draft]),
     template: type.template,
@@ -59,15 +46,7 @@ export function DataJoin({ Label }: { Label: React.ReactNode }) {
     search.open()
   }
   function handleCreate() {
-    const node = nodesActions.create({
-      name: 'New Node',
-    })
-
-    nodesActions.key_update({
-      node_id: node.id,
-      key_id: 'root.templates',
-      data: [template.id],
-    })
+    const node = nodesActions.templateData_create({ template_id })
 
     handleDraftChange([...draft, node.id])
   }
@@ -88,15 +67,15 @@ export function DataJoin({ Label }: { Label: React.ReactNode }) {
     })
   }
 
-  const Joined = draft.map(id => {
+  const template_name = main.template(template_id)
+
+  const Joined = draft.map(data_id => {
     function handleRemove() {
-      handleDraftChange(draft.filter(item => item !== id))
+      handleDraftChange(draft.filter(item => item !== data_id))
     }
 
-    const saved = nodes.node(id)
-
     function handleOpen() {
-      navActions.open(id)
+      navActions.open_templateData({ template_id, data_id })
     }
 
     const actions: BlockAction[] = [
@@ -104,10 +83,12 @@ export function DataJoin({ Label }: { Label: React.ReactNode }) {
       { Label: <Icon icon={faMinus} />, handler: handleRemove },
     ]
 
+    const name = template_id ? template_name : main.node(data_id as any).name
+
     return (
       <Block
-        key={id}
-        Label={saved['root.name']}
+        key={data_id}
+        Label={name}
         actions={actions}
         onClick={handleOpen}
       />

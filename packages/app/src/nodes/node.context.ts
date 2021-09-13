@@ -1,34 +1,43 @@
-import { Key, NodeId, Template } from '@brainote/common'
+import {
+  Template,
+  TemplateData,
+  TemplateDataId,
+  TemplateId,
+} from '@brainote/common'
 import constate from 'constate'
+import { useState } from 'react'
 
-import { useNodes } from '../root'
+import { useMain } from '../main'
 
 export interface NodeTemplate {
   template: Template
-  keys: Key[]
+  templateData: TemplateData
 }
 
-export const [NodeProvider, useNode] = constate(({ id }: { id: NodeId }) => {
-  const nodes = useNodes()
+export const [NodeProvider, useNode] = constate(
+  ({
+    templateId,
+    dataId,
+  }: {
+    templateId: TemplateId
+    dataId: TemplateDataId
+  }) => {
+    const nodes = useMain()
 
-  const saved = nodes.node(id)
-  const draft = nodes.drafts.get(id) || saved
+    const template = nodes.template(templateId)
+    const data = nodes.templateData(templateId, dataId)
 
-  const keys = Object.keys(saved).map(nodes.key)
-  const templates = saved['root.templates']
-    .map(nodes.template)
-    .map(template => {
-      const keys = template['template.keys'].map(nodes.key)
+    const [showData, showData$set] = useState(true)
 
-      return { template, keys }
-    })
+    function handleToggleData() {
+      showData$set(!showData)
+    }
 
-  return {
-    id,
-    name: saved['root.name'],
-    keys,
-    saved,
-    draft,
-    templates,
-  }
-})
+    return {
+      data,
+      template,
+      showData,
+      handleToggleData,
+    }
+  },
+)

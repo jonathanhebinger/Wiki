@@ -1,23 +1,23 @@
 import { Section, Shelf, Surface } from '@brainote/ui/structure'
 
-import { useModel, useNavActions } from '../../root'
+import { useModel, useNavActions } from '../../main'
 
 export function NavTemplates() {
-  const templates = useModel(state => state.nodes.templates)
+  const templates = useModel(state => state.main.templates)
   const actions = useNavActions()
 
   const Nodes = templates.map(template => {
     return (
       <Surface
         htmlProps={{
-          onClick: () => actions.open(template.id),
+          onClick: () => actions.open_template(template.id),
         }}
         key={template.id}
         className="p-1"
         squared
         shadow="sm"
       >
-        {template['root.name']}
+        {template.name}
       </Surface>
     )
   })

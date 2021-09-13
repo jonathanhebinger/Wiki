@@ -5,42 +5,54 @@ const ROOT_KEYS: Key[] = [
     id: 'root.name',
     'root.name': 'Name',
     'root.info': '',
-    'root.templates': ['key'],
+    'root.tags': ['key'],
+    'root.tagged': [],
     'key.required': true,
     'key.type': { type: 'string' },
-    'key.used': true,
   },
   {
     id: 'root.info',
     'root.name': 'Info',
     'root.info': '',
-    'root.templates': ['key'],
+    'root.tags': ['key'],
+    'root.tagged': [],
     'key.required': true,
     'key.type': { type: 'string' },
-    'key.used': true,
   },
-
   {
-    id: 'root.templates',
-    'root.name': 'Templates',
+    id: 'root.tags',
+    'root.name': 'Tags',
     'root.info': '',
-    'root.templates': ['key'],
+    'root.tags': ['key'],
+    'root.tagged': [],
     'key.required': true,
     'key.type': {
       type: 'join',
-      template: 'template',
-      reflect: 'template.data',
+      template: 'root',
+      reflect: 'root.tagged',
     },
-    'key.used': true,
+  },
+  {
+    id: 'root.tagged',
+    'root.name': 'Tagged',
+    'root.info': '',
+    'root.tags': ['key'],
+    'key.required': true,
+    'root.tagged': [],
+    'key.type': {
+      type: 'join',
+      template: 'root',
+      reflect: 'root.tags',
+    },
   },
 ]
 const ROOT_TEMPLATE: Template = {
   id: 'root',
   'root.name': 'Root',
   'root.info': '',
-  'root.templates': ['template'],
-  'template.keys': ['root.name', 'root.info', 'root.templates'],
-  'template.data': [],
+  'root.tags': ['template'],
+  'root.tagged': [],
+  'template.keys': ['root.tags', 'root.name', 'root.info', 'root.tagged'],
 }
 
 const KEY_KEYS: Key[] = [
@@ -48,45 +60,44 @@ const KEY_KEYS: Key[] = [
     id: 'key.required',
     'root.name': 'Key::required',
     'root.info': '',
-    'root.templates': ['key'],
+    'root.tags': ['key'],
+    'root.tagged': [],
     'key.required': true,
     'key.type': { type: 'boolean' },
-    'key.used': true,
   },
   {
     id: 'key.type',
     'root.name': 'Key::type',
     'root.info': '',
-    'root.templates': ['key'],
+    'root.tags': ['key'],
+    'root.tagged': [],
     'key.required': true,
     'key.type': { type: 'type' },
-    'key.used': true,
   },
   {
     id: 'key.used',
     'root.name': 'Key::used',
     'root.info': '',
-    'root.templates': ['key'],
+    'root.tags': ['key'],
+    'root.tagged': [],
     'key.required': true,
     'key.type': { type: 'boolean' },
-    'key.used': true,
   },
 ]
 const KEY_TEMPLATE: Template = {
   id: 'key',
   'root.name': 'Key',
   'root.info': '',
-  'root.templates': ['template'],
+  'root.tags': ['template'],
   'template.keys': ['key.required', 'key.type', 'key.used'],
-  'template.data': [
+  'root.tagged': [
     'root.name',
     'root.info',
-    'root.templates',
+    'root.tags',
     'key.required',
     'key.type',
     'key.used',
     'template.keys',
-    'template.data',
   ],
 }
 
@@ -95,32 +106,19 @@ const TEMPLATE_KEYS: Key[] = [
     id: 'template.keys',
     'root.name': 'Template::keys',
     'root.info': '',
-    'root.templates': ['key'],
+    'root.tags': ['key'],
+    'root.tagged': [],
     'key.required': true,
     'key.type': { type: 'join', template: 'key' },
-    'key.used': true,
-  },
-  {
-    id: 'template.data',
-    'root.name': 'Template::data',
-    'root.info': '',
-    'root.templates': ['key'],
-    'key.required': true,
-    'key.type': {
-      type: 'join',
-      template: '__self__',
-      reflect: 'root.templates',
-    },
-    'key.used': true,
   },
 ]
 const TEMPLATE_TEMPLATE: Template = {
   id: 'template',
   'root.name': 'Template',
   'root.info': '',
-  'root.templates': ['template'],
-  'template.keys': ['template.keys', 'template.data'],
-  'template.data': ['template', 'key'],
+  'root.tags': ['template'],
+  'root.tagged': ['root', 'key', 'template'],
+  'template.keys': ['template.keys'],
 }
 
 export const NODES: Node[] = [
@@ -133,7 +131,7 @@ export const NODES: Node[] = [
 ]
 
 interface TypeNode extends Node {
-  'root.templates': ['type']
+  'root.tags': ['type']
   'type-template.type': Type.Any
   //'type-template.default': any
 }
@@ -143,7 +141,7 @@ const TYPES: TypeNode[] = [
     id: 'type.object',
     'root.name': 'Template::keys',
     'root.info': '',
-    'root.templates': ['type'],
+    'root.tags': ['type'],
     'type-template.type': {
       type: 'set',
       of: {
@@ -163,14 +161,15 @@ const TYPES: TypeNode[] = [
       },
     },
     // 'type-template.default': any,
-  },
+  } as any,
 ]
 
 const test: Key = {
   id: 'template.structure',
   'root.name': 'Template::keys',
   'root.info': '',
-  'root.templates': ['key'],
+  'root.tags': ['key'],
+  'root.tagged': [],
   'key.required': true,
   'key.type': {
     type: 'array',
@@ -182,7 +181,6 @@ const test: Key = {
       ],
     } as any,
   },
-  'key.used': true,
 }
 
 type Enum = {

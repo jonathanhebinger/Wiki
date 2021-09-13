@@ -1,4 +1,4 @@
-import { Node, NodeId } from '@brainote/common'
+import { TemplateData, TemplateDataId, TemplateId } from '@brainote/common'
 import { Button, useModal } from '@brainote/ui/forms'
 import {
   Search,
@@ -9,29 +9,32 @@ import {
 import { Shelf } from '@brainote/ui/structure'
 import { useEffect, useMemo, useState } from 'react'
 
-import { useMain } from '../../main'
+import { useMain } from '../main'
 
-export type NodesSearchProps = {
-  nodes: Node[]
+export type TemplateDataSearchProps = {
+  templateData: TemplateData[]
   multiple?: boolean
-  exclude?: NodeId[]
-  onChange: (ids: NodeId[], context: SearchContext<NodeSearchOption>) => void
+  exclude?: TemplateDataId[]
+  onChange: (
+    ids: TemplateDataId[],
+    context: SearchContext<TemplateDataSearchOption>,
+  ) => void
 }
 export function NodesSearch({
-  nodes,
+  templateData,
   multiple = false,
   exclude = [],
   onChange,
-}: NodesSearchProps) {
-  const options = useMemo<NodeSearchOption[]>(() => {
-    return nodes
-      .filter(node => !exclude.includes(node.id))
-      .map(node => ({
-        id: node.id,
-        name: node.name,
-        test: node.name.toLowerCase(),
+}: TemplateDataSearchProps) {
+  const options = useMemo<TemplateDataSearchOption[]>(() => {
+    return templateData
+      .filter(data => !exclude.includes(data.id))
+      .map(data => ({
+        id: data.id,
+        name: '',
+        test: '',
       }))
-  }, [nodes, exclude])
+  }, [templateData, exclude])
 
   const store = useSearchStore({
     options,
@@ -50,8 +53,8 @@ export function NodesSearch({
   return <Search store={store} />
 }
 
-type NodeSearchOption = {
-  id: NodeId
+type TemplateDataSearchOption = {
+  id: TemplateDataId
   name: string
   test: string
 }
@@ -60,7 +63,7 @@ function Option({
   option,
   selected,
   onSelect,
-}: SearchOptionProps<NodeSearchOption>) {
+}: SearchOptionProps<TemplateDataSearchOption>) {
   return (
     <div
       className={`px-2 py-1 flex justify-between items-center cursor-pointer hover:bg-gray-100 ${
@@ -73,24 +76,28 @@ function Option({
   )
 }
 
-export function useNodesSearch({
+export function useTemplateDataSearch({
   onChange,
   multiple = false,
+  template: template_id,
   excluded = [],
 }: {
-  onChange: (ids: NodeId[]) => void
+  onChange: (ids: TemplateDataId[]) => void
+  template: TemplateId
   multiple?: boolean
-  excluded?: NodeId[]
+  excluded?: TemplateDataId[]
 }) {
-  const [selected, handleChange] = useState<NodeId[]>([])
+  const [selected, handleChange] = useState<TemplateDataId[]>([])
 
-  const { notes: nodes } = useMain()
+  const main = useMain()
+
+  const template = main.template(template_id)
 
   const modal = useModal(
     <Shelf>
       <NodesSearch
         onChange={handleChange}
-        nodes={nodes}
+        templateData={template.data}
         multiple={multiple}
         exclude={excluded}
       />

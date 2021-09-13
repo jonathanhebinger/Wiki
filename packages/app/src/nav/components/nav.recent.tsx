@@ -1,22 +1,17 @@
 import { Section, Shelf, Surface } from '@brainote/ui/structure'
 import { useState } from 'react'
 
-import { useModel, useNavActions } from '../../root'
+import { useModel, useNavActions } from '../../main'
 
 export function NavRecent() {
-  const list = useModel(state => state.nodes.list)
+  const nodes = useModel(state => state.main.notes)
   const actions = useNavActions()
 
-  const [collapsed, collapsed$set] = useState(false)
-
-  function toggle() {
-    collapsed$set(!collapsed)
-  }
-
-  const Nodes = list.map(template => {
-    const handleOpen = () => {
-      actions.open(template.id)
+  const Nodes = nodes.map(template => {
+    function handleOpen() {
+      actions.open_node(template.id)
     }
+
     return (
       <Surface
         htmlProps={{
@@ -27,7 +22,7 @@ export function NavRecent() {
         squared
         shadow="sm"
       >
-        {template['root.name']}
+        {template.name}
       </Surface>
     )
   })

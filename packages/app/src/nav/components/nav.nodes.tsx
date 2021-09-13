@@ -1,16 +1,17 @@
 import { Section, Shelf, Surface } from '@brainote/ui/structure'
-import React from 'react'
 
-import { useModel, useNavActions } from '../../root'
+import { useModel, useNavActions } from '../../main'
 
 export function NavNodes() {
-  const list = useModel(state => state.nodes.list)
+  const navActions = useNavActions()
+  const nodes = useModel(state => state.main.notes)
 
-  const actions = useNavActions()
-
-  const Nodes = list.map(node => {
+  const Nodes = nodes.map(node => {
     function handleOpen() {
-      actions.open(node.id)
+      navActions.open_templateData({
+        template_id: 'note',
+        data_id: node.id,
+      })
     }
 
     return (
@@ -23,13 +24,13 @@ export function NavNodes() {
         squared
         shadow="sm"
       >
-        {node['root.name']}
+        {node.name}
       </Surface>
     )
   })
 
   return (
-    <Section Label={<>Nodes - {list.length}</>}>
+    <Section Label={<>Nodes - {nodes.length}</>}>
       <Shelf noPadding>{Nodes}</Shelf>
     </Section>
   )

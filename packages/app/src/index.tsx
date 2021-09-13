@@ -6,9 +6,9 @@ import { StoreProvider } from 'easy-peasy'
 import React from 'react'
 import ReactDOM from 'react-dom'
 
+import { MainList } from './main/components/main.list'
+import { store } from './main/root.store'
 import { Nav } from './nav/components/nav'
-import { MainList } from './root/main.list'
-import { store } from './root/root.store'
 
 ReactDOM.render(<Root />, document.getElementById('root'))
 

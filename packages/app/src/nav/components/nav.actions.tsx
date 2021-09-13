@@ -2,16 +2,14 @@ import { ButtonIcon } from '@brainote/ui/forms'
 import { Shelf } from '@brainote/ui/structure'
 import { faPlus, faTimes } from '@fortawesome/free-solid-svg-icons'
 
-import { useActions, useNavActions } from '../../root'
+import { useActions, useNavActions } from '../../main'
 
 export function NavActions() {
-  const actions = useActions(actions => actions.nodes)
+  const actions = useActions(actions => actions.main)
   const nav = useNavActions()
 
   function handleCreate() {
-    actions.create({
-      name: 'New Node',
-    })
+    actions.templateData_create({ template_id: 'note' })
   }
 
   function handleCloseAll() {
