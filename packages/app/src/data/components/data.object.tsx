@@ -17,7 +17,7 @@ export function DataObject() {
     return (
       <DataItem
         key={id}
-        Label={'- ' + name}
+        Label={name}
         type={type}
         saved={saved[id]}
         draft={draft[id]}

@@ -30,7 +30,7 @@ export function DataJoin() {
   } = useDataContext<Type.Join, TemplateDataId[]>()
   const main = useMain()
 
-  const template_id = type.template
+  const templateId = type.template
 
   function handleSearchValidate(ids: TemplateDataId[]) {
     handleDraftChange([...draft, ...ids])
@@ -39,14 +39,14 @@ export function DataJoin() {
   const search = useTemplateDataSearch({
     onChange: handleSearchValidate,
     excluded: useMemo(() => ['root', ...draft], [draft]),
-    template: type.template,
+    templateId: type.template,
   })
 
   function handleSearch() {
     search.open()
   }
   function handleCreate() {
-    const node = nodesActions.dataCreate({ template_id })
+    const node = nodesActions.dataCreate({ templateId })
 
     handleDraftChange([...draft, node.id])
   }
@@ -67,15 +67,15 @@ export function DataJoin() {
     })
   }
 
-  const template_name = main.template(template_id)
+  const template_name = main.template(templateId)
 
-  const Joined = draft.map(data_id => {
+  const Joined = draft.map(dataId => {
     function handleRemove() {
-      handleDraftChange(draft.filter(item => item !== data_id))
+      handleDraftChange(draft.filter(item => item !== dataId))
     }
 
     function handleOpen() {
-      navActions.open({ template_id, data_id })
+      navActions.open({ templateId, dataId })
     }
 
     const actions: BlockAction[] = [
@@ -83,15 +83,10 @@ export function DataJoin() {
       { Label: <Icon icon={faMinus} />, handler: handleRemove },
     ]
 
-    const name = main.data(template_id, data_id).name || template_name
+    const name = main.data(templateId, dataId).name || template_name
 
     return (
-      <Block
-        key={data_id}
-        Label={name}
-        actions={actions}
-        onClick={handleOpen}
-      />
+      <Block key={dataId} Label={name} actions={actions} onClick={handleOpen} />
     )
   })
 

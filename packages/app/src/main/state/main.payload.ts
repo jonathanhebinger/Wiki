@@ -25,33 +25,33 @@ export type TemplateCreatePayload = {
   name: string
 }
 export type TemplateUpdatePayload = {
-  template_id: TemplateId
+  templateId: TemplateId
   patch: Patch<Template>
 }
 export type TemplateDeletePayload = {
-  template_id: TemplateId
+  templateId: TemplateId
 }
 
 export type DataCreatePayload = {
-  template_id: TemplateId
+  templateId: TemplateId
 }
 export type DataInsertPayload = {
-  template_id: TemplateId
+  templateId: TemplateId
   data: TemplateData
 }
 export type DataUpdatePayload = {
-  template_id: TemplateId
-  data_id: TemplateDataId
+  templateId: TemplateId
+  dataId: TemplateDataId
   patch: Partial<Data.Object>
 }
 export type DataDeletePayload = {
-  template_id: TemplateId
-  data_id: TemplateDataId
+  templateId: TemplateId
+  dataId: TemplateDataId
 }
 
 export type DataAttachPayload = {
   node_id: NodeId
-  template_id: TemplateId
-  data_id: TemplateDataId
+  templateId: TemplateId
+  dataId: TemplateDataId
 }
 export type DataDetachPayload = DataAttachPayload

@@ -7,7 +7,7 @@ export type Node = TemplateData & {
   tags: NodeId[]
   tagged: NodeId[]
   data: {
-    template_id: TemplateId
-    data_id: TemplateDataId
+    templateId: TemplateId
+    dataId: TemplateDataId
   }[]
 }

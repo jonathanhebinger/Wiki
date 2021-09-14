@@ -17,6 +17,7 @@ export interface BlockProps {
   actions?: BlockAction[]
   opened?: boolean
   noGutter?: boolean
+  noBottom?: boolean
   onClick?: () => void
 }
 
@@ -59,7 +60,7 @@ export function Block({
       shadowless
       className={mergeClassNames(
         'w-3 py-3',
-        hovered ? 'bg-green-100' : 'bg-white',
+        hovered ? 'bg-blue-50' : 'bg-white',
       )}
     />
   )
@@ -100,10 +101,20 @@ export function Block({
           </Collapse>
         )}
       </div>
-      <Collapse className="flex" collapsed={!opened}>
-        {noGutter || !Content || Gutter}
-        <div className="flex-grow bg-white">{Content}</div>
-        {noGutter || !Content || Gutter}
+      <Collapse collapsed={!opened}>
+        <div className="flex">
+          {noGutter || !Content || Gutter}
+          <div className="flex-grow bg-white">{Content}</div>
+          {noGutter || !Content || Gutter}
+        </div>
+        <Surface
+          squared
+          shadowless
+          className={mergeClassNames(
+            'pt-1',
+            hovered ? 'bg-gray-100 border-gray-200' : 'bg-gray-50',
+          )}
+        />
       </Collapse>
     </div>
   )

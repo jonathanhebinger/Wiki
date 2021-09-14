@@ -9,8 +9,8 @@ export function NavTemplates() {
   const Nodes = templates.map(template => {
     function handleOpen() {
       return actions.open({
-        template_id: 'template',
-        data_id: template.id,
+        templateId: 'template',
+        dataId: template.id,
       })
     }
 

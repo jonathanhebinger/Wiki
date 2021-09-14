@@ -27,17 +27,17 @@ export const [NodeProvider, useNode] = constate(
     const template = nodes.template(templateId)
     const data = nodes.data(templateId, dataId)
 
-    const [showData, showData$set] = useState(true)
+    const [showReadonly, showReadonly$set] = useState(false)
 
-    function handleToggleData() {
-      showData$set(!showData)
+    function handleToggleReadonly() {
+      showReadonly$set(!showReadonly)
     }
 
     return {
       data,
       template,
-      showData,
-      handleToggleData,
+      showReadonly,
+      handleToggleReadonly,
     }
   },
 )

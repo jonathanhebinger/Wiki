@@ -1,25 +1,31 @@
-import { ButtonIcon } from '@brainote/ui/forms'
-import { Shelf } from '@brainote/ui/structure'
-import { faPlus, faTimes } from '@fortawesome/free-solid-svg-icons'
+import { Icon } from '@brainote/ui/forms'
+import { Block, Shelf } from '@brainote/ui/structure'
+import { faPlus } from '@fortawesome/free-solid-svg-icons'
 
-import { useActions, useNavActions } from '../../main'
+import { useActions } from '../../main'
+import { useTemplateDataSelect } from '../../templates/template.select'
 
 export function NavActions() {
   const actions = useActions(actions => actions.main)
-  const nav = useNavActions()
+
+  const { Select, selected } = useTemplateDataSelect('template')
 
   function handleCreate() {
-    actions.dataCreate({ template_id: 'note' })
-  }
-
-  function handleCloseAll() {
-    nav.closeAll()
+    actions.dataCreate({ templateId: selected })
   }
 
   return (
-    <Shelf noPadding row>
-      <ButtonIcon icon={faPlus} onClick={handleCreate} />
-      <ButtonIcon icon={faTimes} onClick={handleCloseAll} />
+    <Shelf noPadding>
+      <Block
+        Label="Create"
+        Inline={Select}
+        Content={
+          <Shelf sm border>
+            {Select}
+          </Shelf>
+        }
+        actions={[{ Label: <Icon icon={faPlus} />, handler: handleCreate }]}
+      />
     </Shelf>
   )
 }

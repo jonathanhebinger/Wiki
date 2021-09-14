@@ -69,7 +69,7 @@ export function ValueTypeObject() {
     return (
       <DataItem
         key={id}
-        Label={<>Key - {key.name}</>}
+        Label={key.name}
         type={OBJECT}
         saved={savedMap.get(id)}
         draft={draftMap.get(id)}

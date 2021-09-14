@@ -7,7 +7,7 @@ export namespace Type {
   export type Boolean = Base<'boolean'>
   export type Number = Base<'number'>
   export type String = Base<'string'>
-  export type UUID = Base<'uuid'>
+  export type Uuid = Base<'uuid'>
 
   export type Array = Base<'array'> & {
     of: Any
@@ -23,6 +23,11 @@ export namespace Type {
     type: Any
   }
 
+  export type Map = Base<'map'> & {
+    keyType: Type.Any
+    valueType: Type.Any
+  }
+
   export type Join = Base<'join'> & {
     template: TemplateId
     reflect?: string
@@ -35,7 +40,7 @@ export namespace Type {
     | Boolean
     | Number
     | String
-    | UUID
+    | Uuid
     | Array
     | Object
     | Join

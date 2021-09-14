@@ -31,8 +31,8 @@ export function NodesSearch({
       .filter(data => !exclude.includes(data.id))
       .map(data => ({
         id: data.id,
-        name: '',
-        test: '',
+        name: data.name as string,
+        test: data.name as string,
       }))
   }, [templateData, exclude])
 
@@ -79,11 +79,11 @@ function Option({
 export function useTemplateDataSearch({
   onChange,
   multiple = false,
-  template: template_id,
+  templateId,
   excluded = [],
 }: {
   onChange: (ids: TemplateDataId[]) => void
-  template: TemplateId
+  templateId: TemplateId
   multiple?: boolean
   excluded?: TemplateDataId[]
 }) {
@@ -91,8 +91,8 @@ export function useTemplateDataSearch({
 
   const main = useMain()
 
-  const template = main.template(template_id)
-  const datas = main.datas[template_id]
+  const template = main.template(templateId)
+  const datas = main.datas[templateId]
 
   const modal = useModal(
     <Shelf>

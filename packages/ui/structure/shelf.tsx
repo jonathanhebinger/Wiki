@@ -1,3 +1,4 @@
+import { theme$border } from '../theme'
 import { mergeClassNames } from '../util/class'
 import { QuickProps } from '../util/type'
 
@@ -43,12 +44,14 @@ export function Shelf({
 export interface ShelfClassProps {
   row?: boolean
   sm?: boolean
+  border?: boolean
   spacing?: ShelfSpacing
   noPadding?: boolean
 }
 export function getShelfClass({
   row = false,
   sm = false,
+  border = false,
   spacing = 'md',
   noPadding = false,
 }: ShelfClassProps) {
@@ -59,5 +62,6 @@ export function getShelfClass({
     row ? 'flex-row' : 'flex-col',
     row ? SHELF_SPACING_ROW[spacing] : SHELF_SPACING_COL[spacing],
     noPadding ? 'p-0' : SHELF_PADDING[spacing],
+    border && theme$border('md'),
   )
 }

@@ -1,6 +1,6 @@
 import { createStore, createTypedHooks } from 'easy-peasy'
 
-import { navModel } from '../nav/nav.store'
+import { navModel } from '../nav'
 import { RootModel } from './root.model'
 import { mainStore } from './state/main.store'
 

@@ -1,2 +1,3 @@
 export * from './components/nav'
-export * from './nav.store'
+export * from './state/nav.store'
+export * from './state/nav.model'

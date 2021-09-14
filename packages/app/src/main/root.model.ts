@@ -1,4 +1,4 @@
-import { NavModel } from '../nav/nav.model'
+import { NavModel } from '../nav'
 import { MainModel } from './state/main.model'
 
 export interface RootModel {

@@ -18,7 +18,7 @@ export function NodeInfos() {
   const nodesActions = useMainActions()
   const navActions = useNavActions()
 
-  const { data, template, showData, handleToggleData } = useNode()
+  const { data, template, showReadonly, handleToggleReadonly } = useNode()
   const [draft, draft$set] = useState(data as Partial<TemplateData>)
 
   function handleDraftUpdate(patch: Partial<TemplateData>) {
@@ -26,22 +26,22 @@ export function NodeInfos() {
   }
   function handleSavedUpdate(patch: Partial<TemplateData>) {
     nodesActions.dataUpdate({
-      template_id: template.id,
-      data_id: data.id,
+      templateId: template.id,
+      dataId: data.id,
       patch,
     })
   }
 
   function handleClose() {
     navActions.close({
-      template_id: template.id,
-      data_id: data.id,
+      templateId: template.id,
+      dataId: data.id,
     })
   }
   const actions: BlockAction[] = [
     {
-      Label: <Icon icon={showData ? faEyeSlash : faEye} />,
-      handler: handleToggleData,
+      Label: <Icon icon={showReadonly ? faEyeSlash : faEye} />,
+      handler: handleToggleReadonly,
     },
     { Label: <Icon icon={faTrash} />, handler: handleClose },
     { Label: <Icon icon={faTimes} />, handler: handleClose },

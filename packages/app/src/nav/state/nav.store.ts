@@ -10,23 +10,23 @@ export const navModel: NavModel = {
 
   opened: [],
   openedJoined: computed(state => {
-    return [...state.opened].reverse().map(({ template_id, data_id }) => {
+    return [...state.opened].reverse().map(({ templateId, dataId }) => {
       return {
-        template: state.data(template_id, 'template') as Template,
-        data: state.data(template_id, data_id),
+        template: state.data('template', templateId) as Template,
+        data: state.data(templateId, dataId),
       }
     })
   }),
 
-  open: action((state, { template_id, data_id }) => {
+  open: action((state, { templateId, dataId }) => {
     state.opened = state.opened.filter(item => {
-      return item.template_id !== template_id || item.data_id !== data_id
+      return item.templateId !== templateId || item.dataId !== dataId
     })
-    state.opened.push({ template_id, data_id })
+    state.opened.push({ templateId, dataId })
   }),
-  close: action((state, { template_id, data_id }) => {
+  close: action((state, { templateId, dataId }) => {
     state.opened = state.opened.filter(item => {
-      return item.template_id === template_id && item.data_id === data_id
+      return item.templateId === templateId && item.dataId === dataId
     })
   }),
   closeAll: action(state => {
@@ -37,8 +37,8 @@ export const navModel: NavModel = {
     (_, store) => [store.main.dataCreate],
     (actions, target) => {
       actions.open({
-        template_id: target.payload.template_id,
-        data_id: target.result.id,
+        templateId: target.payload.templateId,
+        dataId: target.result.id,
       })
     },
   ),

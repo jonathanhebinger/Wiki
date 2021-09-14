@@ -1,13 +1,14 @@
 import { Data, Type } from '@brainote/common'
 import { Icon } from '@brainote/ui/forms'
-import { Block } from '@brainote/ui/structure'
+import { Block, BlockAction } from '@brainote/ui/structure'
 import {
   faPlus,
   faSave,
   faTrash,
   faUndo,
 } from '@fortawesome/free-solid-svg-icons'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { v4 } from 'uuid'
 
 import { useDataContext } from '../data.context'
 import { Data$get_default } from '../data.default'
@@ -33,62 +34,73 @@ export function DataArray() {
     handleDraftChange,
     handleSavedChange,
   } = useDataContext<Type.Array, Data.Array>()
-  const [indexes] = useState(saved.map((item, index) => index))
-  const [next, next$set] = useState(indexes.length)
+  const [draftMap, draftMap$set] = useState(new Map<any, any>(draft.entries()))
+  const [savedMap, savedMap$set] = useState(new Map<any, any>(saved.entries()))
+
+  useEffect(() => {
+    if (!modified) {
+      draftMap$set(new Map(draft.entries()))
+      savedMap$set(new Map(saved.entries()))
+    }
+  }, [draft, saved])
 
   function handleItemDelete(index: number) {
     return () => {
-      const data = [...draft]
+      draftMap.delete(index)
 
-      indexes.splice(index, 1)
-      data.splice(index, 1)
-
-      handleDraftChange(data)
+      handleDraftChange([...draftMap.values()])
     }
   }
   function handleDraftItemUpdate(index: number) {
     return (item: Type.Any) => {
-      const data = [...draft]
+      draftMap.set(index, item)
 
-      data.splice(index, 1, item)
-
-      handleDraftChange(data)
+      handleDraftChange([...draftMap.values()])
     }
   }
   function handleSavedItemUpdate(index: number) {
     return (item: Type.Any) => {
-      const data = [...draft]
+      draftMap.set(index, item)
+      savedMap.set(index, item)
 
-      data.splice(index, 1, item)
-
-      handleSavedChange(data)
+      handleSavedChange([...savedMap.values()])
     }
   }
 
   function handleItemAdd() {
+    const index = v4()
     const item = Data$get_default(type.of)
 
-    indexes.push(next)
-    next$set(next + 1)
+    draftMap.set(index, item)
 
-    handleDraftChange([...draft, item])
+    handleDraftChange([...draftMap.values()])
   }
 
-  const Items = draft.map((item, index) => {
-    const name = type.name ? compute(draft[index], type.name) : index
+  const Items = [...draftMap].map(([key], index) => {
+    const name = type.name ? compute(draftMap.get(key), type.name) : key
+
+    const actions: BlockAction[] = []
+    if (!savedMap.get(key)) {
+      actions.push({
+        Label: <Icon icon={faSave} />,
+        handler: () => handleSavedItemUpdate(key)(draftMap.get(key)),
+      })
+    }
+    actions.push({
+      Label: <Icon icon={faTrash} />,
+      handler: handleItemDelete(key),
+    })
 
     return (
       <DataItem
-        key={indexes[index]}
+        key={key}
         type={type.of}
-        Label={name}
-        draft={draft[index]}
-        saved={saved[indexes[index]] ?? Data$get_default(type.of)}
-        onDraftUpdate={handleDraftItemUpdate(index)}
-        onSavedUpdate={handleSavedItemUpdate(index)}
-        actions={[
-          { Label: <Icon icon={faTrash} />, handler: handleItemDelete(index) },
-        ]}
+        Label={name || index}
+        draft={draftMap.get(key)}
+        saved={savedMap.get(key) ?? draftMap.get(key)}
+        onDraftUpdate={handleDraftItemUpdate(key)}
+        onSavedUpdate={handleSavedItemUpdate(key)}
+        actions={actions}
       />
     )
   })

@@ -13,6 +13,8 @@ export function DataInline() {
       return <Input value={draft} onChange={handleDraftChange} />
     case 'string':
       return <Input value={draft} onChange={handleDraftChange} />
+    case 'uuid':
+      return <Input value={draft} onChange={handleDraftChange} />
     case 'type':
       return <ValueTypeSelect />
   }

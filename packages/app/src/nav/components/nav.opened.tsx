@@ -23,8 +23,8 @@ export function NavOpened() {
           icon={faTimes}
           onClick={() =>
             navActions.close({
-              template_id: item.template.id,
-              data_id: item.data.id,
+              templateId: item.template.id,
+              dataId: item.data.id,
             })
           }
         />
