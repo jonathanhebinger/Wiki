@@ -10,8 +10,8 @@ export function DataObject() {
     function key_handleDraftChange(item: Data.Any) {
       handleDraftChange({ ...draft, [id]: item })
     }
-    function key_handleSavedChange() {
-      handleSavedChange({ ...draft, [id]: draft[id] })
+    function key_handleSavedChange(item: Data.Any) {
+      handleSavedChange({ ...saved, [id]: item })
     }
 
     return (

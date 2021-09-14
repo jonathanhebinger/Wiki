@@ -1,6 +1,5 @@
 import { TemplateDataId, TemplateId } from '@brainote/common'
 import { Surface } from '@brainote/ui/structure'
-import { useState } from 'react'
 
 import { NodeProvider } from '../node.context'
 import { NodeInfos } from './node.content'

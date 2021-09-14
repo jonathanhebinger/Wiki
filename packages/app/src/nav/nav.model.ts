@@ -1,6 +1,4 @@
 import {
-  Node,
-  NodeId,
   Template,
   TemplateData,
   TemplateDataId,
@@ -10,40 +8,23 @@ import { Action, Computed, ThunkOn } from 'easy-peasy'
 
 import { RootModel } from '../main/root.model'
 
-type NavOpened =
-  | { type: 'template'; template_id: TemplateId }
-  | { type: 'data'; template_id: TemplateId; data_id: TemplateDataId }
-type NavOpenedJoined =
-  | { type: 'template'; template: Template }
-  | { type: 'data'; template: Template; data: TemplateData }
+export type NavOpened = { template_id: TemplateId; data_id: TemplateDataId }
+export type NavOpenedJoined = { template: Template; data: TemplateData }
 
 export interface NavModel {
-  opened: NavOpened[]
-
-  node: Computed<this, (id: NodeId) => Node, RootModel>
-  template: Computed<this, (id: TemplateId) => Template, RootModel>
-  templateData: Computed<
+  data: Computed<
     this,
-    (template_id: TemplateId, data_id: TemplateDataId) => Template,
+    (template_id: TemplateId, data_id: TemplateDataId) => TemplateData,
     RootModel
   >
 
-  opened_nodes: Computed<this, NavOpenedJoined[]>
+  opened: NavOpened[]
+  openedJoined: Computed<this, NavOpenedJoined[]>
 
-  open_template: Action<this, TemplateId>
-  open_templateData: Action<
-    this,
-    { template_id: TemplateId; data_id: TemplateDataId }
-  >
+  open: Action<this, NavOpened>
 
-  close_template: Action<this, TemplateId>
-  close_templateData: Action<
-    this,
-    { template_id: TemplateId; data_id: TemplateDataId }
-  >
+  close: Action<this, NavOpened>
+  closeAll: Action<this>
 
-  close_all: Action<this>
-
-  on_templateData_create: ThunkOn<this, any, RootModel>
-  on_template_create: ThunkOn<this, any, RootModel>
+  onCreate: ThunkOn<this, any, RootModel>
 }

@@ -8,6 +8,7 @@ import {
   DataContextProvider,
   useDataContext,
 } from '../data.context'
+import { DataArray } from './data.array'
 import { DataBlock } from './data.block'
 import { DataInline } from './data.inline'
 import { DataJoin } from './data.join'
@@ -30,28 +31,31 @@ export function DataItem({
   return (
     <DataContextProvider
       type={type}
+      Label={Label}
       saved={saved}
       draft={draft}
       onDraftUpdate={onDraftUpdate}
       onSavedUpdate={onSavedUpdate}
     >
-      <DataEContent Label={Label} actions={actions} />
+      <DataEContent actions={actions} />
     </DataContextProvider>
   )
 }
 
-function DataEContent({
-  Label,
-  actions = [],
-}: {
-  Label: React.ReactNode
-  actions?: BlockAction[]
-}) {
-  const { type, modified, handleUndo, handleQuickSave, handleSavedChange } =
-    useDataContext()
+function DataEContent({ actions = [] }: { actions?: BlockAction[] }) {
+  const {
+    type,
+    modified,
+    handleUndo,
+    handleQuickSave,
+    handleSavedChange,
+    Label,
+  } = useDataContext()
 
   let inline = false
   let Content: JSX.Element
+
+  if (type.type === 'uuid') return null
 
   if (modified) {
     actions.push({
@@ -69,10 +73,11 @@ function DataEContent({
 
   switch (type.type) {
     case 'join':
-      return <DataJoin Label={Label} />
+      return <DataJoin />
     case 'type':
-      return <DataType Label={Label} actions={actions} />
+      return <DataType actions={actions} />
     case 'array':
+      return <DataArray />
   }
 
   switch (type.type) {
@@ -85,7 +90,6 @@ function DataEContent({
         </Shelf>
       )
       break
-    case 'array':
     case 'object':
       Content = <DataBlock />
       break

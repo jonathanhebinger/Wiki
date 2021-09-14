@@ -22,6 +22,6 @@ export function useNavActions() {
 export function useMain() {
   return useModel(state => state.main)
 }
-export function useNodesActions() {
+export function useMainActions() {
   return useActions(state => state.main)
 }

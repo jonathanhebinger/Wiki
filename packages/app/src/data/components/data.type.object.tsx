@@ -37,7 +37,7 @@ export function ValueTypeObject() {
   const actions = [{ Label: <Icon icon={faPlus} />, handler: handleKeyAdd }]
 
   const draftMap = new Map(draft.keys.map(key => [key.id, key]))
-  const savedMap = new Map(saved?.keys.map(key => [key.id, key]))
+  const savedMap = new Map(saved.keys.map(key => [key.id, key]))
 
   function handleKeyDelete(id: string) {
     return () => {

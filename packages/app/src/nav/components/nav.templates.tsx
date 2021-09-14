@@ -7,15 +7,20 @@ export function NavTemplates() {
   const actions = useNavActions()
 
   const Nodes = templates.map(template => {
+    function handleOpen() {
+      return actions.open({
+        template_id: 'template',
+        data_id: template.id,
+      })
+    }
+
     return (
       <Surface
-        htmlProps={{
-          onClick: () => actions.open_template(template.id),
-        }}
         key={template.id}
+        htmlProps={{ onClick: handleOpen }}
         className="p-1"
-        squared
         shadow="sm"
+        squared
       >
         {template.name}
       </Surface>

@@ -84,13 +84,12 @@ export function useNodesSearch({
 }) {
   const [selected, handleChange] = useState<NodeId[]>([])
 
-  const { notes: nodes } = useMain()
-
+  const nodes = useMain().datas['note']
   const modal = useModal(
     <Shelf>
       <NodesSearch
         onChange={handleChange}
-        nodes={nodes}
+        nodes={nodes as Node[]}
         multiple={multiple}
         exclude={excluded}
       />

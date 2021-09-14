@@ -8,32 +8,32 @@ export function NavOpened() {
   const nav = useNav()
   const navActions = useNavActions()
 
-  const Nodes = nav.opened_nodes.map(item => {
-    switch (item.type) {
-      case 'node':
-        return (
-          <Surface
-            key={item.node.id}
-            squared
-            shadow="sm"
-            className="flex justify-between p-1"
-          >
-            {item.node.name}
-            <ButtonIcon
-              contrast
-              size="xs"
-              icon={faTimes}
-              onClick={() => navActions.close_node(item.node.id)}
-            />
-          </Surface>
-        )
-      default:
-        return null
-    }
+  const Nodes = nav.openedJoined.map(item => {
+    return (
+      <Surface
+        key={item.template.id + item.data.id}
+        squared
+        shadow="sm"
+        className="flex justify-between p-1"
+      >
+        {item.data.name}
+        <ButtonIcon
+          contrast
+          size="xs"
+          icon={faTimes}
+          onClick={() =>
+            navActions.close({
+              template_id: item.template.id,
+              data_id: item.data.id,
+            })
+          }
+        />
+      </Surface>
+    )
   })
 
   return (
-    <Section Label={<>Opened - {nav.opened_nodes.length}</>}>
+    <Section Label={<>Opened - {nav.openedJoined.length}</>}>
       <Shelf noPadding>{Nodes}</Shelf>
     </Section>
   )

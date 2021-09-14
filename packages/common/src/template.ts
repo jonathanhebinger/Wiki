@@ -9,13 +9,12 @@ export type Key = Node & {
   'key.required': boolean
 }
 
-export type TemplateId = Id<'template'>
+export type TemplateId = TemplateDataId
 export type Template = {
   id: TemplateId
   name: string
   info: string
   keys: TemplateKey[]
-  data: TemplateData[]
 }
 export type TemplateKey = {
   id: string

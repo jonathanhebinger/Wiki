@@ -11,11 +11,11 @@ import {
 import { useState } from 'react'
 
 import { DataItem } from '../../data'
-import { useNavActions, useNodesActions } from '../../main'
+import { useMainActions, useNavActions } from '../../main'
 import { useNode } from '../node.context'
 
 export function NodeInfos() {
-  const nodesActions = useNodesActions()
+  const nodesActions = useMainActions()
   const navActions = useNavActions()
 
   const { data, template, showData, handleToggleData } = useNode()
@@ -25,7 +25,7 @@ export function NodeInfos() {
     draft$set(patch)
   }
   function handleSavedUpdate(patch: Partial<TemplateData>) {
-    nodesActions.templateData_update({
+    nodesActions.dataUpdate({
       template_id: template.id,
       data_id: data.id,
       patch,
@@ -33,7 +33,7 @@ export function NodeInfos() {
   }
 
   function handleClose() {
-    navActions.close_templateData({
+    navActions.close({
       template_id: template.id,
       data_id: data.id,
     })

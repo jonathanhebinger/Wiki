@@ -7,9 +7,11 @@ export namespace Type {
   export type Boolean = Base<'boolean'>
   export type Number = Base<'number'>
   export type String = Base<'string'>
+  export type UUID = Base<'uuid'>
 
   export type Array = Base<'array'> & {
     of: Any
+    name?: string[]
   }
 
   export type Object = Base<'object'> & {
@@ -29,7 +31,15 @@ export namespace Type {
 
   export type Type = Base<'type'>
 
-  export type Any = Boolean | Number | String | Array | Object | Join | Type
+  export type Any =
+    | Boolean
+    | Number
+    | String
+    | UUID
+    | Array
+    | Object
+    | Join
+    | Type
 }
 
 export declare namespace Type2 {

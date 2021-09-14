@@ -25,7 +25,7 @@ export const [NodeProvider, useNode] = constate(
     const nodes = useMain()
 
     const template = nodes.template(templateId)
-    const data = nodes.templateData(templateId, dataId)
+    const data = nodes.data(templateId, dataId)
 
     const [showData, showData$set] = useState(true)
 

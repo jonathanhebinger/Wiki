@@ -9,11 +9,11 @@ export function NavActions() {
   const nav = useNavActions()
 
   function handleCreate() {
-    actions.templateData_create({ template_id: 'note' })
+    actions.dataCreate({ template_id: 'note' })
   }
 
   function handleCloseAll() {
-    nav.close_all()
+    nav.closeAll()
   }
 
   return (

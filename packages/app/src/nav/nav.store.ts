@@ -1,84 +1,42 @@
+import { Template } from '@brainote/common'
 import { action, computed, thunkOn } from 'easy-peasy'
 
 import { NavModel } from './nav.model'
 
 export const navModel: NavModel = {
+  data: computed([(state, store) => store.main.data], template => {
+    return template
+  }),
+
   opened: [],
-
-  node: computed([(state, store) => store.main.node], node => {
-    return node
-  }),
-  template: computed([(state, store) => store.main.template], template => {
-    return template
-  }),
-  templateData: computed([(state, store) => store.main.template], template => {
-    return template
-  }),
-
-  opened_nodes: computed(state => {
-    return [...state.opened].reverse().map(opened => {
-      switch (opened.type) {
-        case 'template':
-          return {
-            type: 'template',
-            template: state.template(opened.template_id),
-          }
-        case 'data':
-          return {
-            type: 'template',
-            template: state.template(opened.template_id),
-            data: state.templateData(opened.template_id, opened.data_id),
-          }
+  openedJoined: computed(state => {
+    return [...state.opened].reverse().map(({ template_id, data_id }) => {
+      return {
+        template: state.data(template_id, 'template') as Template,
+        data: state.data(template_id, data_id),
       }
     })
   }),
 
-  open_template: action((state, template_id) => {
+  open: action((state, { template_id, data_id }) => {
     state.opened = state.opened.filter(item => {
-      return item.type !== 'template' || item.template_id !== template_id
+      return item.template_id !== template_id || item.data_id !== data_id
     })
-    state.opened.push({ type: 'template', template_id })
+    state.opened.push({ template_id, data_id })
   }),
-  open_templateData: action((state, { template_id, data_id }) => {
+  close: action((state, { template_id, data_id }) => {
     state.opened = state.opened.filter(item => {
-      return (
-        item.type !== 'data' ||
-        item.template_id !== template_id ||
-        item.data_id !== data_id
-      )
-    })
-    state.opened.push({ type: 'template', template_id })
-  }),
-
-  close_template: action((state, template_id) => {
-    state.opened = state.opened.filter(item => {
-      return item.type === 'template' && item.template_id === template_id
+      return item.template_id === template_id && item.data_id === data_id
     })
   }),
-  close_templateData: action((state, { template_id, data_id }) => {
-    state.opened = state.opened.filter(item => {
-      return (
-        item.type === 'data' &&
-        item.template_id === template_id &&
-        item.data_id === data_id
-      )
-    })
-  }),
-
-  close_all: action(state => {
+  closeAll: action(state => {
     state.opened = []
   }),
 
-  on_template_create: thunkOn(
-    (_, store) => [store.main.template_create],
+  onCreate: thunkOn(
+    (_, store) => [store.main.dataCreate],
     (actions, target) => {
-      actions.open_template(target.result.id)
-    },
-  ),
-  on_templateData_create: thunkOn(
-    (_, store) => [store.main.templateData_create],
-    (actions, target) => {
-      actions.open_templateData({
+      actions.open({
         template_id: target.payload.template_id,
         data_id: target.result.id,
       })

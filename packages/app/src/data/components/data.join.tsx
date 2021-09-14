@@ -11,17 +11,17 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import React, { useMemo } from 'react'
 
-import { useActions, useMain, useModel, useNavActions } from '../../main'
+import { useMain, useMainActions, useNavActions } from '../../main'
 import { useTemplateDataSearch } from '../../templates/template.data.search'
 import { useDataContext } from '../data.context'
 
-export function DataJoin({ Label }: { Label: React.ReactNode }) {
-  const nodes = useModel(state => state.main)
-  const nodesActions = useActions(state => state.main)
+export function DataJoin() {
+  const nodesActions = useMainActions()
   const navActions = useNavActions()
 
   const {
     type,
+    Label,
     draft,
     modified,
     handleUndo,
@@ -46,7 +46,7 @@ export function DataJoin({ Label }: { Label: React.ReactNode }) {
     search.open()
   }
   function handleCreate() {
-    const node = nodesActions.templateData_create({ template_id })
+    const node = nodesActions.dataCreate({ template_id })
 
     handleDraftChange([...draft, node.id])
   }
@@ -75,7 +75,7 @@ export function DataJoin({ Label }: { Label: React.ReactNode }) {
     }
 
     function handleOpen() {
-      navActions.open_templateData({ template_id, data_id })
+      navActions.open({ template_id, data_id })
     }
 
     const actions: BlockAction[] = [
@@ -83,7 +83,7 @@ export function DataJoin({ Label }: { Label: React.ReactNode }) {
       { Label: <Icon icon={faMinus} />, handler: handleRemove },
     ]
 
-    const name = template_id ? template_name : main.node(data_id as any).name
+    const name = main.data(template_id, data_id).name || template_name
 
     return (
       <Block

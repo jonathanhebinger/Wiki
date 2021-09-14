@@ -1,17 +1,19 @@
 import { Shelf } from '@brainote/ui/structure'
 
+import { NodeMain } from '../../nodes'
 import { useNav } from '../root.store'
 
 export function MainList() {
-  const { opened_nodes } = useNav()
+  const { openedJoined } = useNav()
 
-  const Items = opened_nodes.map(item => {
-    switch (item.type) {
-      case 'data':
-        return null
-      case 'template':
-        return null
-    }
+  const Items = openedJoined.map(({ template, data }) => {
+    return (
+      <NodeMain
+        key={template.id + data.id}
+        templateId={template.id}
+        dataId={data.id}
+      />
+    )
   })
 
   return (

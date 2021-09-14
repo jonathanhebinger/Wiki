@@ -92,12 +92,13 @@ export function useTemplateDataSearch({
   const main = useMain()
 
   const template = main.template(template_id)
+  const datas = main.datas[template_id]
 
   const modal = useModal(
     <Shelf>
       <NodesSearch
         onChange={handleChange}
-        templateData={template.data}
+        templateData={datas}
         multiple={multiple}
         exclude={excluded}
       />
