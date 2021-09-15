@@ -36,7 +36,6 @@ export const mainStore: MainModel = {
     const datas = state.datas
 
     return (templateId: TemplateId, dataId: TemplateDataId) => {
-      console.log(state.datas)
       return datas[templateId].find(data => {
         return data.id === dataId
       }) as TemplateData
@@ -60,10 +59,10 @@ export const mainStore: MainModel = {
     const template = getState().template(templateId)
     const templateKeys = template.keys
 
-    templateKeys.map(key => {
-      if (data[key.id] !== undefined || !key.required) return
+    templateKeys.map(([id, { required, type }]) => {
+      if (data[id] !== undefined || !required) return
 
-      data[key.id] = Data$get_default(key.type)
+      data[id] = Data$get_default(type)
     })
 
     actions.dataUpdate({
@@ -72,26 +71,27 @@ export const mainStore: MainModel = {
       patch: data,
     })
 
-    console.log(data)
-
     return data
   }),
   dataUpdate: action((state, { templateId, dataId, patch }) => {
     findDataAndPatch(state.datas, templateId, dataId, (data, template) => {
       Object.keys(patch)
         .map(key_id => {
-          return template.keys.find(key => key.id === key_id) as TemplateKey
+          return template.keys.find(([id]) => id === key_id) as [
+            string,
+            TemplateKey,
+          ]
         })
-        .filter(key => key)
-        .forEach(key => {
+        .filter(item => item)
+        .forEach(([id, key]) => {
           const type = key.type
 
           switch (type.type) {
             case 'join': {
-              const previous = data[key.id] as TemplateDataId[]
-              const next = patch[key.id] as TemplateDataId[]
+              const previous = data[id] as TemplateDataId[]
+              const next = patch[id] as TemplateDataId[]
 
-              data[key.id] = next
+              data[id] = next
 
               const reflect = type.reflect
 
@@ -100,11 +100,13 @@ export const mainStore: MainModel = {
               const added = arrayDiff(next, previous)
               const removed = arrayDiff(previous, next)
 
+              console.log(added, removed)
+
               added.forEach(join => {
                 findDataAndPatch(state.datas, templateId, join, data => {
                   const keys = data[reflect] as string[]
 
-                  if (!keys.includes(dataId)) return
+                  if (keys.includes(dataId)) return
 
                   data[reflect] = [...keys, dataId]
                 })
@@ -122,11 +124,8 @@ export const mainStore: MainModel = {
 
               break
             }
-            default: {
-              const next = patch[key.id]
-
-              data[key.id] = next
-            }
+            default:
+              data[id] = patch[id]
           }
         })
     })

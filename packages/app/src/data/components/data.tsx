@@ -13,7 +13,8 @@ import { DataArray } from './data.array'
 import { DataBlock } from './data.block'
 import { DataInline } from './data.inline'
 import { DataJoin } from './data.join'
-import { DataType } from './data.type'
+import { DataMap } from './data.map'
+import { DataType } from './type/data.type'
 
 export interface ValueProps extends DataContextProps {
   Label: React.ReactNode
@@ -81,6 +82,8 @@ function DataEContent({ actions = [] }: { actions?: BlockAction[] }) {
       return <DataType actions={actions} />
     case 'array':
       return <DataArray />
+    case 'map':
+      return <DataMap />
   }
 
   switch (type.type) {

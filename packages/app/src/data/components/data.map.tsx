@@ -22,7 +22,7 @@ function compute(item: any, path: string[]): any {
     : `${item[key]}`
 }
 
-export function DataArray() {
+export function DataMap() {
   const {
     type,
     Label,
@@ -33,14 +33,15 @@ export function DataArray() {
     handleQuickSave,
     handleDraftChange,
     handleSavedChange,
-  } = useDataContext<Type.Array, Data.Array>()
-  const [draftMap, draftMap$set] = useState(new Map<any, any>(draft.entries()))
-  const [savedMap, savedMap$set] = useState(new Map<any, any>(saved.entries()))
+  } = useDataContext<Type.Map, Data.Map>()
+
+  const [draftMap, draftMap$set] = useState(new Map<any, any>(draft))
+  const [savedMap, savedMap$set] = useState(new Map<any, any>(saved))
 
   useEffect(() => {
     if (!modified) {
-      draftMap$set(new Map(draft.entries()))
-      savedMap$set(new Map(saved.entries()))
+      draftMap$set(new Map(draft))
+      savedMap$set(new Map(saved))
     }
   }, [draft, saved])
 
@@ -48,14 +49,14 @@ export function DataArray() {
     return () => {
       draftMap.delete(index)
 
-      handleDraftChange([...draftMap.values()])
+      handleDraftChange([...draftMap])
     }
   }
   function handleDraftItemUpdate(index: number) {
     return (item: Type.Any) => {
       draftMap.set(index, item)
 
-      handleDraftChange([...draftMap.values()])
+      handleDraftChange([...draftMap])
     }
   }
   function handleSavedItemUpdate(index: number) {
@@ -63,7 +64,7 @@ export function DataArray() {
       draftMap.set(index, item)
       savedMap.set(index, item)
 
-      handleSavedChange([...savedMap.values()])
+      handleSavedChange([...savedMap])
     }
   }
 
@@ -73,7 +74,7 @@ export function DataArray() {
 
     draftMap.set(index, item)
 
-    handleDraftChange([...draftMap.values()])
+    handleDraftChange([...draftMap])
   }
 
   const Items = [...draftMap].map(([key], index) => {

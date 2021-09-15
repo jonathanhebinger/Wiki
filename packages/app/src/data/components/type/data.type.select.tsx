@@ -2,7 +2,7 @@ import { Type } from '@brainote/common'
 import { Select } from '@brainote/ui/forms'
 import { useEffect, useState } from 'react'
 
-import { useDataContext } from '../data.context'
+import { useDataContext } from '../../data.context'
 
 type ValueTypeRecordItem = {
   draft: Type.Any
@@ -10,7 +10,15 @@ type ValueTypeRecordItem = {
 }
 type ValueTypeRecord = Partial<Record<Type.Any['type'], ValueTypeRecordItem>>
 
-const options = ['boolean', 'number', 'string', 'array', 'object', 'join']
+const options = [
+  'boolean',
+  'number',
+  'string',
+  'array',
+  'object',
+  'join',
+  'map',
+]
 
 export function ValueTypeSelect() {
   const {
@@ -58,6 +66,12 @@ export function ValueTypeSelect() {
           current = {
             draft: { type, keys: [] },
             saved: { type, keys: [] },
+          }
+          break
+        case 'map':
+          current = {
+            draft: { type, of: { type: 'type' } },
+            saved: { type, of: { type: 'type' } },
           }
           break
       }

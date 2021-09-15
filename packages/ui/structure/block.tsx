@@ -28,6 +28,7 @@ export function Block({
   actions = [],
   opened: defaultOpened = false,
   noGutter = false,
+  noBottom = false,
   onClick,
 }: BlockProps) {
   const [opened, opened$set] = useState(defaultOpened)
@@ -107,14 +108,16 @@ export function Block({
           <div className="flex-grow bg-white">{Content}</div>
           {noGutter || !Content || Gutter}
         </div>
-        <Surface
-          squared
-          shadowless
-          className={mergeClassNames(
-            'pt-1',
-            hovered ? 'bg-gray-100 border-gray-200' : 'bg-gray-50',
-          )}
-        />
+        {noBottom || (
+          <Surface
+            squared
+            shadowless
+            className={mergeClassNames(
+              'pt-1',
+              hovered ? 'bg-gray-100 border-gray-200' : 'bg-gray-50',
+            )}
+          />
+        )}
       </Collapse>
     </div>
   )

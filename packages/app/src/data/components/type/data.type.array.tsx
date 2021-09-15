@@ -1,7 +1,7 @@
 import { Type } from '@brainote/common'
 
-import { useDataContext } from '../data.context'
-import { DataItem } from './data'
+import { useDataContext } from '../../data.context'
+import { DataItem } from '../data'
 
 export function ValueTypeArray() {
   const { draft, saved, handleDraftChange, handleSavedChange } = useDataContext<

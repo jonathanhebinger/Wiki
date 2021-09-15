@@ -9,10 +9,10 @@ import {
   faSearch,
   faUndo,
 } from '@fortawesome/free-solid-svg-icons'
-import React, { useMemo } from 'react'
+import { useMemo } from 'react'
 
 import { useMain, useMainActions, useNavActions } from '../../main'
-import { useTemplateDataSearch } from '../../templates/template.data.search'
+import { useTemplateDataSearch } from '../../templates'
 import { useDataContext } from '../data.context'
 
 export function DataJoin() {

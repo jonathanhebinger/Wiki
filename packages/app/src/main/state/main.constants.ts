@@ -5,20 +5,24 @@ export const TEMPLATE_NOTE: Template = {
   name: 'note',
   info: '',
   keys: [
-    {
-      id: 'tags',
-      name: 'Tags',
-      type: { type: 'join', template: 'note', reflect: 'tagged' },
-      required: true,
-    },
-    { id: 'name', name: 'Name', type: { type: 'string' }, required: true },
-    { id: 'note', name: 'Note', type: { type: 'string' }, required: true },
-    {
-      id: 'tagged',
-      name: 'Tagged',
-      type: { type: 'join', template: 'note', reflect: 'tags' },
-      required: true,
-    },
+    [
+      'tags',
+      {
+        name: 'Tags',
+        type: { type: 'join', template: 'note', reflect: 'tagged' },
+        required: true,
+      },
+    ],
+    ['name', { name: 'Name', type: { type: 'string' }, required: true }],
+    ['note', { name: 'Note', type: { type: 'string' }, required: true }],
+    [
+      'tagged',
+      {
+        name: 'Tagged',
+        type: { type: 'join', template: 'note', reflect: 'tags' },
+        required: true,
+      },
+    ],
   ],
 }
 export const TEMPLATE_TEMPLATE: Template = {
@@ -26,26 +30,27 @@ export const TEMPLATE_TEMPLATE: Template = {
   name: 'template',
   info: '',
   keys: [
-    { id: 'name', name: 'name', type: { type: 'string' }, required: true },
-    { id: 'info', name: 'Info', type: { type: 'string' }, required: true },
-    {
-      id: 'keys',
-      name: 'Keys',
-      type: {
-        type: 'array',
-        of: {
-          type: 'object',
-          keys: [
-            { id: 'id', name: 'Id', type: { type: 'uuid' } },
-            { id: 'name', name: 'Name', type: { type: 'string' } },
-            { id: 'type', name: 'Type', type: { type: 'type' } },
-            { id: 'required', name: 'Required', type: { type: 'boolean' } },
-          ],
+    ['name', { name: 'Name', type: { type: 'string' }, required: true }],
+    ['info', { name: 'Info', type: { type: 'string' }, required: true }],
+    [
+      'keys',
+      {
+        name: 'Keys',
+        type: {
+          type: 'map',
+          of: {
+            type: 'object',
+            keys: [
+              ['name', { name: 'Name', type: { type: 'string' } }],
+              ['type', { name: 'Type', type: { type: 'type' } }],
+              ['required', { name: 'Required', type: { type: 'boolean' } }],
+            ],
+          },
+          name: ['name'],
         },
-        name: ['name'],
+        required: true,
       },
-      required: true,
-    },
+    ],
   ],
 }
 

@@ -14,18 +14,21 @@ export namespace Type {
     name?: string[]
   }
 
+  export type Map = Base<'map'> & {
+    of: Type.Any
+    name?: string[]
+  }
+
   export type Object = Base<'object'> & {
-    keys: ObjectKey[]
+    keys: [string, ObjectKey][]
   }
   export type ObjectKey = {
-    id: string
     name: string
     type: Any
   }
 
-  export type Map = Base<'map'> & {
-    keyType: Type.Any
-    valueType: Type.Any
+  export type Compute = Base<'compute'> & {
+    compute: any
   }
 
   export type Join = Base<'join'> & {
@@ -45,6 +48,7 @@ export namespace Type {
     | Object
     | Join
     | Type
+    | Map
 }
 
 export declare namespace Type2 {

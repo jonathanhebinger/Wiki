@@ -1,7 +1,7 @@
 import { Type } from '@brainote/common'
 import { Block, BlockAction, Shelf, Surface } from '@brainote/ui/structure'
 
-import { DataContextProvider, useDataContext } from '../data.context'
+import { DataContextProvider, useDataContext } from '../../data.context'
 import { ValueTypeItem } from './data.type.item'
 import { ValueTypeSelect } from './data.type.select'
 

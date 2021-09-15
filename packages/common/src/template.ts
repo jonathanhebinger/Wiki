@@ -14,10 +14,9 @@ export type Template = {
   id: TemplateId
   name: string
   info: string
-  keys: TemplateKey[]
+  keys: [string, TemplateKey][]
 }
 export type TemplateKey = {
-  id: string
   name: string
   type: Type.Any
   required: boolean

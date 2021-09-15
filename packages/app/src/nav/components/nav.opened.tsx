@@ -1,5 +1,5 @@
-import { ButtonIcon } from '@brainote/ui/forms'
-import { Section, Shelf, Surface } from '@brainote/ui/structure'
+import { Icon } from '@brainote/ui/forms'
+import { Block, BlockAction } from '@brainote/ui/structure'
 import { faTimes } from '@fortawesome/free-solid-svg-icons'
 
 import { useNav, useNavActions } from '../../main'
@@ -9,32 +9,39 @@ export function NavOpened() {
   const navActions = useNavActions()
 
   const Nodes = nav.openedJoined.map(item => {
+    function handleClose() {
+      navActions.open({
+        templateId: item.template.id,
+        dataId: item.data.id,
+      })
+    }
+    const actions: BlockAction[] = [
+      { Label: <Icon icon={faTimes} />, handler: handleClose },
+    ]
+
     return (
-      <Surface
+      <Block
         key={item.template.id + item.data.id}
-        squared
-        shadow="sm"
-        className="flex justify-between p-1"
-      >
-        {item.data.name}
-        <ButtonIcon
-          contrast
-          size="xs"
-          icon={faTimes}
-          onClick={() =>
-            navActions.close({
-              templateId: item.template.id,
-              dataId: item.data.id,
-            })
-          }
-        />
-      </Surface>
+        Label={item.data.name}
+        actions={actions}
+      />
     )
   })
 
+  function handleCloseAll() {
+    navActions.closeAll()
+  }
+  const actions: BlockAction[] = [
+    { Label: <Icon icon={faTimes} />, handler: handleCloseAll },
+  ]
+
   return (
-    <Section Label={<>Opened - {nav.openedJoined.length}</>}>
-      <Shelf noPadding>{Nodes}</Shelf>
-    </Section>
+    <Block
+      Label={'Opened - ' + Nodes.length}
+      actions={actions}
+      Content={Nodes.length !== 0 && Nodes}
+      noGutter={Nodes.length === 0}
+      noBottom={Nodes.length === 0}
+    />
   )
 }

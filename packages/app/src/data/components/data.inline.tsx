@@ -1,7 +1,7 @@
 import { Checkbox, Input } from '@brainote/ui/forms'
 import { useDataContext } from 'src/data/data.context'
 
-import { ValueTypeSelect } from './data.type.select'
+import { ValueTypeSelect } from './type/data.type.select'
 
 export function DataInline() {
   const { type, draft, handleDraftChange } = useDataContext()

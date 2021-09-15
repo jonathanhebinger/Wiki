@@ -15,8 +15,8 @@ export function Data$get_default(type: Type.Any): Data.Any {
       return []
     case 'object':
       return Object.fromEntries(
-        type.keys.map(key => {
-          return [key.id, Data$get_default(key.type)]
+        type.keys.map(([id, key]) => {
+          return [id, Data$get_default(key.type)]
         }),
       )
     case 'join':
