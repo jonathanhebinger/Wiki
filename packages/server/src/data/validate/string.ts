@@ -4,7 +4,7 @@ export function validateString(
   type: Type.String,
   value: Data,
 ): value is string {
-  if (typeof value !== 'string') return false
+  if (typeof value !== 'text') return false
 
   const minLength = type.minLength ?? 0
   const maxLength = type.maxLength ?? Infinity

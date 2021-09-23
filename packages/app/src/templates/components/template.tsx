@@ -1,4 +1,4 @@
-import { Template, TemplateId } from '@brainote/common'
+import { TemplateId, Type } from '@brainote/common'
 import { Icon } from '@brainote/ui/forms'
 import { Block, BlockAction } from '@brainote/ui/structure'
 import { Title } from '@brainote/ui/typo'
@@ -21,11 +21,11 @@ export function TemplateMain({ templateId }: TemplateMainProps) {
 
   const [draft, draft$set] = useState(template)
 
-  function handleDraftUpdate(template: Template) {
+  function handleDraftUpdate([, template]: Type.Object) {
     draft$set(template)
   }
-  function handleSavedUpdate(template: Template) {
-    mainActions.templateUpdate(template)
+  function handleSavedUpdate([, template]: Type.Object) {
+    mainActions.templateUpdate({ templateId, template })
   }
 
   function handleCreate() {
@@ -45,10 +45,10 @@ export function TemplateMain({ templateId }: TemplateMainProps) {
 
   const Content = (
     <DataContextProvider
-      Label={template.name}
-      type={{ type: 'type' }}
-      saved={template}
-      draft={draft}
+      Label={templateId}
+      type={['type', {}]}
+      saved={['object', template]}
+      draft={['object', draft]}
       onDraftUpdate={handleDraftUpdate as any}
       onSavedUpdate={handleSavedUpdate as any}
     >

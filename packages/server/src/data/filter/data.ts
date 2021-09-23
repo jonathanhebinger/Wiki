@@ -26,13 +26,13 @@ export function filterData(
 
     default:
       switch (type.type) {
-        case 'boolean':
+        case 'bool':
           return filterBoolean(source, filter)
         case 'number':
           return filterNumber(source, filter)
-        case 'string':
+        case 'text':
           return filterString(source, filter)
-        case 'array':
+        case 'list':
           return filterArray(type, source, filter)
         case 'object':
           return filterObject(type, source, filter)

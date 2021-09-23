@@ -3,10 +3,10 @@ import { DataItem } from 'src/data/components/data'
 import { useDataContext } from 'src/data/data.context'
 
 export function DataObject() {
-  const { type, draft, saved, handleDraftChange, handleSavedChange } =
+  const { typeConfig, draft, saved, handleDraftChange, handleSavedChange } =
     useDataContext<Type.Object, Data.Object>()
 
-  const Keys = type.keys.map(([id, { name, type }]) => {
+  const Keys = typeConfig.keys.map(([id, { name, type }]) => {
     function key_handleDraftChange(item: Data.Any) {
       handleDraftChange({ ...draft, [id]: item })
     }

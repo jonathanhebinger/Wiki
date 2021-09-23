@@ -9,13 +9,13 @@ export function patchData(
   patch: Type.Patch.Any,
 ): Data {
   switch (type.type) {
-    case 'boolean':
+    case 'bool':
       return patch
     case 'number':
       return patch
-    case 'string':
+    case 'text':
       return patch
-    case 'array':
+    case 'list':
       return patchArray(type, source as Data[], patch as Type.Patch.Array)
     case 'object':
       return patchObject(

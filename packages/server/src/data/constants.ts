@@ -13,7 +13,7 @@ export const TYPE_TYPE: Type.Object = {
   type: 'object',
   required: true,
   entries: [
-    ['name', { type: 'string', required: true }],
+    ['name', { type: 'text', required: true }],
     ['type', { type: 'type', name: '$name' }],
   ],
 }
@@ -22,11 +22,11 @@ export const TYPE_FOLDER: Type.Object = {
   type: 'object',
   required: true,
   entries: [
-    ['name', { type: 'string', required: false }],
+    ['name', { type: 'text', required: false }],
     [
       'nodes',
       {
-        type: 'array',
+        type: 'list',
         required: false,
         of: { type: 'link', required: true, reflect: true, with: 'node' },
       },
@@ -38,7 +38,7 @@ export const TYPE_NOTE: Type.Object = {
   type: 'object',
   required: true,
   entries: [
-    ['title', { type: 'string', required: false }],
+    ['title', { type: 'text', required: false }],
     ['note', { type: 'text', required: true }],
   ],
 }

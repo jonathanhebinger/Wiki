@@ -1,22 +1,18 @@
 import { Template } from '@brainote/common'
 
 export const TEMPLATE_NOTE: Template = {
-  id: 'note',
   name: 'note',
   keys: [
-    ['name', { name: 'Name', type: { type: 'string' } }],
-    ['info', { name: 'Info', type: { type: 'string' } }],
+    ['name', { name: 'Name', type: ['text', {}] }],
+    ['info', { name: 'Info', type: ['text', {}] }],
     [
       'tags',
-      { name: 'Tags', type: { type: 'join', template: 'note', on: 'tagged' } },
+      { name: 'Tags', type: ['join', { templateId: 'note', on: 'tagged' }] },
     ],
     [
       'tagged',
-      { name: 'Tagged', type: { type: 'join', template: 'note', on: 'tags' } },
+      { name: 'Tagged', type: ['join', { templateId: 'note', on: 'tags' }] },
     ],
   ],
   namePath: 'name',
-  data: [],
 }
-
-export const TEMPLATES = [TEMPLATE_NOTE]

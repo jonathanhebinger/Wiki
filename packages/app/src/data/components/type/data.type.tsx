@@ -23,9 +23,9 @@ export function DataType({ actions = [] }: { actions?: BlockAction[] }) {
               </Shelf>
             </Surface>
             <DataContextProvider
-              type={{ type: 'type' }}
+              type={['type', {}]}
               Label={Label}
-              saved={saved?.type === draft.type ? saved : draft}
+              saved={saved && saved[0] === draft[0] ? saved : draft}
               draft={draft}
               onDraftUpdate={handleDraftChange as any}
               onSavedUpdate={handleSavedChange as any}

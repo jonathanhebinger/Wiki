@@ -13,7 +13,7 @@ export const TypeUtil = {
   Any: {
     reflect(reflect: Set<string>, type: Type.Any, data: Data) {
       switch (type.type) {
-        case 'array':
+        case 'list':
           TypeUtil.Array.reflect(reflect, type, data as any)
           break
         case 'object':
@@ -28,7 +28,7 @@ export const TypeUtil = {
     },
   },
   Array: {
-    reflect(reflect: Set<string>, type: Type.Array, data: Data[]) {
+    reflect(reflect: Set<string>, type: Type.List, data: Data[]) {
       return data.map(item => {
         return TypeUtil.Any.reflect(reflect, type.of, item)
       })

@@ -5,7 +5,7 @@ export function validateLink(
   type: Type.Link,
   value: Data,
 ) {
-  if (typeof value !== 'string') return false
+  if (typeof value !== 'text') return false
 
   const linked = nodes[value]
 

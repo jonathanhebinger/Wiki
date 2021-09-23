@@ -10,7 +10,10 @@ import { Shelf } from '@brainote/ui/structure'
 import { useEffect, useMemo, useState } from 'react'
 
 import { useMain } from '../../main'
-import { selectTemplate } from '../../main/state/main.selector'
+import {
+  selectTemplate,
+  selectTemplateDataList,
+} from '../../main/state/main.selector'
 
 export type NodeSearchOption = {
   id: NodeId
@@ -31,15 +34,14 @@ export function useNodeSearch({
 }) {
   const [selected, handleChange] = useState<NodeId[]>([])
 
-  const main = useMain()
   const template = useMain(selectTemplate(templateId))
-  const nodeList = template.data
+  const nodeList = useMain(selectTemplateDataList(templateId))
 
   const options = useMemo<NodeSearchOption[]>(() => {
     return nodeList
-      .filter(node => !excluded.includes(node.id))
-      .map(node => ({
-        id: node.id,
+      .filter(([id]) => !excluded.includes(id))
+      .map(([id, node]) => ({
+        id: id,
         name: node[template.namePath] as string,
         test: node[template.namePath] as string,
       }))

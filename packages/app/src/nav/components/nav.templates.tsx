@@ -3,17 +3,14 @@ import { Block } from '@brainote/ui/structure'
 import { faEye, faPlus } from '@fortawesome/free-solid-svg-icons'
 
 import { useMain, useMainActions, useNavActions } from '../../main'
-import { selectTemplateList } from '../../main/state/main.selector'
 
 export function NavTemplates() {
   const navActions = useNavActions()
 
-  const templates = useMain(selectTemplateList)
+  const templates = useMain(state => state.templates)
   const mainActions = useMainActions()
 
-  const Templates = templates.map(template => {
-    const templateId = template.id
-
+  const Templates = templates.map(([templateId]) => {
     function handleCreate() {
       mainActions.templateDataCreate({ templateId })
     }
@@ -26,7 +23,7 @@ export function NavTemplates() {
       { Label: <Icon icon={faEye} />, handler: handleOpen },
     ]
 
-    return <Block key={templateId} Label={template.name} actions={actions} />
+    return <Block key={templateId} Label={templateId} actions={actions} />
   })
 
   function handleCreate() {

@@ -15,13 +15,13 @@ export function validateData(
   if (value === undefined) return !('required' in type) || !type.required
 
   switch (type.type) {
-    case 'boolean':
+    case 'bool':
       return validateBoolean(type, value)
     case 'number':
       return validateNumber(type, value)
-    case 'string':
+    case 'text':
       return validateString(type, value)
-    case 'array':
+    case 'list':
       return validateArray(nodes, type, value)
     case 'object':
       return validateObject(nodes, type, value)

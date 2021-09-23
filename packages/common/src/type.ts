@@ -6,48 +6,43 @@ export type DeepPartial<T> = T extends { [index: string]: any }
   : T
 
 export namespace Type {
-  export type Base<Type extends string> = { type: Type }
+  export type Base<Type, Config extends object = {}> = [Type, Config]
 
-  export type Boolean = Base<'boolean'>
+  export type Bool = Base<'bool'>
   export type Number = Base<'number'>
-  export type String = Base<'string'>
+  export type Text = Base<'text'>
 
-  export type Array = Base<'array'> & {
-    of: Any
-    name?: string[]
+  export type List = Base<'list', ListConfig>
+  export type ListConfig = {
+    type: Any
+    namePath: string[]
   }
 
-  export type Map = Base<'map'> & {
-    of: Type.Any
+  export type Map = Base<'map', MapConfig>
+  export type MapConfig = {
+    type: Type.Any
   }
 
-  export type Object = Base<'object'> & {
+  export type Object = Base<'object', ObjectConfig>
+  export type ObjectConfig = {
     name: string
-    keys: [string, ObjectKey][]
+    keys: [string, ObjectConfigKey][]
     namePath: string
   }
-  export type ObjectKey = {
+  export type ObjectConfigKey = {
     name: string
     type: Any
   }
 
-  export type Join = Base<'join'> & {
-    template: TemplateId
+  export type Join = Base<'join', JoinConfig>
+  export type JoinConfig = {
+    templateId: TemplateId
     on?: string
-    multiple?: boolean
   }
 
   export type Type = Base<'type'>
 
-  export type Any =
-    | Boolean
-    | Number
-    | String
-    | Array
-    | Join
-    | Type
-    | Object
-    | Map
+  export type Any = Bool | Number | Text | List | Join | Type | Object | Map
 }
 
 export declare namespace Type2 {
@@ -57,7 +52,7 @@ export declare namespace Type2 {
     required: boolean
   }
   export interface Boolean extends Base {
-    type: 'boolean'
+    type: 'bool'
 
     default?: boolean
   }
@@ -71,7 +66,7 @@ export declare namespace Type2 {
     step?: number
   }
   export interface String extends Base {
-    type: 'string'
+    type: 'text'
 
     default?: string
 
@@ -89,7 +84,7 @@ export declare namespace Type2 {
     maxLength?: number
   }
   export interface Array extends Base {
-    type: 'array'
+    type: 'list'
 
     of: Any
 

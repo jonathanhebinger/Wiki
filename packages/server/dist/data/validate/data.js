@@ -8,23 +8,23 @@ const number_1 = require("./number");
 const object_1 = require("./object");
 const string_1 = require("./string");
 function validateData(nodes, type, value) {
-    if (value === undefined)
-        return !('required' in type) || !type.required;
-    switch (type.type) {
-        case 'boolean':
-            return boolean_1.validateBoolean(type, value);
-        case 'number':
-            return number_1.validateNumber(type, value);
-        case 'string':
-            return string_1.validateString(type, value);
-        case 'array':
-            return array_1.validateArray(nodes, type, value);
-        case 'object':
-            return object_1.validateObject(nodes, type, value);
-        case 'link':
-            return link_1.validateLink(nodes, type, value);
-        default:
-            return false;
-    }
+  if (value === undefined)
+    return !('required' in type) || !type.required;
+  switch (type.type) {
+    case 'bool':
+      return boolean_1.validateBoolean(type, value);
+    case 'number':
+      return number_1.validateNumber(type, value);
+    case 'text':
+      return string_1.validateString(type, value);
+    case 'list':
+      return array_1.validateArray(nodes, type, value);
+    case 'object':
+      return object_1.validateObject(nodes, type, value);
+    case 'link':
+      return link_1.validateLink(nodes, type, value);
+    default:
+      return false;
+  }
 }
 exports.validateData = validateData;

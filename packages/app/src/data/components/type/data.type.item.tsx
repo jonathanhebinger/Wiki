@@ -9,8 +9,8 @@ import { DataTypeObject } from './data.type.object'
 export function ValueTypeItem() {
   const { draft } = useDataContext<Type.Type, Type.Any>()
 
-  switch (draft.type) {
-    case 'array':
+  switch (draft[0]) {
+    case 'list':
       return <ValueTypeArray />
     case 'map':
       return <ValueTypeMap />

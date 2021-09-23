@@ -5,24 +5,24 @@ import { TemplateMain } from '../../templates/components/template'
 import { useNav } from '../root.store'
 
 export function MainList() {
-  const { openedJoined } = useNav()
+  const { opened } = useNav()
 
-  const Items = openedJoined.map(item => {
+  const Items = opened.map(item => {
     switch (item.type) {
       case 'template': {
-        const { template } = item
+        const { templateId } = item
 
-        return <TemplateMain key={template.id} templateId={template.id} />
+        return <TemplateMain key={templateId} templateId={templateId} />
       }
 
       case 'data': {
-        const { template, templateData } = item
+        const { templateId, templateDataId } = item
 
         return (
           <NodeMain
-            key={template.id + templateData.id}
-            templateId={template.id}
-            dataId={templateData.id}
+            key={templateId + templateDataId}
+            templateId={templateId}
+            dataId={templateDataId}
           />
         )
       }

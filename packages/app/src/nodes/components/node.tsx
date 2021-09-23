@@ -10,7 +10,7 @@ export type NodeMainProps = {
 }
 export function NodeMain({ templateId, dataId }: NodeMainProps) {
   return (
-    <NodeProvider templateId={templateId} dataId={dataId}>
+    <NodeProvider templateId={templateId} templateDataId={dataId}>
       <Surface squared borderless>
         <NodeInfos />
       </Surface>

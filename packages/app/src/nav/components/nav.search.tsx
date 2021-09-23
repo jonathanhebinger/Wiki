@@ -4,7 +4,10 @@ import { faTimes } from '@fortawesome/free-solid-svg-icons'
 import { useState } from 'react'
 
 import { useMain, useNavActions } from '../../main'
-import { selectTemplate } from '../../main/state/main.selector'
+import {
+  selectTemplate,
+  selectTemplateDataList,
+} from '../../main/state/main.selector'
 import { useTemplateSelect } from '../../templates'
 
 export function NavSearch() {
@@ -12,27 +15,29 @@ export function NavSearch() {
 
   const [searchString, search] = useState('')
 
-  const { Select, selected } = useTemplateSelect()
+  const { Select, selected: templateId } = useTemplateSelect()
 
-  const template = useMain(selectTemplate(selected))
-  const nodeList = template.data
+  const template = useMain(selectTemplate(templateId))
+  const nodeList = useMain(selectTemplateDataList(templateId))
   const filtered = searchString
-    ? nodeList.filter(node => (node.name as string).includes(searchString))
+    ? nodeList.filter(([, node]) =>
+        (node[template.namePath] as string).includes(searchString),
+      )
     : nodeList
 
-  const Items = filtered.map(node => {
+  const Items = filtered.map(([templateDataId, templateData]) => {
     function handleOpen() {
       navActions.open({
         type: 'data',
-        templateId: selected,
-        templateDataId: node.id,
+        templateId,
+        templateDataId,
       })
     }
 
     return (
       <Block
-        key={node.id}
-        Label={node[template.namePath]}
+        key={templateDataId}
+        Label={templateData[template.namePath]}
         onClick={handleOpen}
         noBottom
       />

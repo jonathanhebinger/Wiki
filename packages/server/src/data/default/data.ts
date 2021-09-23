@@ -4,13 +4,13 @@ import { defaultObject } from './object'
 
 export function defaultData(type: Type.Any): Data {
   switch (type.type) {
-    case 'boolean':
+    case 'bool':
       return type.default
     case 'number':
       return type.default
-    case 'string':
+    case 'text':
       return type.default
-    case 'array':
+    case 'list':
       return type.default || []
     case 'object':
       return defaultObject(type)

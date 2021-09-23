@@ -14,17 +14,9 @@ import { useDataContext } from '../data.context'
 import { Data$get_default } from '../data.default'
 import { DataItem } from './data'
 
-function compute(item: any, path: string[]): any {
-  const [key, ...rest] = path
-
-  return rest.length > 0 && typeof item === 'object'
-    ? compute(item[key], rest)
-    : `${item[key]}`
-}
-
 export function DataMap() {
   const {
-    type,
+    typeConfig,
     Label,
     draft,
     saved,
@@ -70,7 +62,7 @@ export function DataMap() {
 
   function handleItemAdd() {
     const index = v4()
-    const item = Data$get_default(type.of)
+    const item = Data$get_default(typeConfig.type)
 
     draftMap.set(index, item)
 
@@ -79,7 +71,9 @@ export function DataMap() {
 
   const Items = [...draftMap].map(([key], index) => {
     const name =
-      type.of.type === 'object' ? draftMap.get(key)[type.of.namePath] : index
+      typeConfig.type[0] === 'object'
+        ? draftMap.get(key)[typeConfig.type[1].namePath]
+        : index
 
     const actions: BlockAction[] = []
     if (!savedMap.get(key)) {
@@ -96,7 +90,7 @@ export function DataMap() {
     return (
       <DataItem
         key={key}
-        type={type.of}
+        type={typeConfig.type}
         Label={name || index}
         draft={draftMap.get(key)}
         saved={savedMap.get(key) ?? draftMap.get(key)}

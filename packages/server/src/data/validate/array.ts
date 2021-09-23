@@ -4,7 +4,7 @@ import { validateData } from './data'
 
 export function validateArray(
   nodes: Map<string, Node>,
-  type: Type.Array,
+  type: Type.List,
   value: Data,
 ) {
   if (!Array.isArray(value)) return false

@@ -1,12 +1,9 @@
 import { Id } from './id'
-import { TemplateData } from './template.data'
 import { Type } from './type'
 
-export type TemplateId = Id<'node'>
 /**
  * Templates are NOT data, for now, and forever !
  */
-export type Template = {
-  id: TemplateId
-  data: TemplateData[]
-} & Omit<Type.Object, 'type'>
+export type Template = Type.ObjectConfig
+export type TemplateId = Id<'node'>
+export type TemplatePair = [TemplateId, Template]

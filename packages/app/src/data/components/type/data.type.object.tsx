@@ -7,27 +7,22 @@ import { DataContextProvider, useDataContext } from '../../data.context'
 import { DataItem } from '../data'
 import { DataMap } from '../data.map'
 
-const OBJECT: Type.Object = {
-  type: 'object',
-  name: 'Key',
+const OBJECT: Type.ObjectConfig = {
+  name: 'object',
   keys: [
-    ['name', { name: 'name', type: { type: 'string' } }],
-    ['type', { name: 'type', type: { type: 'type' } }],
+    ['name', { name: 'name', type: ['text', {}] }],
+    ['type', { name: 'type', type: ['type', {}] }],
   ],
   namePath: 'name',
 }
 
 export function DataTypeObject() {
-  const { draft, saved, handleDraftChange, handleSavedChange } = useDataContext<
-    Type.Type,
-    Type.Object
-  >()
+  const { draft, saved, handleDraftChange } = useDataContext<Type.Type, Type.Object>()
 
-  const nameSelectOptions = draft.keys
-    .filter(
-      ([keyId, key]) =>
-        key.type.type === 'string' || key.type.type === 'number',
-    )
+  console.log(saved, draft)
+
+  const nameSelectOptions = draft[1].keys
+    .filter(([keyId, key]) => key.type[0] === 'text' || key.type[0] === 'number')
     .map(([keyId, key]) => ({
       id: keyId,
       label: key.name,
@@ -37,43 +32,39 @@ export function DataTypeObject() {
     <Select
       options={nameSelectOptions}
       onSelect={namePath => {
-        handleDraftChange({
-          ...draft,
-          namePath,
-        })
+        handleDraftChange([draft[0], { ...draft[1], namePath }])
       }}
     />
   )
 
+  function handleDraftConfigChange(config: Partial<Type.ObjectConfig>) {
+    handleDraftChange([draft[0], { ...draft[1], ...config }])
+  }
+  function handleSavedConfigChange(config: Partial<Type.ObjectConfig>) {
+    handleDraftChange([draft[0], { ...draft[1], ...config }])
+  }
+
   return (
     <>
       <DataItem
-        type={{ type: 'string' }}
+        type={['text', {}]}
         Label="Name"
-        draft={draft.name}
-        saved={saved.name}
-        onDraftUpdate={name => handleDraftChange({ ...draft, name })}
-        onSavedUpdate={name => handleSavedChange({ ...saved, name })}
+        draft={draft[0]}
+        saved={saved[0]}
+        onDraftUpdate={name => handleDraftConfigChange({ name })}
+        onSavedUpdate={name => handleSavedConfigChange({ name })}
       />
       <DataContextProvider
-        type={{ type: 'map', of: OBJECT }}
+        type={['map', { type: ['object', OBJECT] }]}
         Label="Keys"
-        draft={draft.keys}
-        saved={saved.keys}
-        onDraftUpdate={keys =>
-          handleDraftChange({ ...draft, keys: keys as any })
-        }
-        onSavedUpdate={keys =>
-          handleSavedChange({ ...draft, keys: keys as any })
-        }
+        draft={draft[1].keys}
+        saved={saved[1].keys}
+        onDraftUpdate={keys => handleDraftConfigChange({ keys: keys as any })}
+        onSavedUpdate={keys => handleSavedConfigChange({ keys: keys as any })}
       >
         <DataMap />
       </DataContextProvider>
-      <Block
-        Label="Name Key"
-        Inline={NameSelect}
-        Content={<Shelf>{NameSelect}</Shelf>}
-      />
+      <Block Label="Name Key" Inline={NameSelect} Content={<Shelf>{NameSelect}</Shelf>} />
     </>
   )
 }

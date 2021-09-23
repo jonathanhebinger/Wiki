@@ -3,7 +3,7 @@ import { Data, Type } from '@brainote/common'
 import { patchData } from './data'
 
 export function patchArray(
-  type: Type.Array,
+  type: Type.List,
   source: Data[],
   patch: Type.Patch.Array,
 ) {

@@ -3,7 +3,7 @@ import { Data, Filter, Type } from '@brainote/common'
 import { filterData } from './data'
 
 export function filterArray(
-  type: Type.Array,
+  type: Type.List,
   source: Data,
   filter: Filter.Any,
 ): boolean {

@@ -24,7 +24,7 @@ function compute(item: any, path: string[]): any {
 
 export function DataArray() {
   const {
-    type,
+    typeConfig,
     Label,
     draft,
     saved,
@@ -33,7 +33,7 @@ export function DataArray() {
     handleQuickSave,
     handleDraftChange,
     handleSavedChange,
-  } = useDataContext<Type.Array, Data.Array>()
+  } = useDataContext<Type.List, Data.List>()
   const [draftMap, draftMap$set] = useState(new Map<any, any>(draft.entries()))
   const [savedMap, savedMap$set] = useState(new Map<any, any>(saved.entries()))
 
@@ -69,7 +69,7 @@ export function DataArray() {
 
   function handleItemAdd() {
     const index = v4()
-    const item = Data$get_default(type.of)
+    const item = Data$get_default(typeConfig.type)
 
     draftMap.set(index, item)
 
@@ -77,7 +77,9 @@ export function DataArray() {
   }
 
   const Items = [...draftMap].map(([key], index) => {
-    const name = type.name ? compute(draftMap.get(key), type.name) : key
+    const name = typeConfig.namePath
+      ? compute(draftMap.get(key), typeConfig.namePath)
+      : key
 
     const actions: BlockAction[] = []
     if (!savedMap.get(key)) {
@@ -94,7 +96,7 @@ export function DataArray() {
     return (
       <DataItem
         key={key}
-        type={type.of}
+        type={typeConfig.type}
         Label={name || index}
         draft={draftMap.get(key)}
         saved={savedMap.get(key) ?? draftMap.get(key)}

@@ -5,10 +5,10 @@ import { DataArray } from './data.array'
 import { DataObject } from './data.object'
 
 export function DataBlock() {
-  const { type } = useDataContext()
+  const { typeName } = useDataContext()
 
-  switch (type.type) {
-    case 'array':
+  switch (typeName) {
+    case 'list':
       return <DataArray />
     case 'object':
       return <DataObject />

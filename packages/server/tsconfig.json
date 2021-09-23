@@ -12,10 +12,5 @@
     "allowJs": true,
     "outDir": "./dist"
   },
-  "references": [
-    {
-      "path": "../common/tsconfig.json"
-    }
-  ],
   "include": ["src/**/*"]
 }

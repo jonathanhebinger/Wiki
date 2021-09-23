@@ -17,8 +17,14 @@ export type NavOpenedTemplateData = {
 
 export type NavOpened = NavOpenedTemplate | NavOpenedTemplateData
 export type NavOpenedJoined =
-  | { type: 'template'; template: Template }
-  | { type: 'data'; template: Template; templateData: TemplateData }
+  | { type: 'template'; template: Template; templateId: TemplateId }
+  | {
+      type: 'data'
+      template: Template
+      templateId: TemplateId
+      templateData: TemplateData
+      templateDataId: TemplateDataId
+    }
 
 export interface NavModel {
   template: Computed<this, (templateId: TemplateId) => Template, RootModel>

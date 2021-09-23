@@ -1,39 +1,37 @@
-import {
-  Template,
-  TemplateData,
-  TemplateDataId,
-  TemplateId,
-} from '@brainote/common'
+import { Template, TemplateData, TemplateDataId, TemplateId } from '@brainote/common'
 import { action, thunk } from 'easy-peasy'
 import { v4 } from 'uuid'
 
 import { Data$get_default } from '../../data/data.default'
 import { ArrayUtil } from '../../util/array'
-import { TEMPLATES } from './main.constants'
-import { MainModel } from './main.model'
+import { TEMPLATE_NOTE } from './main.constants'
+import { MainModel, MainState } from './main.model'
+
+const TEMPLATE: Template = {
+  name: 'New Template',
+  keys: [['name', { name: 'Name', type: ['text', {}] }]],
+  namePath: 'name',
+}
 
 export const mainModel: MainModel = {
-  templates: TEMPLATES,
+  templates: [['note', TEMPLATE_NOTE]],
+  datas: [['note', []]],
 
   templateCreate: thunk(actions => {
-    const template: Template = {
-      id: v4(),
-      name: 'New Template',
-      keys: [['name', { name: 'Name', type: { type: 'string' } }]],
-      namePath: 'name',
-      data: [],
-    }
+    const template = TEMPLATE
+    const templateId = v4()
 
-    actions.templateInsert(template)
+    actions.templateInsert({ templateId, template })
 
-    return template
+    return templateId
   }),
-  templateInsert: action((state, template) => {
-    state.templates.push(template)
+  templateInsert: action((state, { templateId, template }) => {
+    state.templates.push([templateId, template])
+
+    state.datas.push([templateId, []])
   }),
-  templateUpdate: action((state, template) => {
-    const templateId = template.id
-    const templateSaved = selectTemplate(state, templateId)
+  templateUpdate: action((state, { templateId, template }) => {
+    const templateSaved = getTemplate(state, templateId)
 
     const templateKeys = template.keys
     const templateSavedKeys = templateSaved.keys
@@ -41,123 +39,182 @@ export const mainModel: MainModel = {
     Object.assign(templateSaved, template)
 
     templateSavedKeys.forEach(([keyId, key]) => {
-      if (ArrayUtil.findTuple(templateKeys, keyId)) return
+      if (ArrayUtil.getPair(templateKeys, keyId)) return
 
-      templateSaved.data.map(data => {
+      ArrayUtil.getPair(state.datas, templateId).map(([, data]) => {
         delete data[keyId]
       })
     })
 
     templateKeys.forEach(([keyId, key]) => {
-      const keySaved = ArrayUtil.findTuple(templateSavedKeys, keyId)
+      const keySaved = ArrayUtil.getPair(templateSavedKeys, keyId)
 
       if (!keySaved) return
 
-      if (keySaved.type.type !== key.type.type) {
-        templateSaved.data.forEach(data => {
+      if (keySaved.type[0] !== key.type[0]) {
+        ArrayUtil.getPair(state.datas, templateId).map(([, data]) => {
           data[keyId] = Data$get_default(key.type)
         })
       }
     })
   }),
-  templateDelete: action((state, templateId) => {
-    state.templates = state.templates.filter(template => {
-      return template.id === templateId
+  templateDelete: action((state, { templateId }) => {
+    state.templates = state.templates.filter(item => {
+      return item[0] === templateId
     })
   }),
 
   templateDataCreate: thunk((actions, { templateId }, { getState }) => {
-    const templateData: TemplateData = { id: v4() }
-
-    actions.templateDataInsert({
-      templateId,
-      templateData,
-    })
-
-    const template = selectTemplate(getState(), templateId)
+    const template = getTemplate(getState(), templateId)
+    const templateData: TemplateData = {}
+    const templateDataId = v4()
 
     template.keys.map(([keyId, key]) => {
       templateData[keyId] = Data$get_default(key.type)
     })
 
-    actions.templateDataUpdate({
+    actions.templateDataInsert({
       templateId,
       templateData,
+      templateDataId,
     })
 
-    return templateData
+    return templateDataId
   }),
-  templateDataInsert: action((state, { templateId, templateData }) => {
-    const template = selectTemplate(state, templateId)
-
-    template.data.push(templateData)
+  templateDataInsert: action((state, { templateId, templateData, templateDataId }) => {
+    ArrayUtil.getPair(state.datas, templateId).push([templateDataId, templateData, undefined])
   }),
   templateDataUpdate: action((state, payload) => {
-    const { templateId, templateData } = payload
+    const { target, templateId, templateData, templateDataId } = payload
 
-    const template = selectTemplate(state, templateId)
+    const template = getTemplate(state, templateId)
 
-    const templateDataId = templateData.id
-    const templateDataSaved = ArrayUtil.findById(template.data, templateDataId)
+    const getter = target === 'saved' ? getTemplateDataSaved : getTemplateDataDraft
+    const setter = target === 'saved' ? setTemplateDataSaved : setTemplateDataDraft
+
+    const templateDataTarget = getter(state, templateId, templateDataId)
 
     template.keys.map(([keyId, key]) => {
       const dataUpdate = templateData[keyId]
-      const data = templateDataSaved[keyId]
+      const dataTarget = templateDataTarget[keyId]
 
-      switch (key.type.type) {
-        case 'join':
-          const join = key.type
-          const joinOn = join.on
+      if (target === 'saved') {
+        switch (key.type[0]) {
+          case 'join':
+            // TODO - allow join on itself
 
-          if (joinOn) {
-            const joinIdsUpdate = dataUpdate as TemplateDataId[]
-            const joinIds = data as TemplateDataId[]
+            const join = key.type[1]
+            const joinOn = join.on
 
-            const joinIdsCreated = ArrayUtil.diff(joinIdsUpdate, joinIds)
-            const joinIdsDeleted = ArrayUtil.diff(joinIds, joinIdsUpdate)
+            if (joinOn) {
+              const joinIdsUpdate = dataUpdate as TemplateDataId[]
+              const joinIds = dataTarget as TemplateDataId[]
 
-            if (joinIdsCreated.length + joinIdsDeleted.length === 0) return
+              const joinIdsCreated = ArrayUtil.diff(joinIdsUpdate, joinIds)
+              const joinIdsDeleted = ArrayUtil.diff(joinIds, joinIdsUpdate)
 
-            const joinTemplate = selectTemplate(state, join.template)
+              if (joinIdsCreated.length + joinIdsDeleted.length === 0) return
 
-            joinIdsCreated.map(joinId => {
-              const joined = ArrayUtil.findById(joinTemplate.data, joinId)
-              const joinedReflect = joined[joinOn] as TemplateDataId[]
+              joinIdsCreated.map(joinId => {
+                const joinedSaved = getTemplateDataSaved(state, join.templateId, joinId)
+                const joinedDraft = getTemplateDataDraft(state, join.templateId, joinId)
 
-              if (joinedReflect.includes(templateDataId)) return
+                const joinedReflectSaved = joinedSaved[joinOn] as TemplateDataId[]
+                const joinedReflectDraft = joinedDraft[joinOn] as TemplateDataId[]
 
-              joinedReflect.push(templateDataId)
-            })
-
-            joinIdsDeleted.map(joinId => {
-              const joined = ArrayUtil.findById(joinTemplate.data, joinId)
-              const joinedReflect = joined[joinOn] as TemplateDataId[]
-
-              if (!joinedReflect.includes(templateDataId)) return
-
-              joined[joinOn] = joinedReflect.filter(joinedReflectId => {
-                return joinedReflectId !== templateDataId
+                if (!joinedReflectSaved.includes(templateDataId)) {
+                  joinedReflectSaved.push(templateDataId)
+                }
+                if (!joinedReflectDraft.includes(templateDataId)) {
+                  joinedReflectDraft.push(templateDataId)
+                }
               })
-            })
-          }
 
-          break
+              joinIdsDeleted.map(joinId => {
+                const joinedSaved = getTemplateDataSaved(state, join.templateId, joinId)
+                const joinedDraft = getTemplateDataDraft(state, join.templateId, joinId)
+
+                const joinedReflectSaved = joinedSaved[joinOn] as TemplateDataId[]
+                const joinedReflectDraft = joinedDraft[joinOn] as TemplateDataId[]
+
+                if (joinedReflectSaved.includes(templateDataId)) {
+                  joinedSaved[joinOn] = joinedReflectSaved.filter(joinedReflectId => {
+                    return joinedReflectId !== templateDataId
+                  })
+                }
+                if (joinedReflectDraft.includes(templateDataId)) {
+                  joinedDraft[joinOn] = joinedReflectDraft.filter(joinedReflectId => {
+                    return joinedReflectId !== templateDataId
+                  })
+                }
+              })
+            }
+
+            break
+        }
       }
-      templateDataSaved[keyId] = dataUpdate
+
+      templateDataTarget[keyId] = dataUpdate
     })
+
+    setter(state, templateId, templateDataId, templateDataTarget)
   }),
   templateDataDelete: action((state, { templateId, templateDataId }) => {
-    const template = selectTemplate(state, templateId)
+    const dataList = getTemplateDataList(state, templateId)
 
-    template.data = template.data.filter(templateData => {
-      return templateData.id === templateDataId
+    const index = dataList.findIndex(([id]) => {
+      return id === templateDataId
     })
+
+    dataList.splice(index, 1)
   }),
 }
 
-function selectTemplate(
-  state: { templates: Template[] },
+export function getTemplate(state: MainState, templateId: TemplateId) {
+  return ArrayUtil.getPair(state.templates, templateId)
+}
+
+export function getTemplateDataList(state: MainState, templateId: TemplateId) {
+  return ArrayUtil.getPair(state.datas, templateId)
+}
+
+export function getTemplateDataSaved(
+  state: MainState,
   templateId: TemplateId,
+  templateDataId: TemplateDataId,
 ) {
-  return ArrayUtil.findById(state.templates, templateId)
+  return ArrayUtil.getPair(getTemplateDataList(state, templateId), templateDataId)
+}
+export function getTemplateDataDraft(
+  state: MainState,
+  templateId: TemplateId,
+  templateDataId: TemplateDataId,
+) {
+  const templateDataDraft = ArrayUtil.getTrio(
+    getTemplateDataList(state, templateId),
+    templateDataId,
+  )
+
+  if (templateDataDraft) return templateDataDraft
+
+  const templateDataSaved = getTemplateDataSaved(state, templateId, templateDataId)
+
+  return JSON.parse(JSON.stringify(templateDataSaved)) as TemplateData
+}
+
+export function setTemplateDataSaved(
+  state: MainState,
+  templateId: TemplateId,
+  templateDataId: TemplateDataId,
+  templateData: TemplateData,
+) {
+  ArrayUtil.setPair(getTemplateDataList(state, templateId), templateDataId, templateData)
+}
+export function setTemplateDataDraft(
+  state: MainState,
+  templateId: TemplateId,
+  templateDataId: TemplateDataId,
+  templateData: TemplateData,
+) {
+  return ArrayUtil.setTrio(getTemplateDataList(state, templateId), templateDataId, templateData)
 }

@@ -1,4 +1,9 @@
-import { Template, TemplateData, TemplateId } from '@brainote/common'
+import {
+  TemplateDataId,
+  TemplateDataTrio,
+  TemplateId,
+  TemplatePair,
+} from '@brainote/common'
 import { Action, State, Thunk } from 'easy-peasy'
 
 import {
@@ -6,6 +11,9 @@ import {
   TemplateDataDeletePayload,
   TemplateDataInsertPayload,
   TemplateDataUpdatePayload,
+  TemplateDeletePayload,
+  TemplateInsertPayload,
+  TemplateUpdatePayload,
 } from './main.payload'
 
 export type MyThunk<
@@ -17,14 +25,15 @@ export type MyThunk<
 export type MainThunk<P = undefined, R = void> = MyThunk<MainModel, P, R>
 
 export type MainModel = {
-  templates: Template[]
+  templates: TemplatePair[]
+  datas: [TemplateId, TemplateDataTrio[]][]
 
-  templateCreate: MainThunk<void, Template>
-  templateInsert: Action<MainModel, Template>
-  templateUpdate: Action<MainModel, Template>
-  templateDelete: Action<MainModel, TemplateId>
+  templateCreate: MainThunk<void, TemplateId>
+  templateInsert: Action<MainModel, TemplateInsertPayload>
+  templateUpdate: Action<MainModel, TemplateUpdatePayload>
+  templateDelete: Action<MainModel, TemplateDeletePayload>
 
-  templateDataCreate: MainThunk<TemplateDataCreatePayload, TemplateData>
+  templateDataCreate: MainThunk<TemplateDataCreatePayload, TemplateDataId>
   templateDataInsert: Action<MainModel, TemplateDataInsertPayload>
   templateDataUpdate: Action<MainModel, TemplateDataUpdatePayload>
   templateDataDelete: Action<MainModel, TemplateDataDeletePayload>

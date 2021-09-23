@@ -1,9 +1,6 @@
 import { action, computed, thunkOn } from 'easy-peasy'
 
-import {
-  selectTemplate,
-  selectTemplateData,
-} from '../../main/state/main.selector'
+import { selectTemplate, selectTemplateData } from '../../main/state/main.selector'
 import { NavModel, NavOpened } from './nav.model'
 
 export const navModel: NavModel = {
@@ -11,8 +8,7 @@ export const navModel: NavModel = {
     return templateId => selectTemplate(templateId)(main)
   }),
   templateData: computed([(state, store) => store.main], main => {
-    return (templateId, templateDataId) =>
-      selectTemplateData(templateId, templateDataId)(main)
+    return (templateId, templateDataId) => selectTemplateData(templateId, templateDataId)(main)
   }),
 
   opened: [],
@@ -22,18 +18,12 @@ export const navModel: NavModel = {
 
       switch (item.type) {
         case 'template':
-          return {
-            type: item.type,
-            template,
-          }
+          return { ...item, template }
         case 'data':
           return {
-            type: item.type,
+            ...item,
             template,
-            templateData: state.templateData(
-              item.templateId,
-              item.templateDataId,
-            ),
+            templateData: state.templateData(item.templateId, item.templateDataId),
           }
       }
     })
@@ -52,21 +42,14 @@ export const navModel: NavModel = {
 
   onTemplateCreate: thunkOn(
     (_, store) => [store.main.templateCreate],
-    (actions, target) => {
-      actions.open({
-        type: 'template',
-        templateId: target.result.id,
-      })
+    (actions, { result: templateId }) => {
+      actions.open({ type: 'template', templateId })
     },
   ),
   onTemplateDataCreate: thunkOn(
     (_, store) => [store.main.templateDataCreate],
-    (actions, target) => {
-      actions.open({
-        type: 'data',
-        templateId: target.payload.templateId,
-        templateDataId: target.result.id,
-      })
+    (actions, { payload: { templateId }, result: templateDataId }) => {
+      actions.open({ type: 'data', templateId, templateDataId })
     },
   ),
 }
@@ -78,8 +61,8 @@ function diffTest(payload: NavOpened, item: NavOpened) {
     case 'data':
       return (
         item.type !== 'data' ||
-        (item.templateId !== payload.templateId &&
-          item.templateDataId !== payload.templateDataId)
+        item.templateId !== payload.templateId ||
+        item.templateDataId !== payload.templateDataId
       )
   }
 }

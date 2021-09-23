@@ -1,7 +1,7 @@
 import { Data, Filter } from '@brainote/common'
 
 export function filterBoolean(source: Data, filter: Filter.Any): boolean {
-  if (typeof source !== 'boolean') return false
+  if (typeof source !== 'bool') return false
 
   switch (filter.type) {
     case 'boolean.equal':

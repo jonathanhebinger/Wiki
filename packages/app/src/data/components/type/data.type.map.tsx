@@ -6,23 +6,23 @@ import { DataItem } from '../data'
 export function ValueTypeMap() {
   const data = useDataContext<Type.Type, Type.Map>()
 
-  const { draft, saved } = data
+  const { draft, saved, handleDraftChange, handleSavedChange } = data
 
-  function handleDraftChange(of: Type.Any) {
-    data.handleDraftChange({ ...draft, of })
+  function handleDraftUpdate(type: Type.Any) {
+    handleDraftChange([draft[0], { ...draft[1], type }])
   }
-  function handleSavedChange(of: Type.Any) {
-    data.handleSavedChange({ ...saved, of })
+  function handleSavedUpdate(type: Type.Any) {
+    handleSavedChange([saved[0], { ...saved[1], type }])
   }
 
   return (
     <DataItem
       Label="Of Type"
-      type={{ type: 'type' }}
-      saved={saved.of}
-      draft={draft.of}
-      onDraftUpdate={handleDraftChange}
-      onSavedUpdate={handleSavedChange}
+      type={['type', {}]}
+      saved={saved[1].type}
+      draft={draft[1].type}
+      onDraftUpdate={handleDraftUpdate}
+      onSavedUpdate={handleSavedUpdate}
     />
   )
 }

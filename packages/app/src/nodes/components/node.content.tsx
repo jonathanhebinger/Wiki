@@ -3,7 +3,6 @@ import { Icon } from '@brainote/ui/forms'
 import { Block, BlockAction } from '@brainote/ui/structure'
 import { Title } from '@brainote/ui/typo'
 import { faTimes, faTrash } from '@fortawesome/free-solid-svg-icons'
-import React, { useState } from 'react'
 
 import { DataItem } from '../../data'
 import { useMainActions, useNavActions } from '../../main'
@@ -13,24 +12,30 @@ export function NodeInfos() {
   const mainActions = useMainActions()
   const navActions = useNavActions()
 
-  const { node, template, keys } = useNode()
-  const [draft, draft$set] = useState(node as TemplateData)
+  const { node, template, draft, templateId, templateDataId, keys } = useNode()
 
-  function handleDraftUpdate(patch: TemplateData) {
-    draft$set(patch)
+  function handleDraftUpdate(templateData: TemplateData) {
+    mainActions.templateDataUpdate({
+      target: 'draft',
+      templateId,
+      templateData,
+      templateDataId,
+    })
   }
   function handleSavedUpdate(templateData: TemplateData) {
     mainActions.templateDataUpdate({
-      templateId: template.id,
+      target: 'saved',
+      templateId,
       templateData,
+      templateDataId,
     })
   }
 
   function handleClose() {
     navActions.close({
       type: 'data',
-      templateId: template.id,
-      templateDataId: node.id,
+      templateId,
+      templateDataId,
     })
   }
   const actions: BlockAction[] = [

@@ -44,7 +44,7 @@ export function DataItem({
 }
 
 function DataEContent({ actions = [] }: { actions?: BlockAction[] }) {
-  const { type, modified, handleUndo, handleQuickSave, Label } =
+  const { typeName, modified, handleUndo, handleQuickSave, Label } =
     useDataContext()
 
   let inline = false
@@ -61,21 +61,21 @@ function DataEContent({ actions = [] }: { actions?: BlockAction[] }) {
     })
   }
 
-  switch (type.type) {
+  switch (typeName) {
     case 'join':
       return <DataJoin />
     case 'type':
       return <DataType actions={actions} />
-    case 'array':
+    case 'list':
       return <DataArray />
     case 'map':
       return <DataMap />
   }
 
-  switch (type.type) {
-    case 'boolean':
+  switch (typeName) {
+    case 'bool':
     case 'number':
-    case 'string':
+    case 'text':
       Content = (
         <Shelf>
           <DataInline />
@@ -87,10 +87,10 @@ function DataEContent({ actions = [] }: { actions?: BlockAction[] }) {
       break
   }
 
-  switch (type.type) {
-    case 'boolean':
+  switch (typeName) {
+    case 'bool':
     case 'number':
-    case 'string':
+    case 'text':
       inline = true
       break
   }

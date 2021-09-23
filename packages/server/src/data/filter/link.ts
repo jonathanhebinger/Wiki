@@ -1,7 +1,7 @@
 import { Data, Filter } from '@brainote/common'
 
 export function filterLink(source: Data, filter: Filter.Any): boolean {
-  if (typeof source !== 'string') return false
+  if (typeof source !== 'text') return false
 
   switch (filter.type) {
     case 'link.equal':

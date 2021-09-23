@@ -17,7 +17,7 @@ export function DataTypeJoin() {
 
   const nameSelectOptions = template.keys
     .filter(([keyId, key]) => {
-      return key.type.type === 'join'
+      return key.type[0] === 'join'
     })
     .map(([keyId, key]) => ({
       id: keyId,
@@ -30,13 +30,9 @@ export function DataTypeJoin() {
     <Select
       options={nameSelectOptions}
       onSelect={on => {
-        handleDraftChange({
-          ...draft,
-          template: templateId,
-          on,
-        })
+        handleDraftChange([draft[0], { ...draft[1], templateId, on }])
       }}
-      value={draft.on}
+      value={draft[1].on}
     />
   )
 

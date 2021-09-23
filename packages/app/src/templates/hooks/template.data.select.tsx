@@ -3,23 +3,26 @@ import { Select } from '@brainote/ui/forms'
 import { useMemo, useState } from 'react'
 
 import { useMain } from '../../main'
-import { selectTemplate } from '../../main/state/main.selector'
+import {
+  selectTemplate,
+  selectTemplateDataList,
+} from '../../main/state/main.selector'
 
 export function useNodeSelect(
   templateId: TemplateId,
   defaultTemplateDataId?: TemplateId,
 ) {
   const template = useMain(selectTemplate(templateId))
-  const data = template.data
+  const nodeList = useMain(selectTemplateDataList(templateId))
 
-  const [selected, select] = useState(defaultTemplateDataId || data[0]?.id)
+  const [selected, select] = useState(defaultTemplateDataId || nodeList[0][0])
 
   const options = useMemo(() => {
-    return data.map(node => ({
-      id: node.id,
+    return nodeList.map(([id, node]) => ({
+      id,
       label: node[template.namePath] as string,
     }))
-  }, [data])
+  }, [nodeList])
 
   return {
     selected,

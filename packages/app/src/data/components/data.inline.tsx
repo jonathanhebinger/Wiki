@@ -5,14 +5,14 @@ import { useDataContext } from 'src/data/data.context'
 import { ValueTypeSelect } from './type/data.type.select'
 
 export function DataInline() {
-  const { type, draft, handleDraftChange } = useDataContext()
+  const { typeName, draft, handleDraftChange } = useDataContext()
 
-  switch (type.type) {
-    case 'boolean':
+  switch (typeName) {
+    case 'bool':
       return <Checkbox checked={draft} onChange={handleDraftChange} />
     case 'number':
       return <Input value={draft} onChange={handleDraftChange} />
-    case 'string':
+    case 'text':
       return <Input value={draft} onChange={handleDraftChange} />
     case 'type':
       return <ValueTypeSelect />

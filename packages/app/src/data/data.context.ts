@@ -2,7 +2,10 @@ import { Data, Type } from '@brainote/common'
 import constate from 'constate/'
 import React from 'react'
 
-export interface DataContextProps<Type = Type.Any, Data = any> {
+export interface DataContextProps<
+  Type extends Type.Any = Type.Any,
+  Data = any,
+> {
   type: Type
   Label: React.ReactNode
   saved: Data
@@ -11,8 +14,9 @@ export interface DataContextProps<Type = Type.Any, Data = any> {
   onSavedUpdate: (value: Data) => void
 }
 
-export interface DataContext<Type, Data> {
-  type: Type
+export interface DataContext<Type extends Type.Any, Data> {
+  typeName: Type[0]
+  typeConfig: Type[1]
   Label: React.ReactNode
   saved: Data
   draft: Data
@@ -24,17 +28,17 @@ export interface DataContext<Type, Data> {
 }
 
 export type DataContextProvider = React.FC<DataContextProps<Type.Any, Data.Any>>
-export type DataContextHook = <Type = Type.Any, Data = any>() => DataContext<
-  Type,
-  Data
->
+export type DataContextHook = <
+  Type extends Type.Any = Type.Any,
+  Data = any,
+>() => DataContext<Type, Data>
 export type DataContextPair = [DataContextProvider, DataContextHook]
 
 export const [DataContextProvider, useDataContext] = constate(
   useData,
 ) as DataContextPair
 
-export function useData<Type = Type.Any, Data = any>({
+export function useData<Type extends Type.Any = Type.Any, Data = any>({
   type,
   Label,
   saved,
@@ -52,7 +56,8 @@ export function useData<Type = Type.Any, Data = any>({
   }
 
   return {
-    type,
+    typeName: type[0],
+    typeConfig: type[1],
     Label,
     saved,
     draft,
