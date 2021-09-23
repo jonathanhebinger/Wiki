@@ -9,23 +9,48 @@ export function NavOpened() {
   const navActions = useNavActions()
 
   const Nodes = nav.openedJoined.map(item => {
-    function handleClose() {
-      navActions.open({
-        templateId: item.template.id,
-        dataId: item.data.id,
-      })
-    }
-    const actions: BlockAction[] = [
-      { Label: <Icon icon={faTimes} />, handler: handleClose },
-    ]
+    switch (item.type) {
+      case 'template': {
+        const { template } = item
 
-    return (
-      <Block
-        key={item.template.id + item.data.id}
-        Label={item.data.name}
-        actions={actions}
-      />
-    )
+        function handleClose() {
+          navActions.close({
+            type: 'template',
+            templateId: template.id,
+          })
+        }
+
+        const actions: BlockAction[] = [
+          { Label: <Icon icon={faTimes} />, handler: handleClose },
+        ]
+
+        const key = template.id
+        const name = template.name
+
+        return <Block key={key} Label={name} actions={actions} />
+      }
+
+      case 'data': {
+        const { template, templateData } = item
+
+        function handleClose() {
+          navActions.close({
+            type: 'data',
+            templateId: template.id,
+            templateDataId: templateData.id,
+          })
+        }
+
+        const actions: BlockAction[] = [
+          { Label: <Icon icon={faTimes} />, handler: handleClose },
+        ]
+
+        const key = template.id + templateData.id
+        const name = templateData[template.namePath]
+
+        return <Block key={key} Label={name} actions={actions} />
+      }
+    }
   })
 
   function handleCloseAll() {

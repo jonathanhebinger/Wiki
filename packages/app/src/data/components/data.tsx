@@ -3,7 +3,6 @@ import { Block, BlockAction, Shelf, Surface } from '@brainote/ui/structure'
 import { faSave, faUndo } from '@fortawesome/free-solid-svg-icons'
 import React from 'react'
 
-import { useNode } from '../../nodes'
 import {
   DataContextProps,
   DataContextProvider,
@@ -45,30 +44,17 @@ export function DataItem({
 }
 
 function DataEContent({ actions = [] }: { actions?: BlockAction[] }) {
-  const {
-    type,
-    modified,
-    handleUndo,
-    handleQuickSave,
-    handleSavedChange,
-    Label,
-  } = useDataContext()
-
-  const { showReadonly } = useNode()
+  const { type, modified, handleUndo, handleQuickSave, Label } =
+    useDataContext()
 
   let inline = false
   let Content: JSX.Element
-
-  if (type.type === 'uuid' && !showReadonly) return null
 
   if (modified) {
     actions.push({
       Label: <Icon icon={faUndo} />,
       handler: handleUndo,
     })
-  }
-
-  if (modified && handleSavedChange) {
     actions.push({
       Label: <Icon icon={faSave} />,
       handler: handleQuickSave,
@@ -90,14 +76,13 @@ function DataEContent({ actions = [] }: { actions?: BlockAction[] }) {
     case 'boolean':
     case 'number':
     case 'string':
-    case 'uuid':
       Content = (
         <Shelf>
           <DataInline />
         </Shelf>
       )
       break
-    case 'object':
+    default:
       Content = <DataBlock />
       break
   }
@@ -106,7 +91,6 @@ function DataEContent({ actions = [] }: { actions?: BlockAction[] }) {
     case 'boolean':
     case 'number':
     case 'string':
-    case 'uuid':
       inline = true
       break
   }

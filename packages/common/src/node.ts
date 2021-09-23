@@ -1,13 +1,8 @@
-import { TemplateData, TemplateDataId, TemplateId } from './template'
+import { Data } from './data'
+import { Id } from './id'
 
-export type NodeId = TemplateDataId
-export type Node = TemplateData & {
-  name: string
-  info: string
-  tags: NodeId[]
-  tagged: NodeId[]
-  data: {
-    templateId: TemplateId
-    dataId: TemplateDataId
-  }[]
-}
+export type NodeId = Id<'node'>
+export type Node = {
+  id: NodeId
+  draft?: Data.Object
+} & Data.Object

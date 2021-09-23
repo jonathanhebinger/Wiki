@@ -78,7 +78,8 @@ export function DataMap() {
   }
 
   const Items = [...draftMap].map(([key], index) => {
-    const name = type.name ? compute(draftMap.get(key), type.name) : key
+    const name =
+      type.of.type === 'object' ? draftMap.get(key)[type.of.namePath] : index
 
     const actions: BlockAction[] = []
     if (!savedMap.get(key)) {

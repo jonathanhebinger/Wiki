@@ -1,43 +1,20 @@
-import {
-  Template,
-  TemplateData,
-  TemplateDataId,
-  TemplateId,
-} from '@brainote/common'
+import { TemplateDataId, TemplateId } from '@brainote/common'
 import constate from 'constate'
-import { useState } from 'react'
 
 import { useMain } from '../main'
+import { selectTemplate, selectTemplateData } from '../main/state/main.selector'
 
-export interface NodeTemplate {
-  template: Template
-  templateData: TemplateData
+export type useNodeProps = {
+  templateId: TemplateId
+  dataId: TemplateDataId
 }
-
 export const [NodeProvider, useNode] = constate(
-  ({
-    templateId,
-    dataId,
-  }: {
-    templateId: TemplateId
-    dataId: TemplateDataId
-  }) => {
-    const nodes = useMain()
+  ({ templateId, dataId }: useNodeProps) => {
+    const template = useMain(selectTemplate(templateId))
+    const node = useMain(selectTemplateData(templateId, dataId))
 
-    const template = nodes.template(templateId)
-    const data = nodes.data(templateId, dataId)
+    const keys = template.keys
 
-    const [showReadonly, showReadonly$set] = useState(false)
-
-    function handleToggleReadonly() {
-      showReadonly$set(!showReadonly)
-    }
-
-    return {
-      data,
-      template,
-      showReadonly,
-      handleToggleReadonly,
-    }
+    return { node, template, keys }
   },
 )

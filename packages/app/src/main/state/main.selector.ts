@@ -5,22 +5,31 @@ import {
   TemplateId,
 } from '@brainote/common'
 
+import { ArrayUtil } from '../../util/array'
 import { MainState } from './main.model'
 
-type Selector<State extends {}, Result> = (state: State) => Result
+export type MainSelector<Result> = (state: MainState) => Result
 
-export const templateSelector = (
+export function selectTemplateList(state: MainState) {
+  return state.templates
+}
+export function selectTemplate(templateId: TemplateId): MainSelector<Template> {
+  return state => ArrayUtil.findById(state.templates, templateId)
+}
+export function selectTemplateData(
   templateId: TemplateId,
-): Selector<MainState, Template> => {
+  templateDataId: TemplateDataId,
+): MainSelector<TemplateData> {
   return state => {
-    return state.templates.find(template => {
-      return template.id === templateId
-    }) as Template
+    const template = ArrayUtil.findById(state.templates, templateId)
+
+    return ArrayUtil.findById(template.data, templateDataId)
   }
 }
-
-export type TemplateSelector = (templateId: TemplateId) => Template
-export type TemplateDataSelector = (
+export function selectTemplateDataList(
   templateId: TemplateId,
-  dataId: TemplateDataId,
-) => TemplateData
+): MainSelector<TemplateData[]> {
+  return state => {
+    return ArrayUtil.findById(state.templates, templateId).data
+  }
+}

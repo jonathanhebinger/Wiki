@@ -1,5 +1,9 @@
-import { TemplateId } from '.'
 import { Data } from './data'
+import { TemplateId } from './template'
+
+export type DeepPartial<T> = T extends { [index: string]: any }
+  ? { [Key in keyof T]?: DeepPartial<T> }
+  : T
 
 export namespace Type {
   export type Base<Type extends string> = { type: Type }
@@ -7,7 +11,6 @@ export namespace Type {
   export type Boolean = Base<'boolean'>
   export type Number = Base<'number'>
   export type String = Base<'string'>
-  export type Uuid = Base<'uuid'>
 
   export type Array = Base<'array'> & {
     of: Any
@@ -16,24 +19,21 @@ export namespace Type {
 
   export type Map = Base<'map'> & {
     of: Type.Any
-    name?: string[]
   }
 
   export type Object = Base<'object'> & {
+    name: string
     keys: [string, ObjectKey][]
+    namePath: string
   }
   export type ObjectKey = {
     name: string
     type: Any
   }
 
-  export type Compute = Base<'compute'> & {
-    compute: any
-  }
-
   export type Join = Base<'join'> & {
     template: TemplateId
-    reflect?: string
+    on?: string
     multiple?: boolean
   }
 
@@ -43,11 +43,10 @@ export namespace Type {
     | Boolean
     | Number
     | String
-    | Uuid
     | Array
-    | Object
     | Join
     | Type
+    | Object
     | Map
 }
 

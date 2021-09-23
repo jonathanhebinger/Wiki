@@ -3,15 +3,15 @@ import { Block, BlockAction, Shelf } from '@brainote/ui/structure'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
 
 import { useMainActions } from '../../main'
-import { useTemplateDataSelect } from '../../templates'
+import { useTemplateSelect } from '../../templates/hooks/template.select'
 
 export function NavCreate() {
   const mainActions = useMainActions()
 
-  const { Select, selected } = useTemplateDataSelect('template')
+  const { Select, selected } = useTemplateSelect()
 
   function handleCreate() {
-    mainActions.dataCreate({ templateId: selected })
+    mainActions.templateDataCreate({ templateId: selected })
   }
 
   const Content = (

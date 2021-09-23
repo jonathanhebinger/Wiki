@@ -8,11 +8,21 @@ import { Action, Computed, ThunkOn } from 'easy-peasy'
 
 import { RootModel } from '../../main/root.model'
 
-export type NavOpened = { templateId: TemplateId; dataId: TemplateDataId }
-export type NavOpenedJoined = { template: Template; data: TemplateData }
+export type NavOpenedTemplate = { type: 'template'; templateId: TemplateId }
+export type NavOpenedTemplateData = {
+  type: 'data'
+  templateId: TemplateId
+  templateDataId: TemplateDataId
+}
+
+export type NavOpened = NavOpenedTemplate | NavOpenedTemplateData
+export type NavOpenedJoined =
+  | { type: 'template'; template: Template }
+  | { type: 'data'; template: Template; templateData: TemplateData }
 
 export interface NavModel {
-  data: Computed<
+  template: Computed<this, (templateId: TemplateId) => Template, RootModel>
+  templateData: Computed<
     this,
     (templateId: TemplateId, dataId: TemplateDataId) => TemplateData,
     RootModel
@@ -26,5 +36,6 @@ export interface NavModel {
   close: Action<this, NavOpened>
   closeAll: Action<this>
 
-  onCreate: ThunkOn<this, any, RootModel>
+  onTemplateCreate: ThunkOn<this, any, RootModel>
+  onTemplateDataCreate: ThunkOn<this, any, RootModel>
 }

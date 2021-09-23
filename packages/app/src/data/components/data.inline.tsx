@@ -1,4 +1,5 @@
 import { Checkbox, Input } from '@brainote/ui/forms'
+import React from 'react'
 import { useDataContext } from 'src/data/data.context'
 
 import { ValueTypeSelect } from './type/data.type.select'
@@ -12,8 +13,6 @@ export function DataInline() {
     case 'number':
       return <Input value={draft} onChange={handleDraftChange} />
     case 'string':
-      return <Input value={draft} onChange={handleDraftChange} />
-    case 'uuid':
       return <Input value={draft} onChange={handleDraftChange} />
     case 'type':
       return <ValueTypeSelect />

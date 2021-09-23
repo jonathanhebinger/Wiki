@@ -1,29 +1,12 @@
-import { Data } from './data'
 import { Id } from './id'
-import { Node } from './node'
+import { TemplateData } from './template.data'
 import { Type } from './type'
 
-export type Key = Node & {
-  'root.tags': ['key']
-  'key.type': Type.Any
-  'key.required': boolean
-}
-
-export type TemplateId = TemplateDataId
+export type TemplateId = Id<'node'>
+/**
+ * Templates are NOT data, for now, and forever !
+ */
 export type Template = {
   id: TemplateId
-  name: string
-  info: string
-  keys: [string, TemplateKey][]
-}
-export type TemplateKey = {
-  name: string
-  type: Type.Any
-  required: boolean
-}
-
-export type TemplateDataId = Id<'data'>
-export type TemplateData = {
-  id: TemplateDataId
-  // node: NodeId[]
-} & Data.Object
+  data: TemplateData[]
+} & Omit<Type.Object, 'type'>

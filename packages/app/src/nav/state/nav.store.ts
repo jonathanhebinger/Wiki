@@ -1,45 +1,85 @@
-import { Template } from '@brainote/common'
 import { action, computed, thunkOn } from 'easy-peasy'
 
-import { NavModel } from './nav.model'
+import {
+  selectTemplate,
+  selectTemplateData,
+} from '../../main/state/main.selector'
+import { NavModel, NavOpened } from './nav.model'
 
 export const navModel: NavModel = {
-  data: computed([(state, store) => store.main.data], template => {
-    return template
+  template: computed([(state, store) => store.main], main => {
+    return templateId => selectTemplate(templateId)(main)
+  }),
+  templateData: computed([(state, store) => store.main], main => {
+    return (templateId, templateDataId) =>
+      selectTemplateData(templateId, templateDataId)(main)
   }),
 
   opened: [],
   openedJoined: computed(state => {
-    return [...state.opened].reverse().map(({ templateId, dataId }) => {
-      return {
-        template: state.data('template', templateId) as Template,
-        data: state.data(templateId, dataId),
+    return [...state.opened].reverse().map(item => {
+      const template = state.template(item.templateId)
+
+      switch (item.type) {
+        case 'template':
+          return {
+            type: item.type,
+            template,
+          }
+        case 'data':
+          return {
+            type: item.type,
+            template,
+            templateData: state.templateData(
+              item.templateId,
+              item.templateDataId,
+            ),
+          }
       }
     })
   }),
 
-  open: action((state, { templateId, dataId }) => {
-    state.opened = state.opened.filter(item => {
-      return item.templateId !== templateId || item.dataId !== dataId
-    })
-    state.opened.push({ templateId, dataId })
+  open: action((state, payload) => {
+    state.opened = state.opened.filter(item => diffTest(payload, item))
+    state.opened.push(payload)
   }),
-  close: action((state, { templateId, dataId }) => {
-    state.opened = state.opened.filter(item => {
-      return item.templateId === templateId && item.dataId === dataId
-    })
+  close: action((state, payload) => {
+    state.opened = state.opened.filter(item => diffTest(payload, item))
   }),
   closeAll: action(state => {
     state.opened = []
   }),
 
-  onCreate: thunkOn(
-    (_, store) => [store.main.dataCreate],
+  onTemplateCreate: thunkOn(
+    (_, store) => [store.main.templateCreate],
     (actions, target) => {
       actions.open({
-        templateId: target.payload.templateId,
-        dataId: target.result.id,
+        type: 'template',
+        templateId: target.result.id,
       })
     },
   ),
+  onTemplateDataCreate: thunkOn(
+    (_, store) => [store.main.templateDataCreate],
+    (actions, target) => {
+      actions.open({
+        type: 'data',
+        templateId: target.payload.templateId,
+        templateDataId: target.result.id,
+      })
+    },
+  ),
+}
+
+function diffTest(payload: NavOpened, item: NavOpened) {
+  switch (payload.type) {
+    case 'template':
+      return item.type !== 'template' || item.templateId !== payload.templateId
+    case 'data':
+      return (
+        item.type !== 'data' ||
+        (item.templateId !== payload.templateId &&
+          item.templateDataId !== payload.templateDataId)
+      )
+  }
 }

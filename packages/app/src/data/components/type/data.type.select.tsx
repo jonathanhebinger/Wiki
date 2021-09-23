@@ -10,15 +10,7 @@ type ValueTypeRecordItem = {
 }
 type ValueTypeRecord = Partial<Record<Type.Any['type'], ValueTypeRecordItem>>
 
-const options = [
-  'boolean',
-  'number',
-  'string',
-  'array',
-  'object',
-  'join',
-  'map',
-]
+const options = ['boolean', 'number', 'string', 'array', 'join', 'computed']
 
 export function ValueTypeSelect() {
   const {
@@ -57,18 +49,6 @@ export function ValueTypeSelect() {
           }
           break
         case 'array':
-          current = {
-            draft: { type, of: { type: 'type' } },
-            saved: { type, of: { type: 'type' } },
-          }
-          break
-        case 'object':
-          current = {
-            draft: { type, keys: [] },
-            saved: { type, keys: [] },
-          }
-          break
-        case 'map':
           current = {
             draft: { type, of: { type: 'type' } },
             saved: { type, of: { type: 'type' } },

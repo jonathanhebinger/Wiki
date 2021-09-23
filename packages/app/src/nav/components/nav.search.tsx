@@ -4,31 +4,38 @@ import { faTimes } from '@fortawesome/free-solid-svg-icons'
 import { useState } from 'react'
 
 import { useMain, useNavActions } from '../../main'
-import { useTemplateDataSelect } from '../../templates'
+import { selectTemplate } from '../../main/state/main.selector'
+import { useTemplateSelect } from '../../templates'
 
 export function NavSearch() {
-  const main = useMain()
   const navActions = useNavActions()
 
   const [searchString, search] = useState('')
 
-  const { Select, selected } = useTemplateDataSelect('template')
+  const { Select, selected } = useTemplateSelect()
 
-  const nodes = main.datas[selected] || []
+  const template = useMain(selectTemplate(selected))
+  const nodeList = template.data
   const filtered = searchString
-    ? nodes.filter(node => (node.name as string).includes(searchString))
-    : nodes
+    ? nodeList.filter(node => (node.name as string).includes(searchString))
+    : nodeList
 
   const Items = filtered.map(node => {
     function handleOpen() {
       navActions.open({
+        type: 'data',
         templateId: selected,
-        dataId: node.id,
+        templateDataId: node.id,
       })
     }
 
     return (
-      <Block key={node.id} Label={node.name} onClick={handleOpen} noBottom />
+      <Block
+        key={node.id}
+        Label={node[template.namePath]}
+        onClick={handleOpen}
+        noBottom
+      />
     )
   })
 

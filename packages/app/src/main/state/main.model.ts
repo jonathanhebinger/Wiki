@@ -1,29 +1,32 @@
-import { Template, TemplateData } from '@brainote/common'
-import { Action, Computed, State, Thunk } from 'easy-peasy'
+import { Template, TemplateData, TemplateId } from '@brainote/common'
+import { Action, State, Thunk } from 'easy-peasy'
 
 import {
-  DataCreatePayload,
-  DataDeletePayload,
-  DataInsertPayload,
-  DataUpdatePayload,
+  TemplateDataCreatePayload,
+  TemplateDataDeletePayload,
+  TemplateDataInsertPayload,
+  TemplateDataUpdatePayload,
 } from './main.payload'
-import { TemplateDataSelector, TemplateSelector } from './main.selector'
 
-export type MainData = {
-  [index: string]: TemplateData[]
+export type MyThunk<
+  Model extends object,
+  Payload = undefined,
+  Result = any,
+> = Thunk<Model, Payload, any, {}, Result>
+
+export type MainThunk<P = undefined, R = void> = MyThunk<MainModel, P, R>
+
+export type MainModel = {
+  templates: Template[]
+
+  templateCreate: MainThunk<void, Template>
+  templateInsert: Action<MainModel, Template>
+  templateUpdate: Action<MainModel, Template>
+  templateDelete: Action<MainModel, TemplateId>
+
+  templateDataCreate: MainThunk<TemplateDataCreatePayload, TemplateData>
+  templateDataInsert: Action<MainModel, TemplateDataInsertPayload>
+  templateDataUpdate: Action<MainModel, TemplateDataUpdatePayload>
+  templateDataDelete: Action<MainModel, TemplateDataDeletePayload>
 }
-
-export interface MainModel {
-  datas: MainData
-  data: Computed<this, TemplateDataSelector>
-
-  templates: Computed<this, Template[]>
-  template: Computed<this, TemplateSelector>
-
-  dataCreate: Thunk<this, DataCreatePayload>
-  dataInsert: Action<this, DataInsertPayload>
-  dataUpdate: Action<this, DataUpdatePayload>
-  dataDelete: Action<this, DataDeletePayload>
-}
-
 export type MainState = State<MainModel>

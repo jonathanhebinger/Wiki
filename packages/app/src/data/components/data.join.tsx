@@ -1,4 +1,4 @@
-import { TemplateDataId, Type } from '@brainote/common'
+import { NodeId, Type } from '@brainote/common'
 import { Icon } from '@brainote/ui/forms'
 import { Block, BlockAction } from '@brainote/ui/structure'
 import {
@@ -12,7 +12,11 @@ import {
 import { useMemo } from 'react'
 
 import { useMain, useMainActions, useNavActions } from '../../main'
-import { useTemplateDataSearch } from '../../templates'
+import {
+  selectTemplate,
+  selectTemplateData,
+} from '../../main/state/main.selector'
+import { useNodeSearch } from '../../templates'
 import { useDataContext } from '../data.context'
 
 export function DataJoin() {
@@ -27,16 +31,16 @@ export function DataJoin() {
     handleUndo,
     handleQuickSave,
     handleDraftChange,
-  } = useDataContext<Type.Join, TemplateDataId[]>()
+  } = useDataContext<Type.Join, NodeId[]>()
   const main = useMain()
 
   const templateId = type.template
 
-  function handleSearchValidate(ids: TemplateDataId[]) {
+  function handleSearchValidate(ids: NodeId[]) {
     handleDraftChange([...draft, ...ids])
   }
 
-  const search = useTemplateDataSearch({
+  const search = useNodeSearch({
     onChange: handleSearchValidate,
     excluded: useMemo(() => ['root', ...draft], [draft]),
     templateId: type.template,
@@ -46,7 +50,7 @@ export function DataJoin() {
     search.open()
   }
   function handleCreate() {
-    const node = nodesActions.dataCreate({ templateId })
+    const node = nodesActions.templateDataCreate({ templateId })
 
     handleDraftChange([...draft, node.id])
   }
@@ -67,15 +71,15 @@ export function DataJoin() {
     })
   }
 
-  const template_name = main.template(templateId)
+  const template = useMain(selectTemplate(templateId))
 
-  const Joined = draft.map(dataId => {
+  const Joined = draft.map(templateDataId => {
     function handleRemove() {
-      handleDraftChange(draft.filter(item => item !== dataId))
+      handleDraftChange(draft.filter(item => item !== templateDataId))
     }
 
     function handleOpen() {
-      navActions.open({ templateId, dataId })
+      navActions.open({ type: 'data', templateId, templateDataId })
     }
 
     const actions: BlockAction[] = [
@@ -83,10 +87,16 @@ export function DataJoin() {
       { Label: <Icon icon={faMinus} />, handler: handleRemove },
     ]
 
-    const name = main.data(templateId, dataId).name || template_name
+    const node = useMain(selectTemplateData(templateId, templateDataId))
+    const name = node[template.namePath] || template.name
 
     return (
-      <Block key={dataId} Label={name} actions={actions} onClick={handleOpen} />
+      <Block
+        key={templateDataId}
+        Label={name}
+        actions={actions}
+        onClick={handleOpen}
+      />
     )
   })
 

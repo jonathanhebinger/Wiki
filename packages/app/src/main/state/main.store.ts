@@ -1,179 +1,163 @@
-import 'easy-peasy/map-set-support'
-
 import {
   Template,
   TemplateData,
   TemplateDataId,
   TemplateId,
-  TemplateKey,
 } from '@brainote/common'
-import { action, computed, thunk } from 'easy-peasy'
+import { action, thunk } from 'easy-peasy'
 import { v4 } from 'uuid'
 
 import { Data$get_default } from '../../data/data.default'
+import { ArrayUtil } from '../../util/array'
 import { TEMPLATES } from './main.constants'
 import { MainModel } from './main.model'
 
-export const mainStore: MainModel = {
-  datas: {
-    note: [],
-    template: TEMPLATES,
-  },
-  templates: computed(state => {
-    return state.datas['template'] as Template[]
-  }),
+export const mainModel: MainModel = {
+  templates: TEMPLATES,
 
-  template: computed(state => {
-    const templates = state.templates
-
-    return (templateId: TemplateId) => {
-      return templates.find(template => {
-        return template.id === templateId
-      }) as Template
-    }
-  }),
-  data: computed(state => {
-    const datas = state.datas
-
-    return (templateId: TemplateId, dataId: TemplateDataId) => {
-      return datas[templateId].find(data => {
-        return data.id === dataId
-      }) as TemplateData
-    }
-  }),
-
-  dataInsert: action((state, { templateId, data }) => {
-    if (templateId === 'template') {
-      state.datas[data.id] = []
-    }
-
-    state.datas[templateId].push(data)
-  }),
-  dataCreate: thunk((actions, { templateId }, { getState }) => {
-    const data: TemplateData = {
+  templateCreate: thunk(actions => {
+    const template: Template = {
       id: v4(),
+      name: 'New Template',
+      keys: [['name', { name: 'Name', type: { type: 'string' } }]],
+      namePath: 'name',
+      data: [],
     }
 
-    actions.dataInsert({ templateId, data })
+    actions.templateInsert(template)
 
-    const template = getState().template(templateId)
+    return template
+  }),
+  templateInsert: action((state, template) => {
+    state.templates.push(template)
+  }),
+  templateUpdate: action((state, template) => {
+    const templateId = template.id
+    const templateSaved = selectTemplate(state, templateId)
+
     const templateKeys = template.keys
+    const templateSavedKeys = templateSaved.keys
 
-    templateKeys.map(([id, { required, type }]) => {
-      if (data[id] !== undefined || !required) return
+    Object.assign(templateSaved, template)
 
-      data[id] = Data$get_default(type)
+    templateSavedKeys.forEach(([keyId, key]) => {
+      if (ArrayUtil.findTuple(templateKeys, keyId)) return
+
+      templateSaved.data.map(data => {
+        delete data[keyId]
+      })
     })
 
-    actions.dataUpdate({
-      templateId,
-      dataId: data.id,
-      patch: data,
-    })
+    templateKeys.forEach(([keyId, key]) => {
+      const keySaved = ArrayUtil.findTuple(templateSavedKeys, keyId)
 
-    return data
-  }),
-  dataUpdate: action((state, { templateId, dataId, patch }) => {
-    findDataAndPatch(state.datas, templateId, dataId, (data, template) => {
-      Object.keys(patch)
-        .map(key_id => {
-          return template.keys.find(([id]) => id === key_id) as [
-            string,
-            TemplateKey,
-          ]
+      if (!keySaved) return
+
+      if (keySaved.type.type !== key.type.type) {
+        templateSaved.data.forEach(data => {
+          data[keyId] = Data$get_default(key.type)
         })
-        .filter(item => item)
-        .forEach(([id, key]) => {
-          const type = key.type
-
-          switch (type.type) {
-            case 'join': {
-              const previous = data[id] as TemplateDataId[]
-              const next = patch[id] as TemplateDataId[]
-
-              data[id] = next
-
-              const reflect = type.reflect
-
-              if (!reflect) return
-
-              const added = arrayDiff(next, previous)
-              const removed = arrayDiff(previous, next)
-
-              console.log(added, removed)
-
-              added.forEach(join => {
-                findDataAndPatch(state.datas, templateId, join, data => {
-                  const keys = data[reflect] as string[]
-
-                  if (keys.includes(dataId)) return
-
-                  data[reflect] = [...keys, dataId]
-                })
-              })
-
-              removed.forEach(join => {
-                findDataAndPatch(state.datas, templateId, join, data => {
-                  const keys = data[reflect] as string[]
-
-                  if (!keys.includes(dataId)) return
-
-                  data[reflect] = arrayDiff(keys, [dataId])
-                })
-              })
-
-              break
-            }
-            default:
-              data[id] = patch[id]
-          }
-        })
-    })
-  }),
-  dataDelete: action((state, { templateId, dataId }) => {
-    state.datas[templateId] = state.datas[templateId].filter(data => {
-      return data.id !== dataId
-    })
-  }),
-}
-
-function findAndPatch<T extends { id: Id }, Id>(
-  list: T[],
-  id: Id,
-  patch: Partial<T> | ((item: T) => void),
-) {
-  list.forEach(item => {
-    if (item.id === id) {
-      if (typeof patch === 'function') {
-        patch(item)
-      } else {
-        Object.assign(item, patch)
       }
-    }
-  })
-}
-function findDataAndPatch(
-  list: { [index: string]: TemplateData[] },
-  templateId: TemplateId,
-  dataId: TemplateDataId,
-  patch:
-    | Partial<TemplateData>
-    | ((data: TemplateData, template: Template) => void),
-) {
-  findAndPatch(list['template'], templateId, template =>
-    findAndPatch(
-      list[templateId],
-      dataId,
-      typeof patch === 'function'
-        ? data => patch(data, template as Template)
-        : patch,
-    ),
-  )
+    })
+  }),
+  templateDelete: action((state, templateId) => {
+    state.templates = state.templates.filter(template => {
+      return template.id === templateId
+    })
+  }),
+
+  templateDataCreate: thunk((actions, { templateId }, { getState }) => {
+    const templateData: TemplateData = { id: v4() }
+
+    actions.templateDataInsert({
+      templateId,
+      templateData,
+    })
+
+    const template = selectTemplate(getState(), templateId)
+
+    template.keys.map(([keyId, key]) => {
+      templateData[keyId] = Data$get_default(key.type)
+    })
+
+    actions.templateDataUpdate({
+      templateId,
+      templateData,
+    })
+
+    return templateData
+  }),
+  templateDataInsert: action((state, { templateId, templateData }) => {
+    const template = selectTemplate(state, templateId)
+
+    template.data.push(templateData)
+  }),
+  templateDataUpdate: action((state, payload) => {
+    const { templateId, templateData } = payload
+
+    const template = selectTemplate(state, templateId)
+
+    const templateDataId = templateData.id
+    const templateDataSaved = ArrayUtil.findById(template.data, templateDataId)
+
+    template.keys.map(([keyId, key]) => {
+      const dataUpdate = templateData[keyId]
+      const data = templateDataSaved[keyId]
+
+      switch (key.type.type) {
+        case 'join':
+          const join = key.type
+          const joinOn = join.on
+
+          if (joinOn) {
+            const joinIdsUpdate = dataUpdate as TemplateDataId[]
+            const joinIds = data as TemplateDataId[]
+
+            const joinIdsCreated = ArrayUtil.diff(joinIdsUpdate, joinIds)
+            const joinIdsDeleted = ArrayUtil.diff(joinIds, joinIdsUpdate)
+
+            if (joinIdsCreated.length + joinIdsDeleted.length === 0) return
+
+            const joinTemplate = selectTemplate(state, join.template)
+
+            joinIdsCreated.map(joinId => {
+              const joined = ArrayUtil.findById(joinTemplate.data, joinId)
+              const joinedReflect = joined[joinOn] as TemplateDataId[]
+
+              if (joinedReflect.includes(templateDataId)) return
+
+              joinedReflect.push(templateDataId)
+            })
+
+            joinIdsDeleted.map(joinId => {
+              const joined = ArrayUtil.findById(joinTemplate.data, joinId)
+              const joinedReflect = joined[joinOn] as TemplateDataId[]
+
+              if (!joinedReflect.includes(templateDataId)) return
+
+              joined[joinOn] = joinedReflect.filter(joinedReflectId => {
+                return joinedReflectId !== templateDataId
+              })
+            })
+          }
+
+          break
+      }
+      templateDataSaved[keyId] = dataUpdate
+    })
+  }),
+  templateDataDelete: action((state, { templateId, templateDataId }) => {
+    const template = selectTemplate(state, templateId)
+
+    template.data = template.data.filter(templateData => {
+      return templateData.id === templateDataId
+    })
+  }),
 }
 
-/**
- * Return items of left that are not in right
- */
-function arrayDiff<T>(left: T[], right: T[]) {
-  return left.filter(item => !right.includes(item))
+function selectTemplate(
+  state: { templates: Template[] },
+  templateId: TemplateId,
+) {
+  return ArrayUtil.findById(state.templates, templateId)
 }

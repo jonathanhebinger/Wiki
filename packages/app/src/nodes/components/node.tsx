@@ -4,13 +4,11 @@ import { Surface } from '@brainote/ui/structure'
 import { NodeProvider } from '../node.context'
 import { NodeInfos } from './node.content'
 
-export function NodeMain({
-  templateId,
-  dataId,
-}: {
+export type NodeMainProps = {
   templateId: TemplateId
   dataId: TemplateDataId
-}) {
+}
+export function NodeMain({ templateId, dataId }: NodeMainProps) {
   return (
     <NodeProvider templateId={templateId} dataId={dataId}>
       <Surface squared borderless>

@@ -1,0 +1,70 @@
+import { Template, TemplateId } from '@brainote/common'
+import { Icon } from '@brainote/ui/forms'
+import { Block, BlockAction } from '@brainote/ui/structure'
+import { Title } from '@brainote/ui/typo'
+import { faPlus, faTimes, faTrash } from '@fortawesome/free-solid-svg-icons'
+import React, { useState } from 'react'
+
+import { DataContextProvider } from '../../data'
+import { DataTypeObject } from '../../data/components/type/data.type.object'
+import { useMain, useMainActions, useNavActions } from '../../main'
+import { selectTemplate } from '../../main/state/main.selector'
+
+export type TemplateMainProps = {
+  templateId: TemplateId
+}
+export function TemplateMain({ templateId }: TemplateMainProps) {
+  const template = useMain(selectTemplate(templateId))
+
+  const mainActions = useMainActions()
+  const navActions = useNavActions()
+
+  const [draft, draft$set] = useState(template)
+
+  function handleDraftUpdate(template: Template) {
+    draft$set(template)
+  }
+  function handleSavedUpdate(template: Template) {
+    mainActions.templateUpdate(template)
+  }
+
+  function handleCreate() {
+    mainActions.templateDataCreate({ templateId })
+  }
+  function handleClose() {
+    navActions.close({
+      type: 'template',
+      templateId,
+    })
+  }
+  const actions: BlockAction[] = [
+    { Label: <Icon icon={faPlus} />, handler: handleCreate },
+    { Label: <Icon icon={faTrash} />, handler: handleClose },
+    { Label: <Icon icon={faTimes} />, handler: handleClose },
+  ]
+
+  const Content = (
+    <DataContextProvider
+      Label={template.name}
+      type={{ type: 'type' }}
+      saved={template}
+      draft={draft}
+      onDraftUpdate={handleDraftUpdate as any}
+      onSavedUpdate={handleSavedUpdate as any}
+    >
+      <DataTypeObject />
+    </DataContextProvider>
+  )
+
+  return (
+    <Block
+      Label={
+        <Title uppercase underline={false}>
+          {'Template -- ' + template.name}
+        </Title>
+      }
+      actions={actions}
+      Content={Content}
+    />
+  )
+}

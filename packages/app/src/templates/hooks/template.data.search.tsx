@@ -1,4 +1,4 @@
-import { TemplateDataId, TemplateId } from '@brainote/common'
+import { NodeId, TemplateId } from '@brainote/common'
 import { Button, useModal } from '@brainote/ui/forms'
 import {
   Search,
@@ -10,39 +10,40 @@ import { Shelf } from '@brainote/ui/structure'
 import { useEffect, useMemo, useState } from 'react'
 
 import { useMain } from '../../main'
+import { selectTemplate } from '../../main/state/main.selector'
 
-export type TemplateDataSearchOption = {
-  id: TemplateDataId
+export type NodeSearchOption = {
+  id: NodeId
   name: string
   test: string
 }
 
-export function useTemplateDataSearch({
+export function useNodeSearch({
   onChange,
   templateId,
   multiple = false,
   excluded = [],
 }: {
-  onChange: (ids: TemplateDataId[]) => void
+  onChange: (ids: NodeId[]) => void
   templateId: TemplateId
   multiple?: boolean
-  excluded?: TemplateDataId[]
+  excluded?: NodeId[]
 }) {
-  const [selected, handleChange] = useState<TemplateDataId[]>([])
+  const [selected, handleChange] = useState<NodeId[]>([])
 
   const main = useMain()
-  const data = main.datas[templateId]
-  const template = main.template(templateId)
+  const template = useMain(selectTemplate(templateId))
+  const nodeList = template.data
 
-  const options = useMemo<TemplateDataSearchOption[]>(() => {
-    return data
-      .filter(data => !excluded.includes(data.id))
-      .map(data => ({
-        id: data.id,
-        name: data.name as string,
-        test: data.name as string,
+  const options = useMemo<NodeSearchOption[]>(() => {
+    return nodeList
+      .filter(node => !excluded.includes(node.id))
+      .map(node => ({
+        id: node.id,
+        name: node[template.namePath] as string,
+        test: node[template.namePath] as string,
       }))
-  }, [data, excluded])
+  }, [nodeList, excluded])
 
   const store = useSearchStore({
     options,
@@ -79,7 +80,7 @@ function Option({
   option,
   selected,
   onSelect,
-}: SearchOptionProps<TemplateDataSearchOption>) {
+}: SearchOptionProps<NodeSearchOption>) {
   return (
     <div
       className={`px-2 py-1 flex justify-between items-center cursor-pointer hover:bg-gray-100 ${
@@ -93,6 +94,6 @@ function Option({
 }
 function Selected({
   option,
-}: SearchSelectedProps<TemplateDataSearchOption>): JSX.Element {
+}: SearchSelectedProps<NodeSearchOption>): JSX.Element {
   return <div>{option.name}</div>
 }

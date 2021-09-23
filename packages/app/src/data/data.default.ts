@@ -1,5 +1,4 @@
 import { Data, Type } from '@brainote/common'
-import { v4 } from 'uuid'
 
 export function Data$get_default(type: Type.Any): Data.Any {
   switch (type.type) {
@@ -9,19 +8,20 @@ export function Data$get_default(type: Type.Any): Data.Any {
       return 0
     case 'string':
       return ''
-    case 'uuid':
-      return v4()
+    case 'map':
+      return []
     case 'array':
       return []
-    case 'object':
-      return Object.fromEntries(
-        type.keys.map(([id, key]) => {
-          return [id, Data$get_default(key.type)]
-        }),
-      )
     case 'join':
       return []
     case 'type':
       return { type: 'string' }
+    case 'object':
+      return {
+        type: 'object',
+        name: 'Object',
+        keys: [['name', { name: 'name', type: { type: 'string' } }]],
+        namePath: 'name',
+      }
   }
 }
