@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "workspaces": [
-    "packages/*"
+    "./commons/*"
   ],
   "scripts": {
     "build": "set NODE_ENV=production && lerna run build --stream",

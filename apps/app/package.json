@@ -1,0 +1,54 @@
+{
+  "name": "@brainote/app",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "axios": "^0.21.1",
+    "constate": "^3.3.0",
+    "easy-peasy": "^5.0.3",
+    "immer": "^9.0.6",
+    "node-sass": "^6.0.1",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-scripts": "^4.0.3",
+    "slate": "^0.57.3",
+    "slate-history": "^0.57.3",
+    "slate-react": "^0.57.3",
+    "uuid": "^8.3.2"
+  },
+  "scripts": {
+    "start": "npm run tailwind && npx craco start",
+    "tailwind": "tailwind build src/tailwind.css -c tailwind.config.js -o src/index.css",
+    "build": "npm run tailwind && craco build",
+    "test": "npx craco test",
+    "eject": "npx craco eject"
+  },
+  "main": "src/index.tsx",
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@craco/craco": "^6.2.0",
+    "@fortawesome/fontawesome-svg-core": "^1.2.28",
+    "@fortawesome/free-brands-svg-icons": "^5.13.0",
+    "@fortawesome/free-regular-svg-icons": "^5.13.0",
+    "@fortawesome/free-solid-svg-icons": "^5.13.0",
+    "@fortawesome/react-fontawesome": "^0.1.11",
+    "@types/react": "17.0.17",
+    "@types/react-dom": "17.0.9",
+    "@types/uuid": "^8.3.1",
+    "autoprefixer": "^10.3.1",
+    "craco-babel-loader": "^0.1.4",
+    "postcss": "^8.3.6",
+    "tailwindcss": "^2.2.7"
+  }
+}
