@@ -1,0 +1,14 @@
+.border {
+  &--none {
+    border-width: 0;
+  }
+  &--sm {
+    border-width: 1px;
+  }
+  &--md {
+    border-width: 2px;
+  }
+  &--lg {
+    border-width: 4px;
+  }
+}

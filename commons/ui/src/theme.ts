@@ -18,41 +18,17 @@ export const SURFACE_BORDER: Record<Surface_Border, string> = {
 }
 
 export namespace Theme {
-  export type Shadow = 'none' | 'sm' | 'md' | 'lg' | 'xl'
-  export type Border = 'none' | 'md' | 'lg'
-  export type Radius = 'none' | 'sm' | 'md' | 'lg'
+  export type Shadow = 'none' | 'sm' | 'md' | 'lg'
+  export type Border = 'none' | 'sm' | 'md' | 'lg'
+  export type Radius = 'none' | 'sm' | 'md' | 'lg' | 'full'
 }
 
-export const THEME: {
-  SHADOW: Record<Theme.Shadow, string>
-  BORDER: Record<Theme.Border, string>
-  RADIUS: Record<Theme.Radius, string>
-} = {
-  SHADOW: {
-    none: 'shadow-none hover:shadow-none', //tw
-    sm: 'shadow-sm hover:shadow', //tw
-    md: 'shadow hover:shadow-md', //tw
-    lg: 'shadow-md hover:shadow-lg', //tw
-    xl: 'shadow-lg hover:shadow-xl', //tw
-  },
-  BORDER: {
-    none: 'border-0', //tw
-    md: 'border', //tw
-    lg: 'border-2', //tw
-  },
-  RADIUS: {
-    none: 'rounded-none', //tw
-    sm: 'rounded', //tw
-    md: 'rounded-lg', //tw
-    lg: 'rounded-2xl', //tw
-  },
-}
-export function theme$shadow(shadow: Theme.Shadow) {
-  return THEME.SHADOW[shadow]
+export function theme$shadow(shadow: Theme.Shadow, hover = true) {
+  return `shadow--${shadow} ${hover ? 'shadow--hover' : ''}`
 }
 export function theme$border(border: Theme.Border) {
-  return THEME.BORDER[border]
+  return `border--${border}`
 }
 export function theme$radius(radius: Theme.Radius) {
-  return THEME.RADIUS[radius]
+  return `radius--${radius}`
 }

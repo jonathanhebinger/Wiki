@@ -15,7 +15,6 @@ export function Collapse({
   direction = 'vertical',
   displayStrategy = 'hidden',
   children,
-
   className = '',
 }: CollapseProps) {
   const vertical = direction !== 'horizontal'

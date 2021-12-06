@@ -6,3 +6,8 @@ export type QuickProps<
   className?: string
   htmlProps?: React.DetailedHTMLProps<React.HTMLAttributes<E>, E>
 } & Partial<Pick<React.DetailedHTMLProps<React.HTMLAttributes<E>, E>, P>>
+
+export type BaseProps<P extends {}> = P & {
+  children?: React.ReactNode
+  className?: string
+}

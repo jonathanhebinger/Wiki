@@ -1,0 +1,17 @@
+.radius {
+  &--none {
+    border-radius: 0;
+  }
+  &--sm {
+    border-radius: 0.25rem;
+  }
+  &--md {
+    border-radius: 0.5rem;
+  }
+  &--lg {
+    border-radius: 1rem;
+  }
+  &--full {
+    border-radius: 50%;
+  }
+}
