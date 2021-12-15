@@ -1,5 +1,5 @@
-export * from './button.icon'
-export * from './button'
+export * from './Button.icon'
+export * from './Button'
 export * from './checkbox'
 export * from './dialog'
 export * from './icon'

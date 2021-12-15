@@ -1,4 +1,4 @@
-import { Surface } from '../../structure/surface'
+import { Surface } from '../../structure/Surface'
 import { SearchContextProvider } from '../search.context'
 import { SearchContext } from '../search.type'
 import { SearchFilters } from './search.filters'

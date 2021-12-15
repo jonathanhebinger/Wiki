@@ -1,5 +1,4 @@
 import { Shelf, Surface } from '@brainote/ui/structure'
-import React from 'react'
 
 import { NavCreate } from './nav.create'
 import { NavOpened } from './nav.opened'

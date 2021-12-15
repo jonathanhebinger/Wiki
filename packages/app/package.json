@@ -3,13 +3,15 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@brainote/common": "0.1.0",
-    "@brainote/ui": "0.1.0",
-    "axios": "^0.21.1",
+    "@emotion/react": "^11.7.1",
+    "@emotion/styled": "^11.6.0",
+    "@mui/icons-material": "^5.2.4",
+    "@mui/material": "^5.2.4",
+    "axios": "^0.21.4",
     "constate": "^3.3.0",
-    "easy-peasy": "^5.0.3",
-    "immer": "^9.0.6",
-    "node-sass": "^4.14.1",
+    "easy-peasy": "^5.0.4",
+    "immer": "^9.0.7",
+    "node-sass": "^6.0.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-scripts": "^4.0.3",
@@ -19,9 +21,8 @@
     "uuid": "^8.3.2"
   },
   "scripts": {
-    "start": "npm run tailwind && npx craco start",
-    "tailwind": "tailwind build src/tailwind.css -c tailwind.config.js -o src/index.css",
-    "build": "npm run tailwind && craco build",
+    "start": "npx craco start",
+    "build": "npx craco build",
     "test": "npx craco test",
     "eject": "npx craco eject"
   },
@@ -39,7 +40,7 @@
     ]
   },
   "devDependencies": {
-    "@craco/craco": "^6.2.0",
+    "@craco/craco": "^6.4.3",
     "@fortawesome/fontawesome-svg-core": "^1.2.28",
     "@fortawesome/free-brands-svg-icons": "^5.13.0",
     "@fortawesome/free-regular-svg-icons": "^5.13.0",
@@ -47,10 +48,9 @@
     "@fortawesome/react-fontawesome": "^0.1.11",
     "@types/react": "17.0.17",
     "@types/react-dom": "17.0.9",
-    "@types/uuid": "^8.3.1",
-    "autoprefixer": "^10.3.1",
+    "@types/uuid": "^8.3.3",
+    "autoprefixer": "^10.4.0",
     "craco-babel-loader": "^0.1.4",
-    "postcss": "^8.3.6",
-    "tailwindcss": "^2.2.7"
+    "postcss": "^8.4.5"
   }
 }

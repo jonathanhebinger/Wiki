@@ -1,38 +1,30 @@
+import { Box } from '@mui/material'
 import React from 'react'
 
 import { Title, TitleProps } from '../typo/title'
-import { mergeClassNames } from '../util/class'
-import { getShelfClass, ShelfProps } from './shelf'
-import { Surface, SurfaceProps } from './surface'
+import { Shelf, ShelfProps } from './Shelf'
+import { SurfaceProps } from './Surface'
+import { surfaceSx } from './Surface.sx'
 
-export interface GroupProps extends SurfaceProps, ShelfProps {
-  contrast?: boolean
-}
+export type GroupProps = Pick<SurfaceProps, 'shadow' | 'contrast'> & ShelfProps
 export function Group({
-  className = '',
   contrast = true,
   spacing = 'md',
-  noPadding,
-  row,
+  sx = [],
   ...props
 }: GroupProps) {
   return (
-    <Surface
-      shadow="sm"
-      className={mergeClassNames(
-        getShelfClass({ spacing, row, noPadding }),
-        className,
-      )}
-      contrast={contrast}
+    <Shelf
+      sx={surfaceSx({ shadow: 'sm', contrast, sx })}
+      spacing={spacing}
       {...props}
     />
   )
 }
 
-export function GroupItem({ className = '', ...props }: SurfaceProps) {
-  return <Surface className={`bg-white ${className}`} {...props} />
+export function GroupItem(props: SurfaceProps) {
+  return <Box sx={surfaceSx({ ...props, sx: { background: 'white' } })} />
 }
-
 export function GroupTitle(props: TitleProps) {
   return <Title color="contrast" size="lg" {...props} />
 }

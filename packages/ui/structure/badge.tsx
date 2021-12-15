@@ -1,11 +1,12 @@
+import { Grid, SxProps } from '@mui/material'
 import React from 'react'
 
-import { Divider } from '../structure/divider'
-import { getSurfaceClass } from './surface'
+import { mergeSx } from '../theme'
+import { badgeActionSx, badgeItemSx, BadgeSize, badgeSx } from './Badge.sx'
+import { Divider } from './Divider'
 
-export interface Badge_Props {
-  className?: string
-  size?: Badge_Props_Sizing
+export interface BadgeProps {
+  size?: BadgeSize
   label: React.ReactNode
   onClick?: () => void
   onDelete?: () => void
@@ -13,31 +14,16 @@ export interface Badge_Props {
     label: React.ReactNode
     action: () => void
   }[]
+  sx?: SxProps
 }
-export type Badge_Props_Sizing = 'small' | 'medium'
-
-const SPACING: Record<Badge_Props_Sizing, string> = {
-  small: 'px-2', //tw
-  medium: 'px-3 py-1', //tw
-}
-const SURFACE = getSurfaceClass({
-  border: 'md',
-  shadow: 'md',
-  radius: 'lg',
-})
-const CONTENT = 'flex justify-between overflow-hidden' //tw
-
 export function Badge({
   size = 'small',
-  className = '',
   label,
   onClick,
   onDelete,
   actions = [],
-}: Badge_Props) {
-  const CURSOR = onClick ? 'cursor-pointer' : ''
-  const CLASS = `${SURFACE} ${CONTENT} ${CURSOR} ${className}`
-
+  sx = [],
+}: BadgeProps) {
   if (onDelete) {
     actions.push({ label: 'X', action: onDelete })
   }
@@ -49,37 +35,45 @@ export function Badge({
   ))
 
   return (
-    <div
-      className={CLASS}
+    <Grid
+      container
+      justifyContent="space-between"
+      sx={mergeSx(badgeSx(!!onClick), sx)}
       onClick={e => {
         e.stopPropagation()
         onClick && onClick()
       }}
     >
-      <div className={SPACING[size]}>{label}</div>
+      <Grid item sx={badgeItemSx(size)}>
+        {label}
+      </Grid>
       {Actions}
-    </div>
+    </Grid>
   )
 }
 
 export interface BadgeActionProps {
-  size: Badge_Props_Sizing
+  size: BadgeSize
   action: () => void
-  children: React.ReactNode
 }
-export function BadgeAction({ action, children, size }: BadgeActionProps) {
+export function BadgeAction({
+  action,
+  children,
+  size,
+}: React.PropsWithChildren<BadgeActionProps>) {
   return (
-    <div className="flex">
+    <>
       <Divider />
-      <span
-        className={`${SPACING[size]} hover:bg-gray-100 cursor-pointer`}
+      <Grid
+        item
+        sx={badgeActionSx(size)}
         onClick={e => {
           e.stopPropagation()
           action()
         }}
       >
         {children}
-      </span>
-    </div>
+      </Grid>
+    </>
   )
 }

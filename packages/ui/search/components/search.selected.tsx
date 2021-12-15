@@ -1,4 +1,4 @@
-import { Badge } from '../../structure/badge'
+import { Badge } from '../../structure/Badge'
 import { useSearchContext } from '../search.context'
 
 export function SearchSelected() {

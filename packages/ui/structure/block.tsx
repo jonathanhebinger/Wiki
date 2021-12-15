@@ -1,9 +1,11 @@
+import { Box } from '@mui/material'
 import React, { useState } from 'react'
 
-import { Shelf } from '../structure/shelf'
+import { mergeSx } from '../theme'
 import { Collapse, CollapseIcon } from '../transition/collapse'
-import { mergeClassNames } from '../util/class'
-import { Surface } from './surface'
+import { Shelf } from './Shelf'
+import { Surface } from './Surface'
+import { surfaceSx } from './Surface.sx'
 
 export interface BlockAction {
   Label: string | React.ReactNode
@@ -41,17 +43,27 @@ export function Block({
 
   const Actions = actions.map(({ Label, handler }, index) => {
     return (
-      <Surface
+      <Box
         key={index}
-        squared
-        shadowless
-        className={mergeClassNames(
-          'h-7 w-7 flex items-center justify-center cursor-pointer hover:bg-gray-100',
-        )}
-        htmlProps={{ onClick: handler }}
+        sx={{
+          ...surfaceSx({
+            squared: true,
+            shadowless: true,
+          }),
+          height: 7,
+          width: 7,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          cursor: 'pointer',
+          '&:hover': {
+            bgcolor: 'grey.100',
+          },
+        }}
+        onClick={handler}
       >
         {Label}
-      </Surface>
+      </Box>
     )
   })
 
@@ -59,10 +71,7 @@ export function Block({
     <Surface
       squared
       shadowless
-      className={mergeClassNames(
-        'w-3 py-3',
-        hovered ? 'bg-blue-50' : 'bg-white',
-      )}
+      sx={{ width: 3, py: 3, bgcolor: hovered ? 'grey.50' : 'white' }}
     />
   )
 
@@ -72,21 +81,27 @@ export function Block({
       onMouseLeave={() => hovered$set(false)}
     >
       <div className="flex h-7">
-        <Surface
-          squared
-          shadowless
-          className={mergeClassNames(
-            'flex-grow',
-            'flex items-center px-2 py-1 cursor-pointer',
-            hovered ? 'bg-gray-200 border-gray-300' : 'bg-gray-50',
+        <Box
+          sx={mergeSx(
+            surfaceSx({ squared: true, shadowless: true }),
+            {
+              flexGrow: 1,
+              alignItems: 'center',
+              px: 2,
+              py: 1,
+              cursor: 'pointer',
+            },
+            hovered
+              ? { bgcolor: 'grey.200', borderColor: 'grey.200' }
+              : { bgcolor: 'grey.50' },
           )}
-          htmlProps={{ onClick: toggle }}
+          onClick={toggle}
         >
           <div className="flex-grow flex space-x-2 items-center font-mono font-bold h-7">
             {Content && <CollapseIcon collapsed={opened} />}
             <div>{Label}</div>
           </div>
-        </Surface>
+        </Box>
         <div className="flex">{Actions}</div>
         {Inline && (
           <Collapse
@@ -94,8 +109,16 @@ export function Block({
             className="w-1/2 items-center overflow-hidden"
             direction="both"
           >
-            <Surface squared shadowless className="h-full flex items-center">
-              <Shelf spacing="sm" className="flex-grow">
+            <Surface
+              squared
+              shadowless
+              sx={{
+                height: '100%',
+                display: 'flex',
+                alignItems: 'center',
+              }}
+            >
+              <Shelf spacing="sm" sx={{ flexGrow: 1 }}>
                 {Inline}
               </Shelf>
             </Surface>
@@ -112,10 +135,12 @@ export function Block({
           <Surface
             squared
             shadowless
-            className={mergeClassNames(
-              'pt-1',
-              hovered ? 'bg-gray-100 border-gray-200' : 'bg-gray-50',
-            )}
+            sx={[
+              { pt: 1 },
+              hovered
+                ? { bgcolor: 'grey.100', borderColor: 'grey.200' }
+                : { bgcolor: 'grey.50' },
+            ]}
           />
         )}
       </Collapse>

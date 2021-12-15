@@ -3,17 +3,20 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@emotion/react": "^11.7.1",
+    "@emotion/styled": "^11.6.0",
+    "@mui/icons-material": "^5.2.4",
+    "@mui/material": "^5.2.4",
     "constate": "^3.3.0",
     "easy-peasy": "^5.0.3",
-    "node-sass": "^4.14.1",
+    "node-sass": "^6.0.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-scripts": "^4.0.3"
   },
   "scripts": {
-    "start": "npm run tailwind && npx craco start",
-    "tailwind": "tailwind build src/tailwind.css -c tailwind.config.js -o src/index.css",
-    "build": "npm run tailwind && craco build",
+    "start": "npx craco start",
+    "build": "npx craco build",
     "test": "npx craco test",
     "eject": "npx craco eject"
   },

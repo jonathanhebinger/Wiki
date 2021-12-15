@@ -1,4 +1,4 @@
-import { Surface } from '../../structure/surface'
+import { Surface } from '../../structure/Surface'
 import { useSearchContext } from '../search.context'
 
 export function SearchOptions() {

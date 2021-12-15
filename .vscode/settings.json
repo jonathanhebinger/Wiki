@@ -4,7 +4,6 @@
   "editor.wordWrapColumn": 100,
   "files.exclude": {
     "**/node_modules": true,
-    "**/pnpm-lock.yaml": true,
     "**/package-lock.json": true
   },
   "typescript.format.insertSpaceAfterFunctionKeywordForAnonymousFunctions": false,
@@ -18,8 +17,7 @@
   "typescript.preferences.quoteStyle": "single",
   "typescript.suggest.completeFunctionCalls": true,
   "typescriptHero.imports.insertSemicolons": false,
-  "typescriptHero.imports.multiLineWrapThreshold": 100,
+  "typescriptHero.imports.multiLineWrapThreshold": 80,
   "typescriptHero.imports.organizeOnSave": true,
-  "tailwindCSS.experimental.classRegex": ["[^']*'([^']*)'[^']*//tw"],
   "typescript.tsdk": "node_modules\\typescript\\lib"
 }

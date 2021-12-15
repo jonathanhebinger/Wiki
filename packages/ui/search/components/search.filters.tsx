@@ -1,21 +1,25 @@
-import React from 'react'
+import { Box, Grid } from '@mui/material'
 
-import { Badge } from '../../structure/badge'
+import { Badge } from '../../structure/Badge'
 import { useSearchContext } from '../search.context'
 
 export function SearchFilters() {
   const { state, actions } = useSearchContext()
 
   const Filters = state.filters.map((filter, index) => {
+    const label = `${filter.name} - ${state.filtered.sizes[index]}`
+    const handleDelete = () => actions.filters$remove(filter)
+
     return (
-      <Badge
-        key={index}
-        className="m-1"
-        label={filter.name + ' - ' + state.filtered.sizes[index]}
-        onDelete={() => actions.filters$remove(filter)}
-      />
+      <Box key={index} sx={{ m: 1 }}>
+        <Badge label={label} onDelete={handleDelete} />
+      </Box>
     )
   })
 
-  return <div className="flex flex-wrap">{Filters}</div>
+  return (
+    <Grid container wrap="wrap">
+      {Filters}
+    </Grid>
+  )
 }

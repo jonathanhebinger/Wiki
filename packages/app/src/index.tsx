@@ -1,35 +1,36 @@
-import './index.css'
-
 import { Dialog, DialogContextProvider } from '@brainote/ui/forms'
-import { Shelf } from '@brainote/ui/structure'
+import Grid from '@mui/material/Grid'
 import { StoreProvider } from 'easy-peasy'
-import React from 'react'
 import ReactDOM from 'react-dom'
 
 import { MainList } from './main/components/main.list'
 import { store } from './main/root.store'
 import { Nav } from './nav/components/nav'
 
-ReactDOM.render(<Root />, document.getElementById('root'))
+
+ReactDOM.render( <Root />, document.getElementById( 'root' ) )
 
 function Root() {
   return (
     <StoreProvider store={store}>
       <DialogContextProvider>
         <Dialog />
-        <Shelf
-          className="min-h-screen text-gray-500 font-medium bg-blue-100"
-          spacing="lg"
-          row
-          htmlProps={{ style: { fontSize: '14px' } }}
+        <Grid
+          container
+          spacing={2}
+          sx={{
+            fontSize: '14px',
+            minHeight: '100vh',
+          }}
+          className="text-gray-500 font-medium bg-blue-100"
         >
-          <div className="w-1/4">
+          <Grid item xs={3}>
             <Nav />
-          </div>
-          <div className="w-3/4">
+          </Grid>
+          <Grid item xs={9}>
             <MainList />
-          </div>
-        </Shelf>
+          </Grid>
+        </Grid>
       </DialogContextProvider>
     </StoreProvider>
   )
