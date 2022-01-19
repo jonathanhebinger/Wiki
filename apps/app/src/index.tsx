@@ -1,9 +1,8 @@
 import './index.css'
 
-import { Dialog, DialogContextProvider } from '@brainote/ui/forms'
-import { Shelf } from '@brainote/ui/structure'
+import { Dialog, DialogContextProvider } from '@brainote/ui/src/components/forms'
+import { Shelf } from '@brainote/ui/src/components/structure'
 import { StoreProvider } from 'easy-peasy'
-import React from 'react'
 import ReactDOM from 'react-dom'
 
 import { MainList } from './main/components/main.list'

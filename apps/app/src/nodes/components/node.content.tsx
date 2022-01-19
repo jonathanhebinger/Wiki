@@ -1,7 +1,7 @@
 import { Data, TemplateData } from '@brainote/domain'
-import { Icon } from '@brainote/ui/forms'
-import { Block, BlockAction } from '@brainote/ui/structure'
-import { Title } from '@brainote/ui/typo'
+import { Icon } from '@brainote/ui/src/components/forms'
+import { Block, BlockAction } from '@brainote/ui/src/components/structure'
+import { Title } from '@brainote/ui/src/components/typo'
 import { faTimes, faTrash } from '@fortawesome/free-solid-svg-icons'
 
 import { DataItem } from '../../data'

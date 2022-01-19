@@ -1,4 +1,4 @@
-import { Checkbox, Input } from '@brainote/ui/forms'
+import { Checkbox, Input } from '@brainote/ui/src/components/forms'
 import React from 'react'
 import { useDataContext } from 'src/data/data.context'
 

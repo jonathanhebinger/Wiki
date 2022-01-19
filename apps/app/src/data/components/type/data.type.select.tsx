@@ -1,5 +1,5 @@
 import { Type } from '@brainote/domain'
-import { Select } from '@brainote/ui/forms'
+import { Select } from '@brainote/ui/src/components/forms'
 import { useEffect, useState } from 'react'
 
 import { useDataContext } from '../../data.context'
@@ -13,7 +13,11 @@ type ValueTypeRecord = Partial<Record<Type.Any[0], ValueTypeRecordItem>>
 const options = ['bool', 'number', 'text', 'list', 'join', 'computed']
 
 export function ValueTypeSelect() {
-  const { draft, saved, handleDraftChange: $change } = useDataContext<Type.Type, Type.Any>()
+  const {
+    draft,
+    saved,
+    handleDraftChange: $change,
+  } = useDataContext<Type.Type, Type.Any>()
 
   const [current, current$set] = useState<ValueTypeRecordItem>({
     draft,

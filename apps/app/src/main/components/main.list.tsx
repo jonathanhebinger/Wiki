@@ -1,4 +1,4 @@
-import { Shelf } from '@brainote/ui/structure'
+import { Shelf } from '@brainote/ui/src/components/structure'
 
 import { NodeMain } from '../../nodes'
 import { TemplateMain } from '../../templates/components/template'

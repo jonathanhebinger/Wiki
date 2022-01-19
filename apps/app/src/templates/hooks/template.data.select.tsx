@@ -1,11 +1,14 @@
 import { TemplateId } from '@brainote/domain'
-import { Select } from '@brainote/ui/forms'
+import { Select } from '@brainote/ui/src/components/forms'
 import { useMemo, useState } from 'react'
 
 import { useMain } from '../../main'
 import { selectTemplate, selectTemplateDataList } from '../../main/state/main.selector'
 
-export function useNodeSelect(templateId: TemplateId, defaultTemplateDataId?: TemplateId) {
+export function useNodeSelect(
+  templateId: TemplateId,
+  defaultTemplateDataId?: TemplateId,
+) {
   const template = useMain(selectTemplate(templateId))
   const nodeList = useMain(selectTemplateDataList(templateId))
 

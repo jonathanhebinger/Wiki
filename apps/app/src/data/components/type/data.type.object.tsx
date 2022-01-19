@@ -1,6 +1,6 @@
 import { Type } from '@brainote/domain'
-import { Select } from '@brainote/ui/forms'
-import { Block, Shelf } from '@brainote/ui/structure'
+import { Select } from '@brainote/ui/src/components/forms'
+import { Block, Shelf } from '@brainote/ui/src/components/structure'
 import React from 'react'
 
 import { DataContextProvider, useDataContext } from '../../data.context'
@@ -17,12 +17,17 @@ const OBJECT: Type.ObjectConfig = {
 }
 
 export function DataTypeObject() {
-  const { draft, saved, handleDraftChange } = useDataContext<Type.Type, Type.Object>()
+  const { draft, saved, handleDraftChange } = useDataContext<
+    Type.Type,
+    Type.Object
+  >()
 
   console.log(saved, draft)
 
   const nameSelectOptions = draft[1].keys
-    .filter(([keyId, key]) => key.type[0] === 'text' || key.type[0] === 'number')
+    .filter(
+      ([keyId, key]) => key.type[0] === 'text' || key.type[0] === 'number',
+    )
     .map(([keyId, key]) => ({
       id: keyId,
       label: key.name,
@@ -64,7 +69,11 @@ export function DataTypeObject() {
       >
         <DataMap />
       </DataContextProvider>
-      <Block Label="Name Key" Inline={NameSelect} Content={<Shelf>{NameSelect}</Shelf>} />
+      <Block
+        Label="Name Key"
+        Inline={NameSelect}
+        Content={<Shelf>{NameSelect}</Shelf>}
+      />
     </>
   )
 }

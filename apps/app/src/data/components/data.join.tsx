@@ -1,6 +1,6 @@
 import { NodeId, Template, TemplateDataId, TemplateId, Type } from '@brainote/domain'
-import { Icon } from '@brainote/ui/forms'
-import { Block, BlockAction } from '@brainote/ui/structure'
+import { Icon } from '@brainote/ui/src/components/forms'
+import { Block, BlockAction } from '@brainote/ui/src/components/structure'
 import { faEye, faMinus, faPlus, faSave, faSearch, faUndo } from '@fortawesome/free-solid-svg-icons'
 import { useMemo } from 'react'
 
@@ -74,7 +74,12 @@ export function DataJoin() {
 
   return (
     <>
-      <Block Label={Label} Content={Joined} actions={actions} noGutter={Joined.length === 0} />
+      <Block
+        Label={Label}
+        Content={Joined}
+        actions={actions}
+        noGutter={Joined.length === 0}
+      />
       {search.Component}
     </>
   )
@@ -115,5 +120,7 @@ function DataJoinItem({
     { Label: <Icon icon={faMinus} />, handler: handleRemove },
   ]
 
-  return <Block Label={templateDataName} actions={actions} onClick={handleOpen} />
+  return (
+    <Block Label={templateDataName} actions={actions} onClick={handleOpen} />
+  )
 }

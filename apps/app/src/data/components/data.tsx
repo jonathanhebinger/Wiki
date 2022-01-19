@@ -1,13 +1,9 @@
-import { Icon } from '@brainote/ui/forms'
-import { Block, BlockAction, Shelf, Surface } from '@brainote/ui/structure'
+import { Icon } from '@brainote/ui/src/components/forms'
+import { Block, BlockAction, Shelf, Surface } from '@brainote/ui/src/components/structure'
 import { faSave, faUndo } from '@fortawesome/free-solid-svg-icons'
 import React from 'react'
 
-import {
-  DataContextProps,
-  DataContextProvider,
-  useDataContext,
-} from '../data.context'
+import { DataContextProps, DataContextProvider, useDataContext } from '../data.context'
 import { DataArray } from './data.array'
 import { DataBlock } from './data.block'
 import { DataInline } from './data.inline'

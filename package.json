@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "workspaces": [
+    "./apps/*",
     "./commons/*"
   ],
   "scripts": {
@@ -15,8 +16,8 @@
     "lint": "concurrently 'npm run lint:packages' 'npm run lint:spec'",
     "lint:packages": "eslint 'packages/**/**.ts' --fix --ignore-pattern 'packages/**/*.spec.ts'",
     "lint:spec": "eslint 'packages/**/**.spec.ts' -c '.eslintrc.spec.js' --fix",
-    "serve": "cd ./packages/backend && npm run start:dev",
-    "start": "cd ./packages/app && npm run start",
+    "serve": "cd ./apps/backend && npm run start:dev",
+    "start": "cd ./apps/app && npm run start",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --watchAll --coverage"
@@ -32,7 +33,6 @@
     "eslint-plugin-import": "^2.24.0",
     "eslint-plugin-prettier": "^3.4.0",
     "jest": "^26.6.3",
-    "lerna": "^4.0.0",
     "prettier": "^2.3.2",
     "rimraf": "^3.0.2",
     "ts-jest": "^26.5.6",

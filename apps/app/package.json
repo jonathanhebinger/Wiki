@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@brainote/ui": "*",
+    "@brainote/domain": "*",
     "axios": "^0.21.1",
     "constate": "^3.3.0",
     "easy-peasy": "^5.0.3",
@@ -18,7 +20,7 @@
   },
   "scripts": {
     "start": "npm run tailwind && npx craco start",
-    "tailwind": "tailwind build src/tailwind.css -c tailwind.config.js -o src/index.css",
+    "tailwind": "tailwind build src/tailwind.scss -c tailwind.config.js -o src/index.css",
     "build": "npm run tailwind && craco build",
     "test": "npx craco test",
     "eject": "npx craco eject"

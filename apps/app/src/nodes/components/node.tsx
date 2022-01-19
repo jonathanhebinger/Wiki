@@ -1,5 +1,5 @@
 import { TemplateDataId, TemplateId } from '@brainote/domain'
-import { Surface } from '@brainote/ui/structure'
+import { Surface } from '@brainote/ui/src/components/structure'
 
 import { NodeProvider } from '../node.context'
 import { NodeInfos } from './node.content'

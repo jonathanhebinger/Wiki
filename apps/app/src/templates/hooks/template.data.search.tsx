@@ -1,7 +1,12 @@
 import { NodeId, TemplateId } from '@brainote/domain'
-import { Button, useModal } from '@brainote/ui/forms'
-import { Search, SearchOptionProps, SearchSelectedProps, useSearchStore } from '@brainote/ui/search'
-import { Shelf } from '@brainote/ui/structure'
+import { Button, useModal } from '@brainote/ui/src/components/forms'
+import {
+  Search,
+  SearchOptionProps,
+  SearchSelectedProps,
+  useSearchStore,
+} from '@brainote/ui/src/components/search'
+import { Shelf } from '@brainote/ui/src/components/structure'
 import { useEffect, useMemo, useState } from 'react'
 
 import { useMain } from '../../main'
@@ -70,7 +75,11 @@ export function useNodeSearch({
   return modal
 }
 
-function Option({ option, selected, onSelect }: SearchOptionProps<NodeSearchOption>) {
+function Option({
+  option,
+  selected,
+  onSelect,
+}: SearchOptionProps<NodeSearchOption>) {
   return (
     <div
       className={`px-2 py-1 flex justify-between items-center cursor-pointer hover:bg-gray-100 ${
@@ -82,6 +91,8 @@ function Option({ option, selected, onSelect }: SearchOptionProps<NodeSearchOpti
     </div>
   )
 }
-function Selected({ option }: SearchSelectedProps<NodeSearchOption>): JSX.Element {
+function Selected({
+  option,
+}: SearchSelectedProps<NodeSearchOption>): JSX.Element {
   return <div>{option.name}</div>
 }

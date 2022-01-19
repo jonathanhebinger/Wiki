@@ -2,9 +2,10 @@
   "name": "@brainote/ui",
   "version": "0.1.0",
   "private": true,
-  "main": "index.ts",
-  "module": "index.ts",
-  "typings": "index.ts",
+  "type": "module",
+  "exports": {
+    "./src/*": "./*"
+  },
   "dependencies": {
     "constate": "^3.3.0",
     "easy-peasy": "^5.0.3",

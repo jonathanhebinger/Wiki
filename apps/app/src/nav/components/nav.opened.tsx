@@ -1,5 +1,5 @@
-import { Icon } from '@brainote/ui/forms'
-import { Block, BlockAction } from '@brainote/ui/structure'
+import { Icon } from '@brainote/ui/src/components/forms'
+import { Block, BlockAction } from '@brainote/ui/src/components/structure'
 import { faTimes } from '@fortawesome/free-solid-svg-icons'
 
 import { useNav, useNavActions } from '../../main'

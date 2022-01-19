@@ -1,6 +1,6 @@
 import { Type } from '@brainote/domain'
-import { Select } from '@brainote/ui/forms'
-import { Block, Shelf } from '@brainote/ui/structure'
+import { Select } from '@brainote/ui/src/components/forms'
+import { Block, Shelf } from '@brainote/ui/src/components/structure'
 import React, { useEffect, useMemo } from 'react'
 
 import { useDataContext } from '../..'
@@ -38,8 +38,16 @@ export function DataTypeJoin() {
 
   return (
     <>
-      <Block Label="Template" Inline={SelectTemplate} Content={<Shelf>{SelectTemplate}</Shelf>} />
-      <Block Label="Key" Inline={KeySelect} Content={<Shelf>{KeySelect}</Shelf>} />
+      <Block
+        Label="Template"
+        Inline={SelectTemplate}
+        Content={<Shelf>{SelectTemplate}</Shelf>}
+      />
+      <Block
+        Label="Key"
+        Inline={KeySelect}
+        Content={<Shelf>{KeySelect}</Shelf>}
+      />
     </>
   )
 }

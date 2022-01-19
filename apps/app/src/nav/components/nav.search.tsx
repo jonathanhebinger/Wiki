@@ -1,13 +1,10 @@
-import { Icon, Input } from '@brainote/ui/forms'
-import { Block, Shelf } from '@brainote/ui/structure'
+import { Icon, Input } from '@brainote/ui/src/components/forms'
+import { Block, Shelf } from '@brainote/ui/src/components/structure'
 import { faTimes } from '@fortawesome/free-solid-svg-icons'
 import { useState } from 'react'
 
 import { useMain, useNavActions } from '../../main'
-import {
-  selectTemplate,
-  selectTemplateDataList,
-} from '../../main/state/main.selector'
+import { selectTemplate, selectTemplateDataList } from '../../main/state/main.selector'
 import { useTemplateSelect } from '../../templates'
 
 export function NavSearch() {

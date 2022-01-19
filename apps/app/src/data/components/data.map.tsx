@@ -1,6 +1,6 @@
 import { Data, Type } from '@brainote/domain'
-import { Icon } from '@brainote/ui/forms'
-import { Block, BlockAction } from '@brainote/ui/structure'
+import { Icon } from '@brainote/ui/src/components/forms'
+import { Block, BlockAction } from '@brainote/ui/src/components/structure'
 import { faPlus, faSave, faTrash, faUndo } from '@fortawesome/free-solid-svg-icons'
 import { useEffect, useState } from 'react'
 import { v4 } from 'uuid'
@@ -66,7 +66,9 @@ export function DataMap() {
 
   const Items = [...draftMap].map(([key], index) => {
     const name =
-      typeConfig.type[0] === 'object' ? draftMap.get(key)[typeConfig.type[1].namePath] : index
+      typeConfig.type[0] === 'object'
+        ? draftMap.get(key)[typeConfig.type[1].namePath]
+        : index
 
     const actions: BlockAction[] = []
     if (!savedMap.get(key)) {

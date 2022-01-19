@@ -1,6 +1,6 @@
 import { Data, Type } from '@brainote/domain'
-import { Icon } from '@brainote/ui/forms'
-import { Block, BlockAction } from '@brainote/ui/structure'
+import { Icon } from '@brainote/ui/src/components/forms'
+import { Block, BlockAction } from '@brainote/ui/src/components/structure'
 import { faPlus, faSave, faTrash, faUndo } from '@fortawesome/free-solid-svg-icons'
 import { useEffect, useState } from 'react'
 import { v4 } from 'uuid'
@@ -12,7 +12,9 @@ import { DataItem } from './data'
 function compute(item: any, path: string[]): any {
   const [key, ...rest] = path
 
-  return rest.length > 0 && typeof item === 'object' ? compute(item[key], rest) : `${item[key]}`
+  return rest.length > 0 && typeof item === 'object'
+    ? compute(item[key], rest)
+    : `${item[key]}`
 }
 
 export function DataArray() {
@@ -70,7 +72,9 @@ export function DataArray() {
   }
 
   const Items = [...draftMap].map(([key], index) => {
-    const name = typeConfig.namePath ? compute(draftMap.get(key), typeConfig.namePath) : key
+    const name = typeConfig.namePath
+      ? compute(draftMap.get(key), typeConfig.namePath)
+      : key
 
     const actions: BlockAction[] = []
     if (!savedMap.get(key)) {

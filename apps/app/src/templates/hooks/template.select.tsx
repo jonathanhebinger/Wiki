@@ -1,5 +1,5 @@
 import { TemplateId } from '@brainote/domain'
-import { Select } from '@brainote/ui/forms'
+import { Select } from '@brainote/ui/src/components/forms'
 import { useMemo, useState } from 'react'
 
 import { useMain } from '../../main'
@@ -7,7 +7,9 @@ import { useMain } from '../../main'
 export function useTemplateSelect(defaultTemplateId?: TemplateId) {
   const templatePairList = useMain(state => state.templates)
 
-  const [selected, select] = useState(defaultTemplateId || templatePairList[0][0])
+  const [selected, select] = useState(
+    defaultTemplateId || templatePairList[0][0],
+  )
 
   const options = useMemo(() => {
     return templatePairList.map(([templateId]) => ({
